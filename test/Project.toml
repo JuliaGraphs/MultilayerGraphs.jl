@@ -1,0 +1,3 @@
+[deps]
+MultilayerGraphs = "af984530-d72f-4904-8b81-b992bbbeaf3f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
