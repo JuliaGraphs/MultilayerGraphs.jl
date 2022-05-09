@@ -1,0 +1,12 @@
+name = "MultilayerGraphs"
+uuid = "af984530-d72f-4904-8b81-b992bbbeaf3f"
+authors = ["Pietro Monticone <38562595+pitmonticone@users.noreply.github.com>", "Claudio Moroni <43729990+ClaudMor@users.noreply.github.com>"]
+version = "0.1.0"
+
+[deps]
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+MetaGraphs = "626554b9-1ddb-594c-aa3c-2596fe9399a5"
+SimpleWeightedGraphs = "47aef6b3-ad0c-573a-a1e2-d07658019622"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
