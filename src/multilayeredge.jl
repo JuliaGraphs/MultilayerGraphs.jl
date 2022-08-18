@@ -5,7 +5,7 @@ An abstract type representing a `MultilayerGraph` edge.
 
 It must have fields: `src`, `dst`, `weight`.
 """
-abstract type  AbstractMultilayerEdge{T} <: AbstractEdge{T} end
+abstract type AbstractMultilayerEdge{T} <: AbstractEdge{T} end
 
 """
     struct MultilayerEdge{ T <: MultilayerVertex, U <: Union{ <: Real, Nothing}} <: AbstractMultilayerEdge{T}
@@ -28,27 +28,28 @@ Default constructor.
 
 Unweighted edge.
 """
-struct MultilayerEdge{ T <: MultilayerVertex, U <: Union{ <: Real, Nothing}} <: AbstractMultilayerEdge{T}
+struct MultilayerEdge{T<:MultilayerVertex,U<:Union{<:Real,Nothing}} <:
+       AbstractMultilayerEdge{T}
     src::T
     dst::T
     weight::U
 end
 
-
-MultilayerEdge(src::T, dst::T) where {T <: MultilayerVertex}  = MultilayerEdge{T,Nothing}(src, dst, nothing)
+function MultilayerEdge(src::T, dst::T) where {T<:MultilayerVertex}
+    return MultilayerEdge{T,Nothing}(src, dst, nothing)
+end
 
 """
     src(e::AbstractMultilayerEdge)
 """
-src(e::AbstractMultilayerEdge)    = e.src
+src(e::AbstractMultilayerEdge) = e.src
 
 """
     dst(e::AbstractMultilayerEdge)
 """
-Graphs.dst(e::AbstractMultilayerEdge)    = e.dst
+Graphs.dst(e::AbstractMultilayerEdge) = e.dst
 
 """
     weight(e::AbstractMultilayerEdge)
 """
 weight(e::AbstractMultilayerEdge) = e.weight
-

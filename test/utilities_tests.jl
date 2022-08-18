@@ -3,4 +3,4 @@ struct test_struct
     b
 end
 
-@test MultilayerGraphs.iscompletelyinitialized(test_struct(1,2))
+@test MultilayerGraphs.iscompletelyinitialized(test_struct(1, 2))

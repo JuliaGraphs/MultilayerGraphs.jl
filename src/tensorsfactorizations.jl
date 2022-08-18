@@ -25,7 +25,7 @@ function tensorsplit(args...; kwargs...)
     if hermitian
         res = tensoreig(args...; kwargs...)
         S, U = res[1:2]
-        Vt_perm = [ndims(U), (1:ndims(U)-1)...]
+        Vt_perm = [ndims(U), (1:(ndims(U) - 1))...]
         Vt = conj!(tensorcopy(U, collect(1:ndims(U)), Vt_perm))
         S = Diagonal(S)
         if !isposdef(S)
@@ -39,8 +39,8 @@ function tensorsplit(args...; kwargs...)
         auxdata = res[4:end]
     end
     S_sqrt = sqrt.(S)
-    A1 = tensorcontract(U, (1:ndims(U)-1..., :a), S_sqrt, (:a, :b))
-    A2 = tensorcontract(S_sqrt, (:b, :a), Vt, (:a, 1:ndims(Vt)-1...))
+    A1 = tensorcontract(U, (1:(ndims(U) - 1)..., :a), S_sqrt, (:a, :b))
+    A2 = tensorcontract(S_sqrt, (:b, :a), Vt, (:a, 1:(ndims(Vt) - 1)...))
     return A1, A2, auxdata...
 end
 
@@ -71,31 +71,39 @@ U*diagm(E)*U' up to the truncation error.
 Output is E, U, and possibly error, if return_error=true. Here E is a
 vector of eigenvalues values and U[:,...,:,k] is the kth eigenvector.
 """
-function tensoreig(A, a, b; chis=nothing, eps=0, return_error=false,
-                   print_error=false, break_degenerate=false,
-                   degeneracy_eps=1e-6, norm_type=:frobenius,
-                   hermitian=false)
+function tensoreig(
+    A,
+    a,
+    b;
+    chis=nothing,
+    eps=0,
+    return_error=false,
+    print_error=false,
+    break_degenerate=false,
+    degeneracy_eps=1e-6,
+    norm_type=:frobenius,
+    hermitian=false,
+)
     # Create the matrix and decompose it.
     A, shp_a, shp_b = to_matrix(A, a, b; return_tensor_shape=true)
     if hermitian
-        A = Hermitian((A+A')/2)
+        A = Hermitian((A + A') / 2)
     end
     fact = eigen(A)
     E, U = fact.values, fact.vectors
     # Sort the by largest magnitude eigenvalue first.
-    perm = sortperm(abs.(E), rev=true)
+    perm = sortperm(abs.(E); rev=true)
     if perm != collect(1:length(E))
         E = E[perm]
-        U = U[:,perm]
+        U = U[:, perm]
     end
 
     # Find the dimensions to truncate to and the error caused in doing so.
-    chi, error = find_trunc_dim(E, chis, eps, break_degenerate, degeneracy_eps,
-                                norm_type)
+    chi, error = find_trunc_dim(E, chis, eps, break_degenerate, degeneracy_eps, norm_type)
 
     # Truncate
     E = E[1:chi]
-    U = U[:,1:chi]
+    U = U[:, 1:chi]
 
     if print_error
         println("Relative truncation error ($norm_type norm) in eig: $error")
@@ -156,21 +164,29 @@ singular values and U and Vt are isometric tensors (unitary if the matrix
 that is SVDed is square and there is no truncation) such that  U*diag(S)*Vt =
 A, up to truncation errors.
 """
-function tensorsvd(A, a, b; chis=nothing, eps=0, return_error=false,
-                   print_error=false, break_degenerate=false,
-                   degeneracy_eps=1e-6, norm_type=:frobenius)
+function tensorsvd(
+    A,
+    a,
+    b;
+    chis=nothing,
+    eps=0,
+    return_error=false,
+    print_error=false,
+    break_degenerate=false,
+    degeneracy_eps=1e-6,
+    norm_type=:frobenius,
+)
     # Create the matrix and SVD it.
     A, shp_a, shp_b = to_matrix(A, a, b; return_tensor_shape=true)
     fact = svd(A)
     U, S, Vt = fact.U, fact.S, fact.Vt
 
     # Find the dimensions to truncate to and the error caused in doing so.
-    chi, error = find_trunc_dim(S, chis, eps, break_degenerate, degeneracy_eps,
-                                norm_type)
+    chi, error = find_trunc_dim(S, chis, eps, break_degenerate, degeneracy_eps, norm_type)
     # Truncate
     S = S[1:chi]
-    U = U[:,1:chi]
-    Vt = Vt[1:chi,:]
+    U = U[:, 1:chi]
+    Vt = Vt[1:chi, :]
 
     if print_error
         println("Relative truncation error ($norm_type norm) in SVD: $error")
@@ -226,7 +242,6 @@ function format_trunc_chis(v, chis, eps)
     return chis
 end
 
-
 """
 Transpose A so that the indices listed in a are on the left and the indices
 listed in b on the right, and reshape A into a matrix.
@@ -257,7 +272,7 @@ function to_matrix(A, a, b; return_tensor_shape=false)
     # The lists shp_a and shp_b list the dimensions of the bonds in a and b
     shp = size(A)
     shp_a = shp[1:length(a)]
-    shp_b = shp[end+1-length(b):end]
+    shp_b = shp[(end + 1 - length(b)):end]
 
     # Compute the dimensions of the the matrix that will be formed when
     # indices of a and b are joined together.
@@ -273,24 +288,23 @@ function to_matrix(A, a, b; return_tensor_shape=false)
     end
 end
 
-
 """
 Finds the dimension to which v should be truncated, and the error caused in
 this truncation. See documentation for tensorsvd for the meaning of the
 different arguments.
 """
-function find_trunc_dim(v, chis, eps,
-                        break_degenerate=false, degeneracy_eps=1e-6,
-                        norm_type=:frobenius)
+function find_trunc_dim(
+    v, chis, eps, break_degenerate=false, degeneracy_eps=1e-6, norm_type=:frobenius
+)
     # Put chis in a standard format.
     chis = format_trunc_chis(v, chis, eps)
     v = abs.(v)
-    if !issorted(v, rev=true)
-        sort!(v, rev=true)
+    if !issorted(v; rev=true)
+        sort!(v; rev=true)
     end
 
-    if norm_type==:frobenius
-        v = v.^2
+    if norm_type == :frobenius
+        v = v .^ 2
         eps = eps^2
     elseif norm_type == :trace
         # Nothing to be done
@@ -309,8 +323,8 @@ function find_trunc_dim(v, chis, eps,
                 # necessary.
                 while 0 < chi < length(v)
                     last_in = v[chi]
-                    last_out = v[chi+1]
-                    rel_diff = abs(last_in - last_out)/last_in
+                    last_out = v[chi + 1]
+                    rel_diff = abs(last_in - last_out) / last_in
                     if rel_diff < degeneracy_eps
                         chi -= 1
                     else
@@ -318,13 +332,13 @@ function find_trunc_dim(v, chis, eps,
                     end
                 end
             end
-            sum_disc = sum(v[chi+1:end])
-            error = sum_disc/sum_all
+            sum_disc = sum(v[(chi + 1):end])
+            error = sum_disc / sum_all
             if error <= eps
                 break
             end
         end
-        if norm_type==:frobenius
+        if norm_type == :frobenius
             error = sqrt(error)
         end
     else

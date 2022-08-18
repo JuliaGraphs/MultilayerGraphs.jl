@@ -1,27 +1,42 @@
 # Specify layers
 layers_u = [
-    Layer(:layer_1, get_SimpleGraph(); U = Float64),
-    Layer(:layer_2, get_SimpleWeightedGraph(); U = Float64),
-    Layer(:layer_3, get_SimpleWeightedGraph(); U = Float64),
+    Layer(:layer_1, get_SimpleGraph(); U=Float64),
+    Layer(:layer_2, get_SimpleWeightedGraph(); U=Float64),
+    Layer(:layer_3, get_SimpleWeightedGraph(); U=Float64),
 ]
 
 # Specify interlayers
 interlayers_u = [
-    Interlayer(n_nodes, :myinterlayer_1_2, :layer_1, :layer_2, SimpleGraph{Int64},
-               rand(min_edges:max_edges); U = Float64),
-    Interlayer(n_nodes, :myinterlayer_1_3, :layer_1, :layer_3,
-               SimpleWeightedGraph{Int64, Float64}, rand(min_edges:max_edges)),
+    Interlayer(
+        n_nodes,
+        :myinterlayer_1_2,
+        :layer_1,
+        :layer_2,
+        SimpleGraph{Int64},
+        rand(min_edges:max_edges);
+        U=Float64,
+    ),
+    Interlayer(
+        n_nodes,
+        :myinterlayer_1_3,
+        :layer_1,
+        :layer_3,
+        SimpleWeightedGraph{Int64,Float64},
+        rand(min_edges:max_edges),
+    ),
 ]
 
 # Test instantiation. This also tests add_layer! and specify_interlayer!
 multilayergraph = MultilayerGraph(layers_u, interlayers_u)
 
 # Test random multilayer
-random_multilayergraph = MultilayerGraph(3, n_nodes, min_edges, max_edges,
-                                         [
-                                             SimpleGraph{Int64},
-                                             SimpleWeightedGraph{Int64, Float64},
-                                         ])
+random_multilayergraph = MultilayerGraph(
+    3,
+    n_nodes,
+    min_edges,
+    max_edges,
+    [SimpleGraph{Int64}, SimpleWeightedGraph{Int64,Float64}],
+)
 
 # Test getproperty and getters
 random_multilayergraph.interlayers
@@ -47,46 +62,61 @@ edgetype(multilayergraph)
 @inferred eltype(multilayergraph)
 
 has_edge(multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(4, :layer_2))
-@inferred has_edge(multilayergraph, MultilayerVertex(1, :layer_1),
-                   MultilayerVertex(4, :layer_2))
+@inferred has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(4, :layer_2)
+)
 
 rem_edge!(multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_2))
-@test !has_edge(multilayergraph, MultilayerVertex(1, :layer_1),
-                MultilayerVertex(2, :layer_2))
+@test !has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_2)
+)
 
 rem_edge!(multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_3))
-@test !has_edge(multilayergraph, MultilayerVertex(1, :layer_1),
-                MultilayerVertex(2, :layer_3))
+@test !has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_3)
+)
 
 rem_edge!(multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1))
-@test !has_edge(multilayergraph, MultilayerVertex(1, :layer_1),
-                MultilayerVertex(2, :layer_1))
+@test !has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1)
+)
 
 rem_edge!(multilayergraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2))
-@test !has_edge(multilayergraph, MultilayerVertex(1, :layer_2),
-                MultilayerVertex(2, :layer_2))
+@test !has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2)
+)
 
 add_edge!(multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_2))
-@test has_edge(multilayergraph, MultilayerVertex(1, :layer_1),
-               MultilayerVertex(2, :layer_2))
+@test has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_2)
+)
 @test multilayergraph.adjacency_tensor[1, 2, 1, 2] == 1.0
 
-add_edge!(multilayergraph, MultilayerEdge(MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_3), 3.14))
-@test has_edge(multilayergraph, MultilayerVertex(1, :layer_1),
-               MultilayerVertex(2, :layer_3))
+add_edge!(
+    multilayergraph,
+    MultilayerEdge(MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_3), 3.14),
+)
+@test has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_3)
+)
 @test multilayergraph.adjacency_tensor[1, 2, 1, 3] == 3.14
 
-add_edge!(multilayergraph,
-          MultilayerEdge(MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1)))
-@test has_edge(multilayergraph, MultilayerVertex(1, :layer_1),
-               MultilayerVertex(2, :layer_1))
+add_edge!(
+    multilayergraph,
+    MultilayerEdge(MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1)),
+)
+@test has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1)
+)
 @test multilayergraph.adjacency_tensor[1, 2, 1, 1] == 1.0
 
-add_edge!(multilayergraph,
-          MultilayerEdge(MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2),
-                         3.14))
-@test has_edge(multilayergraph, MultilayerVertex(1, :layer_2),
-               MultilayerVertex(2, :layer_2))
+add_edge!(
+    multilayergraph,
+    MultilayerEdge(MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2), 3.14),
+)
+@test has_edge(
+    multilayergraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2)
+)
 @test multilayergraph.adjacency_tensor[1, 2, 2, 2] == 3.14
 
 has_vertex(multilayergraph, MultilayerVertex(1, :layer_1))
@@ -127,22 +157,30 @@ degree_variance(multilayergraph)
 @inferred degree_variance(multilayergraph)
 
 #
-randoms_u = [MultilayerGraph(4, n_nodes, min_edges, max_edges,
-                             [SimpleGraph{Int64}, SimpleWeightedGraph{Int64, Float64}])
-             for i in 1:4]
+randoms_u = [
+    MultilayerGraph(
+        4,
+        n_nodes,
+        min_edges,
+        max_edges,
+        [SimpleGraph{Int64}, SimpleWeightedGraph{Int64,Float64}],
+    ) for i in 1:4
+]
 @test_broken multilayer_global_clustering_coefficient.(randoms_u) .==
-             global_clustering_coefficient.(randoms_u)
+    global_clustering_coefficient.(randoms_u)
 overlays_randoms_u = get_overlay_monoplex_graph.(randoms_u)
 @test_broken global_clustering_coefficient.(overlays_randoms_u) .==
-             overlay_clustering_coefficient.(randoms_u)
+    overlay_clustering_coefficient.(randoms_u)
 
 multilayer_weighted_global_clustering_coefficient.(randoms_u, Ref([1 / 3, 1 / 3, 1 / 3])) .≈
 multilayer_global_clustering_coefficient.(randoms_u)
 
-eig_centr_u, errs_u = eigenvector_centrality(randoms_u[1]; norm = "n", tol = 1e-3)
+eig_centr_u, errs_u = eigenvector_centrality(randoms_u[1]; norm="n", tol=1e-3)
 
-modularity.(randoms_u,
-            Ref(rand([1, 2, 3, 4], length(nodes(randoms_u[1])), length(randoms_u[1].layers))))
+modularity.(
+    randoms_u,
+    Ref(rand([1, 2, 3, 4], length(nodes(randoms_u[1])), length(randoms_u[1].layers))),
+)
 
 von_neumann_entropy.(randoms_u)
 
@@ -168,42 +206,50 @@ monolayergraph = MultilayerGraph([Layer(:layer_1, layer_graph)])
 
 @test all(degree(monolayergraph) .== degree(layer_graph))
 
-@test_broken vec(eigenvector_centrality(monolayergraph; norm = "n", tol = 1e-3)[1]) ==
-             eigenvector_centrality(layer_graph)
+@test_broken vec(eigenvector_centrality(monolayergraph; norm="n", tol=1e-3)[1]) ==
+    eigenvector_centrality(layer_graph)
 
-eigenvector_centrality(monolayergraph; norm = "n", tol = 1e-3)[1] ./
+eigenvector_centrality(monolayergraph; norm="n", tol=1e-3)[1] ./
 eigenvector_centrality(layer_graph)
 
 tests = Bool[]
 for i in 1:5
-    clustering = rand([1, 2, 3], length(nodes(monolayergraph)),
-                      length(monolayergraph.layers))
-    push!(tests,
-          modularity(monolayergraph, clustering) ==
-          modularity(layer_graph, vec(clustering)))
+    clustering = rand(
+        [1, 2, 3], length(nodes(monolayergraph)), length(monolayergraph.layers)
+    )
+    push!(
+        tests,
+        modularity(monolayergraph, clustering) == modularity(layer_graph, vec(clustering)),
+    )
 end
 @test_broken all(tests)
 
 layer_graph_vertices = vertices(layer_graph)
 for (vert_1, vert_2) in Iterators.product(layer_graph_vertices, layer_graph_vertices)
-    @test has_edge(monolayergraph, MultilayerVertex(vert_1, :layer_1),
-                   MultilayerVertex(vert_2, :layer_1)) ==
-          has_edge(layer_graph, vert_1, vert_2)
+    @test has_edge(
+        monolayergraph,
+        MultilayerVertex(vert_1, :layer_1),
+        MultilayerVertex(vert_2, :layer_1),
+    ) == has_edge(layer_graph, vert_1, vert_2)
 end
 
 for vertex in vertices(layer_graph)
     @test has_vertex(monolayergraph, MultilayerVertex(vertex, :layer_1)) ==
-          has_vertex(layer_graph, vertex)
+        has_vertex(layer_graph, vertex)
 
-    @test all([mv_neighbor.node
-               for mv_neighbor in inneighbors(monolayergraph,
-                                              MultilayerVertex(vertex, :layer_1))] .==
-              inneighbors(layer_graph, vertex))
+    @test all(
+        [
+            mv_neighbor.node for
+            mv_neighbor in inneighbors(monolayergraph, MultilayerVertex(vertex, :layer_1))
+        ] .== inneighbors(layer_graph, vertex),
+    )
 
-    @test all([mv_neighbor.node
-               for mv_neighbor in outneighbors(monolayergraph,
-                                               MultilayerVertex(vertex, :layer_1))] .==
-              outneighbors(layer_graph, vertex))
+    @test all(
+        [
+            mv_neighbor.node for
+            mv_neighbor in outneighbors(monolayergraph, MultilayerVertex(vertex, :layer_1))
+        ] .== outneighbors(layer_graph, vertex),
+    )
 end
 
 ## weighted case
@@ -226,37 +272,48 @@ monolayerweightedgraph = MultilayerGraph([Layer(:layer_1, layer_w_graph)])
 
 @test all(degree(monolayerweightedgraph) .== degree(layer_w_graph))
 
-@test_broken vec(eigenvector_centrality(monolayerweightedgraph; norm = "n", tol = 1e-3)[1]) ==
-             eigenvector_centrality(layer_w_graph)
+@test_broken vec(eigenvector_centrality(monolayerweightedgraph; norm="n", tol=1e-3)[1]) ==
+    eigenvector_centrality(layer_w_graph)
 
 tests = Bool[]
 for i in 1:5
-    clustering = rand([1, 2, 3], length(nodes(monolayerweightedgraph)),
-                      length(monolayerweightedgraph.layers))
-    push!(tests,
-          modularity(monolayerweightedgraph, clustering) ==
-          modularity(layer_graph, vec(clustering)))
+    clustering = rand(
+        [1, 2, 3],
+        length(nodes(monolayerweightedgraph)),
+        length(monolayerweightedgraph.layers),
+    )
+    push!(
+        tests,
+        modularity(monolayerweightedgraph, clustering) ==
+        modularity(layer_graph, vec(clustering)),
+    )
 end
 @test_broken all(tests)
 
 layer_w_graph_vertices = vertices(layer_w_graph)
 for (vert_1, vert_2) in Iterators.product(layer_w_graph_vertices, layer_w_graph_vertices)
-    @test has_edge(monolayerweightedgraph, MultilayerVertex(vert_1, :layer_1),
-                   MultilayerVertex(vert_2, :layer_1)) ==
-          has_edge(layer_w_graph, vert_1, vert_2)
+    @test has_edge(
+        monolayerweightedgraph,
+        MultilayerVertex(vert_1, :layer_1),
+        MultilayerVertex(vert_2, :layer_1),
+    ) == has_edge(layer_w_graph, vert_1, vert_2)
 end
 
 for vertex in vertices(layer_w_graph)
     @test has_vertex(monolayerweightedgraph, MultilayerVertex(vertex, :layer_1)) ==
-          has_vertex(layer_w_graph, vertex)
+        has_vertex(layer_w_graph, vertex)
 
-    @test all([mv_neighbor.node
-               for mv_neighbor in inneighbors(monolayerweightedgraph,
-                                              MultilayerVertex(vertex, :layer_1))] .==
-              inneighbors(layer_w_graph, vertex))
+    @test all(
+        [
+            mv_neighbor.node for mv_neighbor in
+            inneighbors(monolayerweightedgraph, MultilayerVertex(vertex, :layer_1))
+        ] .== inneighbors(layer_w_graph, vertex),
+    )
 
-    @test all([mv_neighbor.node
-               for mv_neighbor in outneighbors(monolayerweightedgraph,
-                                               MultilayerVertex(vertex, :layer_1))] .==
-              outneighbors(layer_w_graph, vertex))
+    @test all(
+        [
+            mv_neighbor.node for mv_neighbor in
+            outneighbors(monolayerweightedgraph, MultilayerVertex(vertex, :layer_1))
+        ] .== outneighbors(layer_w_graph, vertex),
+    )
 end

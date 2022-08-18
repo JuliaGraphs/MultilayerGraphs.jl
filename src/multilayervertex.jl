@@ -21,7 +21,7 @@ A struct representing a vertex of a MultilayerGraph.
 - `vertex::T` : the node that the MultilayerVertex represents;
 - `layer::Symbol`:  the layer the MultilayerVertex belongs to.
 """
-struct MultilayerVertex{T <: Integer} <: AbstractMultilayerVertex{T}
+struct MultilayerVertex{T<:Integer} <: AbstractMultilayerVertex{T}
     node::T
     layer::Symbol
 end

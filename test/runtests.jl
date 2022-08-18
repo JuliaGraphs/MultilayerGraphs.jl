@@ -14,28 +14,40 @@ get_SimpleDiGraph() = SimpleDiGraph(n_nodes, rand(min_edges:max_edges))
 const simpleweightedgraph_sources = 1:n_nodes
 const simpleweightedgraph_destinations = rand(1:n_nodes, n_nodes)
 const simpleweightedgraph_weights = rand(n_nodes)
-simpleweightedgraph = SimpleWeightedGraph(simpleweightedgraph_sources,
-                                          simpleweightedgraph_destinations,
-                                          simpleweightedgraph_weights)
+simpleweightedgraph = SimpleWeightedGraph(
+    simpleweightedgraph_sources,
+    simpleweightedgraph_destinations,
+    simpleweightedgraph_weights,
+)
 function get_SimpleWeightedGraph()
-    SimpleWeightedGraph(simpleweightedgraph_sources, rand(1:n_nodes, n_nodes),
-                        rand(n_nodes))
+    return SimpleWeightedGraph(
+        simpleweightedgraph_sources, rand(1:n_nodes, n_nodes), rand(n_nodes)
+    )
 end
-simpleweighteddigraph = SimpleWeightedDiGraph(simpleweightedgraph_sources,
-                                              simpleweightedgraph_destinations,
-                                              simpleweightedgraph_weights)
+simpleweighteddigraph = SimpleWeightedDiGraph(
+    simpleweightedgraph_sources,
+    simpleweightedgraph_destinations,
+    simpleweightedgraph_weights,
+)
 function get_SimpleWeightedDiGraph()
-    SimpleWeightedDiGraph(simpleweightedgraph_sources, rand(1:n_nodes, n_nodes),
-                          rand(n_nodes))
+    return SimpleWeightedDiGraph(
+        simpleweightedgraph_sources, rand(1:n_nodes, n_nodes), rand(n_nodes)
+    )
 end
 
 metadigraph = MetaDiGraph(simpleweighteddigraph)
 metagraph = MetaGraph(simpleweightedgraph)
 
 @testset "MultilayerGraphs" begin
-    @testset "utilities" begin include("utilities_tests.jl") end
+    @testset "utilities" begin
+        include("utilities_tests.jl")
+    end
 
-    @testset "multilayergraph" begin include("multilayergraph_tests.jl") end
+    @testset "multilayergraph" begin
+        include("multilayergraph_tests.jl")
+    end
 
-    @testset "multilayerdigraph" begin include("multilayerdigraph_tests.jl") end
+    @testset "multilayerdigraph" begin
+        include("multilayerdigraph_tests.jl")
+    end
 end

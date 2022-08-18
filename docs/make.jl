@@ -1,7 +1,9 @@
 using MultilayerGraphs
 using Documenter
 
-DocMeta.setdocmeta!(MultilayerGraphs, :DocTestSetup, :(using MultilayerGraphs); recursive=true)
+DocMeta.setdocmeta!(
+    MultilayerGraphs, :DocTestSetup, :(using MultilayerGraphs); recursive=true
+)
 
 makedocs(;
     modules=[MultilayerGraphs],
@@ -13,14 +15,9 @@ makedocs(;
         canonical="https://InPhyT.github.io/MultilayerGraphs.jl",
         assets=String[],
     ),
-    pages=[
-        "Home"      => "index.md",
-        "Internals" => "internals.md"
-    ],
+    pages=["Home" => "index.md", "Internals" => "internals.md"],
 )
 
 deploydocs(;
-    repo="github.com/InPhyT/MultilayerGraphs.jl",
-    devbranch="main",
-    push_preview = true
+    repo="github.com/InPhyT/MultilayerGraphs.jl", devbranch="main", push_preview=true
 )
