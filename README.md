@@ -27,13 +27,12 @@ Press `]` in the Julia REPL and then
 ```julia
 pkg> add https://github.com/InPhyT/MultilayerGraphs.jl
 ```
-[Registration](https://github.com/JuliaRegistries/General/pull/66311) is under way.
 
 [Registration](https://github.com/JuliaRegistries/General/pull/66311) is in progress.
 
 ## Tutorial
 
-In the package documentation we have written a [tutorial](https://inphyt.github.io/MultilayerGraphs.jl/stable/#Tutorial) to illustrate how to define, handle and analyse a [`MultilayerGraph`](@ref) (the directed version is completely analogous).
+In the package documentation we have prepared a [tutorial](https://inphyt.github.io/MultilayerGraphs.jl/stable/#Tutorial) to illustrate how to define, handle and analyse a [`MultilayerGraph`](@ref) (the directed version is completely analogous).
 
 ## Future Developments
 
@@ -54,7 +53,9 @@ Here we highlight the major future developments we have currently identified:
 
 ## How to Contribute
 
-If you wish to change or add some functionality, please file an [issue](https://github.com/InPhyT/MultilayerGraphs.jl/issues).
+The package is currently under development and further steps would benefit enormously from the precious feedback of the [JuliaGraph people](https://github.com/orgs/JuliaGraphs/people), graph theorists, network scientists and all the users who might have general questions or suggestions. 
+
+Therefore feel free to open [discussions](https://github.com/InPhyT/MultilayerGraphs.jl/discussions), [issues](https://github.com/InPhyT/MultilayerGraphs.jl/issues) or [PRs](https://github.com/InPhyT/MultilayerGraphs.jl/pulls). They are very welcome!   
 
 ## How to Cite
 
@@ -62,4 +63,4 @@ If you use this package in your work, please cite this repository using the meta
 
 ## References
 
-De Domenico et al. (2013) [Mathematical Formulation of Multilayer Networks](https://doi.org/10.1103/PhysRevX.3.041022). *Physical Review X*
+De Domenico et al. (2013) [Mathematical Formulation of Multilayer Networks](https://doi.org/10.1103/PhysRevX.3.041022). *Physical Review X*.

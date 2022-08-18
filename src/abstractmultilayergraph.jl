@@ -375,14 +375,44 @@ Return the nodes of the AbstractMultilayerGraph `mg`.
 nodes(mg::M) where {M <: AbstractMultilayerGraph} = [vertex.node for vertex in  vertices(mg.layers[(1,1)])]
 
 # Graphs.jl's internals extra overrides
+"""
+    indegree(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}}
+
+Get the indegree of vertex `v` in `mg`.
+"""
 Graphs.indegree(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}} = length(inneighbors(mg, v))
+"""
+    indegree(mg::M, vs::AbstractVector{V} = vertices(mg)) where {T,M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}} 
+
+Get the vector of indegrees of vertices `vs` in `mg`.
+"""
 Graphs.indegree(mg::M, vs::AbstractVector{V} = vertices(mg)) where {T,M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}} = [indegree(mg, x) for x in vs]
 
+"""
+    outdegree(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}}
+
+Get the outdegree of vertex `v` in `mg`.
+"""
 Graphs.outdegree(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}} = length(outneighbors(mg, v))
+"""
+outdegree(mg::M, vs::AbstractVector{V} = vertices(mg)) where {T,M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}} 
+
+Get the vector of outdegrees of vertices `vs` in `mg`.
+"""
 Graphs.outdegree(mg::M, vs::AbstractVector{V} = vertices(mg)) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}} = [outdegree(mg, x) for x in vs]
 
+"""
+    degree(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}}
+
+Get the degree of vertices `vs` in `mg`.
+"""
 Graphs.degree(mg::M, vs::AbstractVector{V} = vertices(mg)) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}}  = [degree(mg, x) for x in vs]
 
+"""
+    neighbors(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}}
+
+Get the neighbors of vertices `vs` in `mg`. Reduces to `outneighbors` for both directed and undirected multilayer graphs.
+"""
 Graphs.neighbors(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex{T}}   = outneighbors(mg, v)
 
 """
