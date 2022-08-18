@@ -16,11 +16,11 @@ CurrentModule = MultilayerGraphs
 
 **MultilayerGraphs.jl** is a Julia package for the construction, manipulation and analysis of multilayer graphs [extending Graphs.jl](https://juliagraphs.org/Graphs.jl/dev/ecosystem/interface/).
 
-## Overview 
+## Overview
 
-**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). It mainly revolves around two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), encoding undirected and directed multilayer graphs respectively. 
+**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). It mainly revolves around two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), encoding undirected and directed multilayer graphs respectively.
 
-Roughly speaking, a multilayer graph is a collection of graphs, called *layers*, whose vertices are representations of the same set of nodes, and *interlayers*, i.e the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) whose vertices are those of any two layers and whose edges are those between vertices of the same two layers. See below for the distinction between *node* and *vertex*.
+Roughly speaking, a multilayer graph is a collection of ***layers***, i.e. graphs whose vertices are representations of the same set of nodes, and ***interlayers***, i.e the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) whose vertices are those of any two layers and whose edges are those between vertices of the same two layers. See below for the distinction between ***nodes*** and ***vertices***.
 
 [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed so that their layers and interlayers can be of any type (as long as they are Graphs.jl extensions themselves) and they need not be all of the same type. It is anyway required that all layers and interlayers of [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are respectively undirected and directed. Directedness is checked via the `IsDirected` trait defined in Graphs.jl adopting [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl). Since the layers' and interlayers' graph types don't need to be the same, multilayer graph types are considered weighted graphs by default, and thus are assigned the trait `IsWeighted`.
 
@@ -31,9 +31,9 @@ Press `]` in the Julia REPL and then
 ```julia
 pkg> add https://github.com/InPhyT/MultilayerGraphs.jl
 ```
-[Registration](https://github.com/JuliaRegistries/General/pull/66311) is under way.
+[Registration](https://github.com/JuliaRegistries/General/pull/66311) is in progress.
 
-## Tutorial 
+## Tutorial
 
 Here we illustrate how to define, handle and analyse a [`MultilayerGraph`](@ref) (the directed version is completely analogous).
 
@@ -71,11 +71,13 @@ get_SimpleWeightedDiGraph() = SimpleWeightedDiGraph(simpleweightedgraph_sources,
 As said before, to define a multilayer graph we need to specify its layers and interlayers. We proceed by constructing a layer (see [`Layer`](@ref))
 
 ```julia
-# Construct a layer 
+# Construct a layer
 layer = Layer(:layer_1, SimpleGraph(n_nodes, rand(min_edges:max_edges)); U = Float64)
 ```
 
-A `Layer` has a name (here `:layer_1`), an underlying graph (`SimpleGraph(n_nodes, rand(min_edges:max_edges))`) and a weight matrix `eltype` `U` (it defaults to the adjacency matrix's `eltype` if the graph in unweighted). To correctly specify a multilayer graph all layers and interlayers must have the same `U`, otherwise the multilayers's adjacency tensor would be poorly specified. Notice that `U` does not need to coincide with the `eltype` of the adjacency matrix of the underlying graph: as far as we know, there is no way to set it explicitly for all Graphs.jl extensions, nor it is required for extensions to implement such feature, so our package converts to `U` the `eltype` of `Layer`s and `Interlayer`s weight (/adjacency) matrices every time they are invoked
+A `Layer` has a name (here `:layer_1`), an underlying graph (`SimpleGraph(n_nodes, rand(min_edges:max_edges))`) and a weight matrix `eltype` `U` (it defaults to the adjacency matrix's `eltype` if the graph is unweighted). To correctly specify a multilayer graph all layers and interlayers must have the same `U`, otherwise the multilayers's adjacency tensor would be poorly specified.
+
+Notice that `U` does not need to coincide with the `eltype` of the adjacency matrix of the underlying graph: as far as we know, there is no way to set it explicitly for all Graphs.jl extensions, nor it is required for extensions to implement such feature, so our package converts to `U` the `eltype` of `Layer`s and `Interlayer`s weight (/adjacency) matrices every time they are invoked
 
 ```julia
 adjacency_matrix(layers[1])
@@ -117,15 +119,15 @@ adjacency_matrix(interlayer)
 ```nothing
 10×10 SparseMatrixCSC{Float64, Int64} with 18 stored entries:
   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅   1.0
-  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅   1.0  1.0   ⋅ 
-  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅ 
+  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅   1.0  1.0   ⋅
+  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅
   ⋅    ⋅    ⋅    ⋅    ⋅   1.0  1.0   ⋅    ⋅   1.0
-  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅ 
-  ⋅   1.0  1.0  1.0  1.0   ⋅    ⋅    ⋅    ⋅    ⋅ 
-  ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
-  ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
-  ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
- 1.0   ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
+  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅
+  ⋅   1.0  1.0  1.0  1.0   ⋅    ⋅    ⋅    ⋅    ⋅
+  ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅
+  ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅
+  ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅
+ 1.0   ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅
 ```
 
 It is a 4 block matrix where the first `n_nodes` rows and columns refer to `:layer_1`'s vertices, while the last `n_nodes` rows and columns refer to `:layer_2`'s vertices.
@@ -133,9 +135,9 @@ It is a 4 block matrix where the first `n_nodes` rows and columns refer to `:lay
 We may define more `Interlayer`s for future use:
 
 ```julia
-interlayers = [ 
-                Interlayer(n_nodes, :interlayer_layer_1_layer_2, :layer_1, :layer_2, SimpleGraph{Int64}, rand(min_edges:max_edges); U = Float64), 
-                Interlayer(n_nodes, :interlayer_layer_1_layer_3, :layer_1, :layer_3, SimpleWeightedGraph{Int64,Float64}, rand(min_edges:max_edges)) 
+interlayers = [
+                Interlayer(n_nodes, :interlayer_layer_1_layer_2, :layer_1, :layer_2, SimpleGraph{Int64}, rand(min_edges:max_edges); U = Float64),
+                Interlayer(n_nodes, :interlayer_layer_1_layer_3, :layer_1, :layer_3, SimpleWeightedGraph{Int64,Float64}, rand(min_edges:max_edges))
               ]
 ```
 
@@ -181,7 +183,7 @@ empty_multilayergraph  = MultilayerGraph( n_nodes, # Number of nodes
                                         )
 ```
 
-Let's explore some properties of the `MultilayerGraph` struct. 
+Let's explore some properties of the `MultilayerGraph` struct.
 
 #### Layers
 
@@ -218,7 +220,7 @@ Note that the (1,2) interlayer (i.e. the interlayer between layer (1,1) and laye
 
 ```julia
 symmetric_interlayer = get_symmetric_interlayer(multilayergraph.interlayers[(1,2)])
-symmetric_interlayer == multilayergraph.interlayers[(2,1)] 
+symmetric_interlayer == multilayergraph.interlayers[(2,1)]
 ```
 ```nothing
 true
@@ -323,20 +325,20 @@ edges(multilayergraph)
  MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(2, :layer_1), MultilayerVertex{Int64}(5, :layer_1), 1)
  MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(3, :layer_1), MultilayerVertex{Int64}(5, :layer_1), 1)
  MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_2), MultilayerVertex{Int64}(1, :layer_2), 0.7188425521261754)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_2), MultilayerVertex{Int64}(3, :layer_2), 0.9012061650463197) 
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_2), MultilayerVertex{Int64}(4, :layer_2), 0.6163304419976594) 
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(3, :layer_2), MultilayerVertex{Int64}(5, :layer_2), 1.0046265072746847) 
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_3), MultilayerVertex{Int64}(2, :layer_3), 0.2819477742859873) 
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_2), MultilayerVertex{Int64}(3, :layer_2), 0.9012061650463197)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_2), MultilayerVertex{Int64}(4, :layer_2), 0.6163304419976594)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(3, :layer_2), MultilayerVertex{Int64}(5, :layer_2), 1.0046265072746847)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_3), MultilayerVertex{Int64}(2, :layer_3), 0.2819477742859873)
  MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_3), MultilayerVertex{Int64}(4, :layer_3), 0.40111133874926597)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(3, :layer_3), MultilayerVertex{Int64}(4, :layer_3), 0.9498077050078636) 
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_3), MultilayerVertex{Int64}(5, :layer_3), 0.9618455695308973) 
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(3, :layer_3), MultilayerVertex{Int64}(4, :layer_3), 0.9498077050078636)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_3), MultilayerVertex{Int64}(5, :layer_3), 0.9618455695308973)
  ⋮
 ```
 
 The implementation of `MultilayerEdge` is
 
 ```julia
-struct MultilayerEdge{ T <: MultilayerVertex, U <: Union{ <: Real, Nothing}} <: AbstractMultilayerEdge{T} # AbstractMultilayerEdge{T} subtypes AbstractEdge 
+struct MultilayerEdge{ T <: MultilayerVertex, U <: Union{ <: Real, Nothing}} <: AbstractMultilayerEdge{T} # AbstractMultilayerEdge{T} subtypes AbstractEdge
     src::T    # The source vertex
     dst::T    # The destination vertex
     weight::U # The edge weight. Can be `nothing` to signify an unweighted edge, or a Real
@@ -345,7 +347,7 @@ end
 
 #### Other Example APIs
 
-Let's showcase some other key functionalities. 
+Let's showcase some other key functionalities.
 
 ##### Get the node type
 
@@ -395,7 +397,7 @@ multilayergraph.adjacency_tensor[1,2,1,2]
 0.0
 ```
 
-##### Add an edge 
+##### Add an edge
 
 We may add an edge using the `add_edge!` function. Since the interlayer we are adding the edge has an unweighted underlying graph (we will say that the interlayer is unweighted), we have to add an unweighted edge, so we don't specify the weight after the vertices. The adjacency tensor will be updated with a `one(U)` in the correct position. `add_edge!` mimics the behaviour of the analogous function in Graphs.jl
 
@@ -415,9 +417,9 @@ add_edge!(multilayergraph,  MultilayerEdge(MultilayerVertex(1, :layer_1), Multil
 true
 ```
 
-##### Get the inneighbors 
+##### Get the inneighbors
 
-To get all the inneighbors of a vertex we just need to write 
+To get all the inneighbors of a vertex we just need to write
 
 ```julia
 inneighbors(multilayergraph, MultilayerVertex(1, :layer_1))
@@ -458,7 +460,7 @@ Get the overlay monoplex graph: the monoplex graph whose nodes are the nodes of 
 ```julia
 get_overlay_monoplex_graph(multilayergraph)
 ```
-```nothing 
+```nothing
 {5, 8} undirected simple Int64 graph with Float64 weights
 ```
 
@@ -467,14 +469,14 @@ get_overlay_monoplex_graph(multilayergraph)
 Get the global clustering coefficient where triplets are weighted by how many layers they span
 
 ```julia
-w =  [1/3, 1/3, 1/3] 
+w =  [1/3, 1/3, 1/3]
 multilayer_weighted_global_clustering_coefficient(multilayergraph,w)
 ```
-```nothing 
+```nothing
 0.12667622867320916
 ```
 
-The first component of `w` is the weight associated to triplets that are contained in one layer, the second component to triplets whose vertices are spread across exactly two layers, the third to triplets whose vertices are spread across exactly three layers. Weights must sum to 1.0 . When they are all equal (like in this example), the weighted global clustering coefficient coincides with the global clustering coefficient. 
+The first component of `w` is the weight associated to triplets that are contained in one layer, the second component to triplets whose vertices are spread across exactly two layers, the third to triplets whose vertices are spread across exactly three layers. Weights must sum to `1.0`. When they are all equal (like in this example), the weighted global clustering coefficient coincides with the global clustering coefficient.
 
 #### Eigenvector Centrality
 
@@ -484,7 +486,7 @@ Calculated via an iterative algorithm, its normalization is different from the G
 # The returned values are: the eigenvector centrality and the relative error at each iteration, that is, the summed absolute values of the componentwise differences between the centrality computed at the current iteration minus the centrality computed at the previous iteration.
 eig_centrality, errs = eigenvector_centrality(multilayergraph; norm = "n", tol = 1e-3)
 ```
-```nothing 
+```nothing
 ([0.260450377858897 0.02358226618172732 0.08408641909534659; 0.6517125919818912 0.646849109975291 0.25212976452498587; … ; 0.21160486454350666 0.24850764907380082 0.2809259415084613; 0.5089709123112656 0.27775286552140954 0.22663014660085468], [10.000000000000004, 0.7095737447337795, 0.329314405320397, 0.16256401870083886, 0.07860800793625616, 0.04125218689190476, 0.021191358681432643, 0.011056758224944913, 0.006831972142635288, 0.0035133270128280235, 0.0024675719418019056, 0.0013403531942171656, 0.0009739276503972424])
 ```
 
@@ -518,12 +520,12 @@ Other extended functions are: [`is_directed`](@ref), [`has_vertex`](@ref), [`ne`
 
 ## How to Contribute
 
-If you wish to change or add some functionality, please file an [issue](https://github.com/InPhyT/MultilayerGraphs.jl/issues). 
+If you wish to change or add some functionality, please file an [issue](https://github.com/InPhyT/MultilayerGraphs.jl/issues).
 
-## How to Cite 
+## How to Cite
 
 If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/CITATION.bib).
 
-## References 
+## References
 
 De Domenico et al. (2013) [Mathematical Formulation of Multilayer Networks](https://doi.org/10.1103/PhysRevX.3.041022). *Physical Review X*

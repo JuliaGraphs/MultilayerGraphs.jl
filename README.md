@@ -12,11 +12,11 @@
 
 **MultilayerGraphs.jl** is a Julia package for the construction, manipulation and analysis of multilayer graphs [extending Graphs.jl](https://juliagraphs.org/Graphs.jl/dev/ecosystem/interface/).
 
-## Overview 
+## Overview
 
-**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). It mainly revolves around two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), encoding undirected and directed multilayer graphs respectively. 
+**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). It mainly revolves around two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), encoding undirected and directed multilayer graphs respectively.
 
-Roughly speaking, a multilayer graph is a collection of graphs, called *layers*, whose vertices are representations of the same set of nodes, and *interlayers*, i.e the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) whose vertices are those of any two layers and whose edges are those between vertices of the same two layers.
+Roughly speaking, a multilayer graph is a collection of ***layers***, i.e. graphs whose vertices are representations of the same set of nodes, and ***interlayers***, i.e the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) whose vertices are those of any two layers and whose edges are those between vertices of the same two layers.
 
 [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed so that their layers and interlayers can be of any type (as long as they are Graphs.jl extensions themselves) and they need not be all of the same type. It is anyway required that all layers and interlayers of [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are respectively undirected and directed. Directedness is checked via the `IsDirected` trait defined in Graphs.jl adopting [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl). Since the layers' and interlayers' graph types don't need to be the same, multilayer graph types are considered weighted graphs by default, and thus are assigned the trait `IsWeighted`.
 
@@ -29,20 +29,23 @@ pkg> add https://github.com/InPhyT/MultilayerGraphs.jl
 ```
 [Registration](https://github.com/JuliaRegistries/General/pull/66311) is under way.
 
-## Tutorial 
+[Registration](https://github.com/JuliaRegistries/General/pull/66311) is in progress.
+
+## Tutorial
 
 In the package documentation we have written a [tutorial](https://inphyt.github.io/MultilayerGraphs.jl/stable/#Tutorial) to illustrate how to define, handle and analyse a [`MultilayerGraph`](@ref) (the directed version is completely analogous).
 
 ## Future Developments
 
-Here we highlight the major future developments we have currently identified: 
+Here we highlight the major future developments we have currently identified:
+
 - [ ] Better integration with [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) (e.g. move the `AbstractVertex` to Graphs.jl, standardize graphs constructors, etc.);
 - [ ] Better integration with [MetaGraphs.jl](https://github.com/JuliaGraphs/MetaGraphs.jl) and [SimpleValueGraphs.jl](https://github.com/simonschoelly/SimpleValueGraphs.jl). Although it is possible to specify a `MetaGraph` and `SimpleValueGraph` as layer and/or interlayer, they are not yet fully supported (i.e. API may be a little unfit for them). An example using MetaGraphs, SimpleValueGraphs can be found at our announcement post [here]();
 - [ ] Optimise the adjacency tensor;
 - [ ] More intuitive constructor for `Interlayer`;
 - [ ] Implement specialised and simplified API for `MultiplexGraph`;
 - [ ] Implement visualisation functionalities;
-- [ ] Implement other features and methods for the analysis of multilayer graphs following the scientific literature: 
+- [ ] Implement other features and methods for the analysis of multilayer graphs following the scientific literature:
   - Kivelä et al. (2014) [Multilayer networks](https://doi.org/10.1093/comnet/cnu016). *Journal of Complex Networks*
   - Cozzo et al. (2015) [Structure of triadic relations in multiplex networks](https://doi.org/10.1088/1367-2630/17/7/073029). *New Journal of Physics*
   - De Domenico et al. (2015) [MuxViz: a tool for multilayer analysis and visualization of networks](https://doi.org/10.1093/comnet/cnu038). *Journal of Complex Networks*
@@ -51,12 +54,12 @@ Here we highlight the major future developments we have currently identified:
 
 ## How to Contribute
 
-If you wish to change or add some functionality, please file an [issue](https://github.com/InPhyT/MultilayerGraphs.jl/issues). 
+If you wish to change or add some functionality, please file an [issue](https://github.com/InPhyT/MultilayerGraphs.jl/issues).
 
-## How to Cite 
+## How to Cite
 
 If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/CITATION.bib).
 
-## References 
+## References
 
 De Domenico et al. (2013) [Mathematical Formulation of Multilayer Networks](https://doi.org/10.1103/PhysRevX.3.041022). *Physical Review X*
