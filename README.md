@@ -7,7 +7,7 @@
 [![codecov](https://codecov.io/gh/InPhyT/MultilayerGraphs.jl/branch/main/graph/badge.svg?token=Z758JuxDJX)](https://codecov.io/gh/InPhyT/MultilayerGraphs.jl)
 [![Coverage Status](https://coveralls.io/repos/github/InPhyT/MultilayerGraphs.jl/badge.svg?branch=main)](https://coveralls.io/github/InPhyT/MultilayerGraphs.jl?branch=main)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
-[![DOI](https://zenodo.org/badge/XXXXXXXXX.svg)](https://zenodo.org/badge/latestdoi/XXXXXXXXX)
+[![DOI](https://zenodo.org/badge/490352002.svg)](https://zenodo.org/badge/latestdoi/490352002)
 
 <img align="right" width="215" height="215" src="https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/docs/src/assets/logo.png?raw=true">
 
@@ -26,10 +26,8 @@ Roughly speaking, a multilayer graph is a collection of ***layers***, i.e. graph
 Press `]` in the Julia REPL and then
 
 ```julia
-pkg> add https://github.com/InPhyT/MultilayerGraphs.jl
+pkg> add MultilayerGraphs
 ```
-
-[Registration](https://github.com/JuliaRegistries/General/pull/66311) is in progress.
 
 ## Tutorial
 

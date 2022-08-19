@@ -29,10 +29,8 @@ Roughly speaking, a multilayer graph is a collection of *layers*, i.e. graphs wh
 Press `]` in the Julia REPL and then
 
 ```julia
-pkg> add https://github.com/InPhyT/MultilayerGraphs.jl
+pkg> add MultilayerGraphs
 ```
-
-[Registration](https://github.com/JuliaRegistries/General/pull/66311) is in progress.
 
 ## Tutorial
 
