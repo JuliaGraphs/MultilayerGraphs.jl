@@ -60,6 +60,12 @@ Therefore feel free to open [discussions](https://github.com/InPhyT/MultilayerGr
 
 If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/CITATION.bib).
 
+## Announcements 
+
+- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988)
+- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22)
+- [Twitter](https://twitter.com/In_Phy_T/status/1560594513189638146)
+
 ## References
 
 De Domenico et al. (2013) [Mathematical Formulation of Multilayer Networks](https://doi.org/10.1103/PhysRevX.3.041022). *Physical Review X*.
