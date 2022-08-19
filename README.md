@@ -37,7 +37,7 @@ In the package documentation we have prepared a [tutorial](https://inphyt.github
 
 Here we highlight the major future developments we have currently identified:
 
-- [ ] Better integration with [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) (e.g. move the `AbstractVertex` to Graphs.jl, standardize graphs constructors, etc.);
+- [ ] Better integration with [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl). We've recently opened an [issue](https://github.com/JuliaGraphs/Graphs.jl/issues/165) on Graphs.jl illustrating our proposals;
 - [ ] Better integration with [MetaGraphs.jl](https://github.com/JuliaGraphs/MetaGraphs.jl) and [SimpleValueGraphs.jl](https://github.com/simonschoelly/SimpleValueGraphs.jl). Although it is possible to specify a `MetaGraph` and `SimpleValueGraph` as layer and/or interlayer, they are not yet fully supported (i.e. API may be a little unfit for them). An example using MetaGraphs, SimpleValueGraphs can be found at our announcement post [here]();
 - [ ] Optimise the adjacency tensor;
 - [ ] More intuitive constructor for `Interlayer`;
@@ -59,6 +59,12 @@ Therefore feel free to open [discussions](https://github.com/InPhyT/MultilayerGr
 ## How to Cite
 
 If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/CITATION.bib).
+
+## Announcements 
+
+- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988)
+- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22)
+- [Twitter](https://twitter.com/In_Phy_T/status/1560594513189638146)
 
 ## References
 
