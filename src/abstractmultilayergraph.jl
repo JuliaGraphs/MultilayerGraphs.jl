@@ -134,7 +134,7 @@ function _specify_interlayer!(
     all(in.([new_interlayer.layer_1, new_interlayer.layer_2], Ref(mg.layers_names))) ||
         throw(
             ErrorException(
-                "The new interlayer conencts two layers that are not (one or both) part of the multilayer graph. Make sure you spelled the `layer_1` and `layer_2` arguments of the `Interlayer` correctly.",
+                "The new interlayer connects two layers that are not (one or both) part of the multilayer graph. Make sure you spelled the `layer_1` and `layer_2` arguments of the `Interlayer` correctly.",
             ),
         )
 
@@ -694,7 +694,7 @@ function Graphs.modularity(
     n_layers = length(mg.layers)
     size(c) == (n_nodes, n_layers) || throw(
         ErrorException(
-            "The size of the community matrx does not match (nn(mg),length(mg.layers)), found $(size(c)) and $((nn(mg),length(mg.layers)))",
+            "The size of the community matrix does not match (nn(mg),length(mg.layers)), found $(size(c)) and $((nn(mg),length(mg.layers)))",
         ),
     )
 

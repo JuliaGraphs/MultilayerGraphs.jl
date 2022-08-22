@@ -1,5 +1,4 @@
 # Define traits from SimpleTraits.jl
-
 """
     IsWeighted{X}
 
