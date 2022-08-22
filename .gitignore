@@ -30,4 +30,4 @@ docs/site/
 Manifest.toml
 
 # Formatting files 
-formatter.jl
+##.JuliaFormatter.jl
