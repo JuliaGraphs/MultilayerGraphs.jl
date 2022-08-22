@@ -77,7 +77,10 @@ include("interlayer.jl")
 include("graphs_extensions.jl")
 include("graph_of_graphs.jl")
 include("abstractmultilayergraph.jl")
-include("multilayerdigraph.jl")
+include("abstractmultilayerugraph.jl")
+# include("abstractmultilayerdigraph.jl")
 include("multilayergraph.jl")
+include("multilayerdigraph.jl")
+
 
 end
