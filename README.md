@@ -49,6 +49,7 @@ Here we highlight the major future developments we have currently identified:
   - De Domenico et al. (2015) [MuxViz: a tool for multilayer analysis and visualization of networks](https://doi.org/10.1093/comnet/cnu038). *Journal of Complex Networks*
   - De Domenico et al. (2015) [Ranking in interconnected multilayer networks reveals versatile nodes](https://doi.org/10.1038/ncomms7868). *Nature Communications*
   - De Domenico (2022) [Multilayer Networks: Analysis and Visualization](https://doi.org/10.1007/978-3-030-75718-2). *Springer Cham*
+  - Artime et al. (2022) [Multilayer Network Science: From Cells to Societies](https://doi.org/10.1017/9781009085809). *Cambridge Elements*
 
 ## How to Contribute
 
