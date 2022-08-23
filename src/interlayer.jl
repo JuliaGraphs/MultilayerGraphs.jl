@@ -228,7 +228,7 @@ function Interlayer(
 end
 
 """
-    multiplex_interlayer(nv::Int64, name::Symbol,layer_1::Symbol, layer_2::Symbol, graph_type::Type{G}; forbidden_vertices::Vector{MultilayerVertex{T}}, forbidden_edges::Vector{NTuple{2, MultilayerVertex{T}}}) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T};  IsWeighted{G}}
+    multiplex_interlayer(nv::Int64, name::Symbol,layer_1::Symbol, layer_2::Symbol, graph_type::Type{G}; forbidden_vertices::Vector{MultilayerVertex{T}}, forbidden_edges::Vector{NTuple{2, MultilayerVertex{T}}}) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}; !IsDirected{G}}
 
 Return an `Interlayer{T,U,G}` that has edges only between vertices that represent the same node.
 
@@ -243,7 +243,7 @@ Return an `Interlayer{T,U,G}` that has edges only between vertices that represen
 - `forbidden_vertices::Vector{MultilayerVertex{T}}`: list of vertices that are not considered present in the Interlayer;
 - `forbidden_edges::Vector{NTuple{2, MultilayerVertex{T}}}`: list of edges whose existence is a priori excluded from the Interlayer.
 """
-function multiplex_interlayer(
+@traitfn function multiplex_interlayer(
     nv::Int64,
     name::Symbol,
     layer_1::Symbol,
@@ -252,7 +252,7 @@ function multiplex_interlayer(
     U::Type=Float64,
     forbidden_vertices::Vector{MultilayerVertex{T}}=MultilayerVertex{T}[],
     forbidden_edges::Vector{NTuple{2,MultilayerVertex{T}}}=NTuple{2,MultilayerVertex{T}}[],
-) where {T<:Union{<:Integer,AbstractVertex},G<:AbstractGraph{T}}
+) where {T<:Union{<:Integer,AbstractVertex},G<:AbstractGraph{T}; !IsDirected{G}}
     edge_list = Tuple(
         MultilayerEdge(MultilayerVertex(i, layer_1), MultilayerVertex(i, layer_2), one(U))
         for i in 1:nv
@@ -279,6 +279,18 @@ function multiplex_interlayer(
         forbidden_vertices=forbidden_vertices,
         forbidden_edges=forbidden_edges,
     )
+end
+
+"""
+    is_multiplex_interlayer(interlayer::In) where {In <: Interlayer}
+
+Check that Interlayer `interlayer` is a multiplex-type interlayer.
+"""
+function is_multiplex_interlayer(interlayer::In) where {In <: Interlayer}
+    graph_adjm = adjacency_matrix(interlayer.graph)
+    n_vertices = nv(interlayer)
+    n_vertices_half = n_vertices ÷ 2
+    return graph_adjm[1:n_vertices_half, (n_vertices_half+1):end] == graph_adjm[(n_vertices_half+1):end, 1:n_vertices_half] == I(n_vertices_half) 
 end
 
 # Extend all Graphs.jl required methods (https://juliagraphs.org/Graphs.jl/dev/ecosystem/interface/)

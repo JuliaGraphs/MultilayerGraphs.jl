@@ -1,10 +1,10 @@
 
 """
-    AbstractMultilayerUGraph{T,U} <: AbstractAbstractMultilayerUGraph{T,U} 
+    AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} 
 
 Abstract type representing an undirected multilayer graph.
 """
-abstract type AbstractMultilayerUGraph{T,U} <: AbstractAbstractMultilayerUGraph{T,U} end
+abstract type AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 
 
 

@@ -50,4 +50,8 @@ metagraph = MetaGraph(simpleweightedgraph)
     @testset "multilayerdigraph" begin
         include("multilayerdigraph_tests.jl")
     end
+
+    @testset "multiplexgraph" begin
+        include("multiplexgraph_tests.jl")
+    end
 end

@@ -81,7 +81,7 @@ end
 """
     MultilayerGraph(layers::Vector{ <: Layer{T,U}};  default_interlayer::String  = "multiplex") where {T,U} 
 
-Construct a MultilayerDiGraph with layers `layers` and all interlayers of type `default_interlayer` (only "multiplex" is allowed).
+Construct a MultilayerGraph with layers `layers` and all interlayers of type `default_interlayer` (only "multiplex" is allowed).
 """
 function MultilayerGraph(
     layers::Vector{<:Layer{T,U}}; default_interlayer::String="multiplex"
@@ -92,14 +92,14 @@ end
 """
     MultilayerGraph(layers::Vector{ <: Layer{T,U }}, specified_interlayers::Vector{ <: Interlayer{T,U}};  default_interlayer::String  = "multiplex") where {T, U}      
 
-Construct a MultilayerDiGraph with layers given by `layers`. The interlayers will be constructed by default according to `default_interlayer` (only `"multiplex"` is allowed), except for those specified in `specified_interlayers`.
+Construct a MultilayerGraph with layers given by `layers`. The interlayers will be constructed by default according to `default_interlayer` (only `"multiplex"` is allowed), except for those specified in `specified_interlayers`.
 """
 function MultilayerGraph(
     layers::Vector{<:Layer{T,U}},
     specified_interlayers::Vector{<:Interlayer{T,U}};
     default_interlayer::String="multiplex",
 ) where {T,U}
-    # Check that all layers and specified interlayers are directed
+    # Check that all layers and specified interlayers are undirected
     specified_subgraphs = vcat(layers, specified_interlayers)
     all([
         !istrait(IsDirected{typeof(subgraph.graph)}) for subgraph in specified_subgraphs
