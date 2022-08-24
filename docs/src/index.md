@@ -7,7 +7,7 @@ CurrentModule = MultilayerGraphs
         border-color:#000;border-radius:10px;text-align:center;background-color:#B3D8FF;
         color:#000">
     <h3 style="color: black;">Star us on GitHub!</h3>
-    <a class="github-button" href="https://github.com/InPhyT/MultilayerGraphs.jl" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star InPhyT/MultilayerGraphs.jl on GitHub" style="margin:auto">Star</a>
+    <a class="github-button" href="https://github.com/JuliaGraphs/MultilayerGraphs.jl" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star JuliaGraphs/MultilayerGraphs.jl on GitHub" style="margin:auto">Star</a>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 </div>
 ```
@@ -521,11 +521,11 @@ Other extended functions are: [`is_directed`](@ref), [`has_vertex`](@ref), [`ne`
 
 The package is currently under development and further steps would benefit enormously from the precious feedback of the [JuliaGraph people](https://github.com/orgs/JuliaGraphs/people), graph theorists, network scientists and all the users who might have general questions or suggestions. 
 
-Therefore feel free to open [discussions](https://github.com/InPhyT/MultilayerGraphs.jl/discussions), [issues](https://github.com/InPhyT/MultilayerGraphs.jl/issues) or [PRs](https://github.com/InPhyT/MultilayerGraphs.jl/pulls). They are very welcome!   
+Therefore feel free to open [discussions](https://github.com/JuliaGraphs/MultilayerGraphs.jl/discussions), [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues) or [PRs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/pulls). They are very welcome!   
 
 ## How to Cite
 
-If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/CITATION.bib).
+If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib).
 
 ## References
 
