@@ -8,16 +8,16 @@ DocMeta.setdocmeta!(
 makedocs(;
     modules=[MultilayerGraphs],
     authors="Pietro Monticone, Claudio Moroni",
-    repo="https://github.com/InPhyT/MultilayerGraphs.jl/blob/{commit}{path}#{line}",
+    repo="https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/{commit}{path}#{line}",
     sitename="MultilayerGraphs.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://InPhyT.github.io/MultilayerGraphs.jl",
+        canonical="https://juliagraphs.org/MultilayerGraphs.jl",
         assets=String[],
     ),
     pages=["Home" => "index.md", "Internals" => "internals.md"],
 )
 
 deploydocs(;
-    repo="github.com/InPhyT/MultilayerGraphs.jl", devbranch="main", push_preview=true
+    repo="github.com/JuliaGraphs/MultilayerGraphs.jl", devbranch="main", push_preview=true
 )

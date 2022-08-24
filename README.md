@@ -1,25 +1,25 @@
 # MultilayerGraphs.jl 
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/LICENSE)
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://InPhyT.github.io/MultilayerGraphs.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://InPhyT.github.io/MultilayerGraphs.jl/dev)
-[![Build Status](https://github.com/InPhyT/MultilayerGraphs.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/InPhyT/MultilayerGraphs.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/InPhyT/MultilayerGraphs.jl/branch/main/graph/badge.svg?token=Z758JuxDJX)](https://codecov.io/gh/InPhyT/MultilayerGraphs.jl)
-[![Coverage Status](https://coveralls.io/repos/github/InPhyT/MultilayerGraphs.jl/badge.svg?branch=main)](https://coveralls.io/github/InPhyT/MultilayerGraphs.jl?branch=main)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/LICENSE)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliagraphs.org/MultilayerGraphs.jl/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliagraphs.org/MultilayerGraphs.jl/dev)
+[![Build Status](https://github.com/JuliaGraphs/MultilayerGraphs.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/JuliaGraphs/MultilayerGraphs.jl/branch/main/graph/badge.svg?token=Z758JuxDJX)](https://codecov.io/gh/JuliaGraphs/MultilayerGraphs.jl)
+[![Coverage Status](https://coveralls.io/repos/github/JuliaGraphs/MultilayerGraphs.jl/badge.svg?branch=main)](https://coveralls.io/github/JuliaGraphs/MultilayerGraphs.jl?branch=main)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![DOI](https://zenodo.org/badge/490352002.svg)](https://zenodo.org/badge/latestdoi/490352002)
 
-<img align="right" width="215" height="215" src="https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/docs/src/assets/logo.png?raw=true">
+<img align="right" width="215" height="215" src="https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/docs/src/assets/logo.png?raw=true">
 
 **MultilayerGraphs.jl** is a Julia package for the construction, manipulation and analysis of multilayer graphs [extending Graphs.jl](https://juliagraphs.org/Graphs.jl/dev/ecosystem/interface/).
 
 ## Overview
 
-**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). It mainly revolves around two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), encoding undirected and directed multilayer graphs respectively.
+**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). It mainly revolves around two custom types, [`MultilayerGraph`](https://juliagraphs.org/MultilayerGraphs.jl/dev/internals/#MultilayerGraphs.MultilayerGraph) and [`MultilayerDiGraph`](https://juliagraphs.org/MultilayerGraphs.jl/dev/internals/#MultilayerGraphs.MultilayerDiGraph), encoding undirected and directed multilayer graphs respectively.
 
 Roughly speaking, a multilayer graph is a collection of ***layers***, i.e. graphs whose vertices are representations of the same set of nodes, and ***interlayers***, i.e the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) whose vertices are those of any two layers and whose edges are those between vertices of the same two layers.
 
-[`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed so that their layers and interlayers can be of any type (as long as they are Graphs.jl extensions themselves) and they need not be all of the same type. It is anyway required that all layers and interlayers of [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are respectively undirected and directed. Directedness is checked via the `IsDirected` trait defined in Graphs.jl adopting [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl). Since the layers' and interlayers' graph types don't need to be the same, multilayer graph types are considered weighted graphs by default, and thus are assigned the trait `IsWeighted`.
+[`MultilayerGraph`](https://juliagraphs.org/MultilayerGraphs.jl/dev/internals/#MultilayerGraphs.MultilayerGraph) and [`MultilayerDiGraph`](https://juliagraphs.org/MultilayerGraphs.jl/dev/internals/#MultilayerGraphs.MultilayerDiGraph) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed so that their layers and interlayers can be of any type (as long as they are Graphs.jl extensions themselves) and they need not be all of the same type. It is anyway required that all layers and interlayers of [`MultilayerGraph`](https://juliagraphs.org/MultilayerGraphs.jl/dev/internals/#MultilayerGraphs.MultilayerGraph) and [`MultilayerDiGraph`](https://juliagraphs.org/MultilayerGraphs.jl/dev/internals/#MultilayerGraphs.MultilayerDiGraph) are respectively undirected and directed. Directedness is checked via the `IsDirected` trait defined in Graphs.jl adopting [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl). Since the layers' and interlayers' graph types don't need to be the same, multilayer graph types are considered weighted graphs by default, and thus are assigned the trait `IsWeighted`.
 
 ## Installation
 
@@ -31,7 +31,7 @@ pkg> add MultilayerGraphs
 
 ## Tutorial
 
-In the package documentation we have prepared a [tutorial](https://inphyt.github.io/MultilayerGraphs.jl/stable/#Tutorial) to illustrate how to define, handle and analyse a [`MultilayerGraph`](@ref) (the directed version is completely analogous).
+In the package documentation we have prepared a [tutorial](https://juliagraphs.org/MultilayerGraphs.jl/stable/#Tutorial) to illustrate how to define, handle and analyse a [`MultilayerGraph`](https://juliagraphs.org/MultilayerGraphs.jl/dev/internals/#MultilayerGraphs.MultilayerGraph) (the directed version is completely analogous).
 
 ## Future Developments
 
@@ -55,11 +55,11 @@ Here we highlight the major future developments we have currently identified:
 
 The package is currently under development and further steps would benefit enormously from the precious feedback of the [JuliaGraph people](https://github.com/orgs/JuliaGraphs/people), graph theorists, network scientists and all the users who might have general questions or suggestions. 
 
-Therefore feel free to open [discussions](https://github.com/InPhyT/MultilayerGraphs.jl/discussions), [issues](https://github.com/InPhyT/MultilayerGraphs.jl/issues) or [PRs](https://github.com/InPhyT/MultilayerGraphs.jl/pulls). They are very welcome!   
+Therefore feel free to open [discussions](https://github.com/JuliaGraphs/MultilayerGraphs.jl/discussions), [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues) or [PRs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/pulls). They are very welcome!   
 
 ## How to Cite
 
-If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/InPhyT/MultilayerGraphs.jl/blob/main/CITATION.bib).
+If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib).
 
 ## Announcements 
 
