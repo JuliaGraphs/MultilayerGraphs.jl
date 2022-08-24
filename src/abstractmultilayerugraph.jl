@@ -29,6 +29,30 @@ function add_layer!(
 end
 
 
+"""
+    specify_interlayer!(mg::M, new_interlayer::In; symmetric_interlayer_name::String) where { T, U, G<: AbstractGraph{T}, M <: AbstractMultilayerUGraph{T, U}, In <: Interlayer{T,U,G}}
+
+Specify the interlayer `new_interlayer` as part of `mg`. The underlying graph of `new_interlayer` must be undirected.
+"""
+function specify_interlayer!(
+    mg::M,
+    new_interlayer::In;
+    symmetric_interlayer_name::String="interlayer_$(new_interlayer.layer_2)_$(new_interlayer.layer_1)",
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},In<:Interlayer{T,U,G}}
+
+    # This error could be removed since we are already dispatching on trait
+    !istrait(IsDirected{typeof(new_interlayer.graph)}) || throw(
+        ErrorException(
+            "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is directed, so it is not compatible with a `AbstractMultilayerUGraph`.",
+        ),
+    )
+
+    return _specify_interlayer!(
+        mg, new_interlayer; symmetric_interlayer_name=symmetric_interlayer_name
+    )
+end
+
+
 # Graphs.jl's internals extra overrides
 function Graphs.degree(
     mg::M, v::V

@@ -113,3 +113,25 @@ function SimpleWeightedGraphs.SimpleWeightedDiGraph{T,U}(
 
     return SimpleWeightedDiGraph{T,U}(adjm)
 end
+
+# FIXME:
+# We cannot define a constructor of random SimpleValueGraphs.ValGraph that we may use inside the random layer and interlayer constructor that takes the SimpleValueGraphs.ValGraph concrete type, nv and ne  since in the SimpleValueGraphs.ValGraph concrete type are not stored infromations like the function associated to the `edgeval_init` argument. This would be solved with point 2. of https://github.com/JuliaGraphs/Graphs.jl/issues/165
+#= function SimpleValueGraphs.ValGraph{V, V_VALS, E_VALS, V_VALS_C, E_VALS_C}(n_vertices::Integer, n_edges::Integer)
+
+    return ValGraph{}
+end =#
+
+"""
+    MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
+
+Random  MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying grpah is a SimpleGraph. 
+"""
+MetaGraphs.MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}= MetaGraph{T,U}(SimpleGraph(n_vertices,n_edges))
+
+
+"""
+    MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
+
+Random  MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying grpah is a SimpleGraph. 
+"""
+MetaGraphs.MetaDiGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}= MetaGraph{T,U}(SimpleDiGraph(n_vertices,n_edges))

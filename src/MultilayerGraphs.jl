@@ -4,12 +4,11 @@ export getindex,
     δ_Ω,
     tensoreig,
     AbstractMultilayerGraph,
+    AbstractMultilayerUGraph,
+    AbstractMultilayerDiGraph,
     IsWeighted,
     MultilayerGraph,
     MultilayerDiGraph,
-    MultilayerGraph_m,
-    MultilayerGraph_mcsc,
-    MultilayerGraph_csc,
     MultiplexGraph,
     AbstractVertex,
     AbstractMultilayerVertex,
@@ -78,8 +77,11 @@ include("graphs_extensions.jl")
 include("graph_of_graphs.jl")
 include("abstractmultilayergraph.jl")
 include("abstractmultilayerugraph.jl")
+include("abstractmultilayerdigraph.jl")
+include("abstractmultiplexugraph.jl")
 # include("abstractmultilayerdigraph.jl")
 include("multilayergraph.jl")
+include("multiplexgraph.jl")
 include("multilayerdigraph.jl")
 
 

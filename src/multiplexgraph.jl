@@ -16,9 +16,9 @@ mutable struct MultiplexGraph{T,U} <: AbstractMultiplexUGraph{T,U}
     
     function MultiplexGraph(adjacency_tensor::Array{U,4}, layers::OrderedDict{Tuple{Int64,Int64},Layer{T}}, interlayers::OrderedDict{Tuple{Int64,Int64},Interlayer{T}}) where {T,U}
 
-        for interlayer in values(interlayers)
-            @assert is_multiplex_interlayer(interlayer)
-        end
+        
+        @assert all(is_multiplex_interlayer.(values(interlayers)))
+        
         
         return new{T,U}(adjacency_tensor, layers, interlayers)
 
@@ -106,11 +106,11 @@ function MultiplexGraph(
     )
 
     num_nodes = nv(layers[1])
-    MultiplexGraph = MultiplexGraph(num_nodes, T, U)
+    multiplexgraph = MultiplexGraph(num_nodes, T, U)
 
     for layer in layers
-        add_layer!(MultiplexGraph, layer; new_default_interlayers_type=default_interlayer)
+        add_layer!(multiplexgraph, layer)
     end
 
-    return MultiplexGraph
+    return multiplexgraph
 end

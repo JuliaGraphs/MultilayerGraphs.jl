@@ -1,9 +1,17 @@
 # Specify layers
-layers_u = [
-    Layer(:layer_1, get_SimpleGraph(); U=Float64),
-    Layer(:layer_2, get_SimpleWeightedGraph(); U=Float64),
-    Layer(:layer_3, get_SimpleWeightedGraph(); U=Float64),
+# layers_u = [
+#     Layer(:layer_1, get_SimpleGraph(); U=Float64),
+#     Layer(:layer_2, get_SimpleWeightedGraph(); U=Float64),
+#     Layer(:layer_3, get_SimpleWeightedGraph(); U=Float64),
+# ]
+
+layers_u = [Layer(n_nodes, :layer_1, SimpleGraph{Int64}, rand(min_edges:max_edges); U = Float64), 
+          Layer(n_nodes, :layer_2, SimpleWeightedGraph{Int64}, rand(min_edges:max_edges); U = Float64),
+          Layer(n_nodes, :layer_3, MetaGraph{Int64, Float64}, rand(min_edges:max_edges); U = Float64),
+          Layer(:layer_4, ValGraph( SimpleGraph{Int64}(5, rand(min_edges:max_edges)), edgeval_types=(Int64, ), edgeval_init=(s, d) -> (s + d, ), vertexval_types=(String, ), vertexval_init=undef); U = Float64)
 ]
+
+const num_layers_u = length(layers_u)
 
 # Specify interlayers
 interlayers_u = [
@@ -31,7 +39,7 @@ multilayergraph = MultilayerGraph(layers_u, interlayers_u)
 
 # Test random multilayer
 random_multilayergraph = MultilayerGraph(
-    3,
+    num_layers_u,
     n_nodes,
     min_edges,
     max_edges,
@@ -172,7 +180,7 @@ overlays_randoms_u = get_overlay_monoplex_graph.(randoms_u)
 @test_broken global_clustering_coefficient.(overlays_randoms_u) .==
     overlay_clustering_coefficient.(randoms_u)
 
-multilayer_weighted_global_clustering_coefficient.(randoms_u, Ref([1 / 3, 1 / 3, 1 / 3])) .≈
+multilayer_weighted_global_clustering_coefficient.(randoms_u, Ref(repeat([1. / num_layers_u], num_layers_u))) .≈
 multilayer_global_clustering_coefficient.(randoms_u)
 
 eig_centr_u, errs_u = eigenvector_centrality(randoms_u[1]; norm="n", tol=1e-3)

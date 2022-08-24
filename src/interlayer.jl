@@ -243,7 +243,7 @@ Return an `Interlayer{T,U,G}` that has edges only between vertices that represen
 - `forbidden_vertices::Vector{MultilayerVertex{T}}`: list of vertices that are not considered present in the Interlayer;
 - `forbidden_edges::Vector{NTuple{2, MultilayerVertex{T}}}`: list of edges whose existence is a priori excluded from the Interlayer.
 """
-@traitfn function multiplex_interlayer(
+function multiplex_interlayer(
     nv::Int64,
     name::Symbol,
     layer_1::Symbol,
@@ -252,7 +252,7 @@ Return an `Interlayer{T,U,G}` that has edges only between vertices that represen
     U::Type=Float64,
     forbidden_vertices::Vector{MultilayerVertex{T}}=MultilayerVertex{T}[],
     forbidden_edges::Vector{NTuple{2,MultilayerVertex{T}}}=NTuple{2,MultilayerVertex{T}}[],
-) where {T<:Union{<:Integer,AbstractVertex},G<:AbstractGraph{T}; !IsDirected{G}}
+) where {T<:Union{<:Integer,AbstractVertex},G<:AbstractGraph{T}}
     edge_list = Tuple(
         MultilayerEdge(MultilayerVertex(i, layer_1), MultilayerVertex(i, layer_2), one(U))
         for i in 1:nv

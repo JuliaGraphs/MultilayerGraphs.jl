@@ -1,6 +1,6 @@
 using Test
 using MultilayerGraphs
-using Graphs, SimpleWeightedGraphs, MetaGraphs
+using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
 
 # Test that methods work on a general multilayer graph
 ## Define variables and utilities
