@@ -3,63 +3,7 @@ AbstractMultiplexGraph{T}
 """
 abstract type AbstractMultiplexUGraph{T,U} <: AbstractMultilayerUGraph{T,U} end
 
-#= """
-    specify_interlayer!(mg::M, new_interlayer::In; symmetric_interlayer_name::String) where { T, U, G<: AbstractGraph{T}, M <: AbstractMultiplexUGraph{T, U}, In <: Interlayer{T,U,G}}
 
-Specify the interlayer `new_interlayer` as part of `mg`. The underlying graph of `new_interlayer` must be undirected.
-"""
-function specify_interlayer!(
-    mg::M,
-    new_interlayer::In;
-    symmetric_interlayer_name::String="interlayer_$(new_interlayer.layer_2)_$(new_interlayer.layer_1)",
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultiplexUGraph{T,U},In<:Interlayer{T,U,G}}
-
-    # This error could be removed since we are already dispatching on trait
-    !istrait(IsDirected{typeof(new_interlayer.graph)}) || throw(
-        ErrorException(
-            "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is directed, so it is not compatible with a `AbstractMultiplexUGraph`.",
-        ),
-    )
-
-    return _specify_interlayer!(
-        mg, new_interlayer; symmetric_interlayer_name=symmetric_interlayer_name
-    )
-end
-
-"""
-    specify_interlayer!(mg::M, layer_1::Symbol, layer_2::Symbol, graph::G; new_interlayer_name::Symbol, symmetric_interlayer_name::Symbol ,  forbidden_vertices::Tuple{Vararg{MultilayerVertex{T}}}, forbidden_edges::Tuple{Vararg{NTuple{2, MultilayerVertex{T}}}} ) where { T, U, G<: AbstractGraph{T}, M <: AbstractMultiplexUGraph{T, U}}
-
-Specify an interlayer which is represented by `graph` between `layer_1` and `layer_2`. The Interlayer's name can be specified via `new_interlayer_name`, as the name of its corresponding Interlayer between `layer_2` and `layer_1` which is the same as the new Interlayer except its adjacency matrix is transposed.
-"""
-
-function specify_interlayer!(
-    mg::M,
-    layer_1::Symbol,
-    layer_2::Symbol,
-    graph::G;
-    new_interlayer_name::String="interlayer_$(layer_1)_$(layer_2)",
-    symmetric_interlayer_name::String="interlayer_$(layer_2)_$(layer_1)",
-    forbidden_vertices::Tuple{Vararg{MultilayerVertex{T}}},
-    forbidden_edges::Tuple{Vararg{NTuple{2,MultilayerVertex{T}}}},
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultiplexUGraph{T,U}}
-    !istrait(isDirected{G}) || throw(
-        ErrorException(
-            "The new interlayer's underlying graphs $(graph) is directed, so it is not compatible with a `AbstractMultiplexUGraph`.",
-        ),
-    )
-    interlayer = Interlayer(
-        Symbol(new_interlayer_name),
-        layer_1,
-        layer_2,
-        graph;
-        forbidden_vertices=forbidden_vertices,
-        forbidden_edges=forbidden_edges,
-    )
-    return specify_interlayer!(
-        mg, interlayer; symmetric_interlayer_name=symmetric_interlayer_name
-    )
-end
- =#
 # Graphs.jl's internals extra overrides
 
 """
@@ -81,7 +25,6 @@ function Graphs.add_edge!(
     src_layer_cartIdxs, _src_layer = get_layer(mg, src.layer)
     dst_layer_cartIdxs, _dst_layer = get_layer(mg, dst.layer)
     added = addede_symmetric = false
-    # if _src_layer == _dst_layer
     layerContainingEdge_cartIdxs, layerContainingEdge = get_layer(mg, _src_layer.name)
     istrait(IsWeighted{typeof(layerContainingEdge.graph)}) || throw(
         ErrorException(
@@ -101,42 +44,6 @@ function Graphs.add_edge!(
         return false
     end
 
-    #= else
-        interlayerContainingEdge_cartIdxs, interlayerContainingEdge = get_interlayer(
-            mg, _src_layer.name, _dst_layer.name
-        )
-        interlayerSymmetricContainingEdge_cartIdxs, interlayerSymmetricContainingEdge = get_interlayer(
-            mg, _dst_layer.name, _src_layer.name
-        )
-
-        istrait(IsWeighted{typeof(interlayerContainingEdge.graph)}) &&
-            istrait(IsWeighted{typeof(interlayerSymmetricContainingEdge.graph)}) || throw(
-            ErrorException(
-                "You are trying to add a weighted edge to an unweighted interlayer. If you are convinced that the graph type of the interlayer to which the two vertices $(src) and $(dst) belong is weighted, then please submit an issue so that we may give the `IsWeighted` trait to the graph type. Also make sure that you didn't specify the two symmetric interlayer involved with different graph types.",
-            ),
-        )
-
-        added = add_edge!(interlayerContainingEdge, src, dst, weight)
-        added_symmetric = add_edge!(interlayerSymmetricContainingEdge, src, dst, weight)
-
-        added == added_symmetric || throw(
-            ErrorException(
-                "add_edge!; While adding and edge to an interlayer and its symmetric, one of the two already has/hasn't the said edge while the other doesn't/does. This implies that the multilayer has been corrupted. If you didn't modify its fields without relying on the provided API, please file an issue.",
-            ),
-        )
-
-        if added && added_symmetric
-            mg.adjacency_tensor[
-                src.node, dst.node, src_layer_cartIdxs[1], dst_layer_cartIdxs[1]
-            ] = weight
-            mg.adjacency_tensor[
-                dst.node, src.node, dst_layer_cartIdxs[1], src_layer_cartIdxs[1]
-            ] = weight
-            return true
-        else
-            return false
-        end
-    end =#
     return added
 end
 
@@ -160,7 +67,6 @@ function Graphs.add_edge!(
     src_layer_cartIdxs, _src_layer = get_layer(mg, src.layer)
     dst_layer_cartIdxs, _dst_layer = get_layer(mg, dst.layer)
     added = addede_symmetric = false
-    #if _src_layer == _dst_layer
     layerContainingEdge_cartIdxs, layerContainingEdge = get_layer(mg, _src_layer.name)
     added = added_symmetric = add_edge!(layerContainingEdge, src, dst)
     if added
@@ -174,36 +80,7 @@ function Graphs.add_edge!(
     else
         return false
     end
-#= 
-    else
-        interlayerContainingEdge_cartIdxs, interlayerContainingEdge = get_interlayer(
-            mg, _src_layer.name, _dst_layer.name
-        )
-        interlayerSymmetricContainingEdge_cartIdxs, interlayerSymmetricContainingEdge = get_interlayer(
-            mg, _dst_layer.name, _src_layer.name
-        )
 
-        added = add_edge!(interlayerContainingEdge, src, dst)
-        added_symmetric = add_edge!(interlayerSymmetricContainingEdge, src, dst)
-
-        added == added_symmetric || throw(
-            ErrorException(
-                "add_edge!; While adding and edge to an interlayer and its symmetric, one of the two already has/hasn't the said edge while the other doesn't/does. This implies that the multilayer has been corrupted. If you didn't modify its fields without relying on the provided API, please file an issue.",
-            ),
-        )
-
-        if added && added_symmetric
-            mg.adjacency_tensor[src.node, dst.node, src_layer_cartIdxs[1], dst_layer_cartIdxs[1]] = one(
-                U
-            )
-            mg.adjacency_tensor[dst.node, src.node, dst_layer_cartIdxs[1], src_layer_cartIdxs[1]] = one(
-                U
-            )
-            return true
-        else
-            return false
-        end
-    end =#
     return added
 end
 
@@ -247,35 +124,7 @@ function Graphs.rem_edge!(
     else
         return false
     end
-    #= else
-        interlayerContainingEdge_cartIdxs, interlayerContainingEdge = get_interlayer(
-            mg, _src_layer.name, _dst_layer.name
-        )
-        interlayerSymmetricContainingEdge_cartIdxs, interlayerSymmetricContainingEdge = get_interlayer(
-            mg, _dst_layer.name, _src_layer.name
-        )
 
-        removed = rem_edge!(interlayerContainingEdge, src, dst)
-        removed_symmetric = rem_edge!(interlayerSymmetricContainingEdge, src, dst)
-
-        if removed && removed_symmetric
-            mg.adjacency_tensor[src.node, dst.node, src_layer_cartIdxs[1], dst_layer_cartIdxs[1]] = zero(
-                U
-            )
-            mg.adjacency_tensor[dst.node, src.node, dst_layer_cartIdxs[1], src_layer_cartIdxs[1]] = zero(
-                U
-            )
-            return true
-        elseif removed == !removed_symmetric
-            throw(
-                ErrorException(
-                    "rem_edge!; While removing and edge to an interlayer and its symmetric, one of the two already has/hasn't the said edge while the other doesn't/does. This implies that the multilayer has been corrupted. If you didn't modify its fields without relying on the provided API, please file an issue.",
-                ),
-            )
-        elseif !removed && !removed_symmetric
-            return false
-        end
-    end =#
 end
 
 
