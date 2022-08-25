@@ -17,7 +17,7 @@ const num_layers_u = length(layers_u)
 interlayers_u = [
     Interlayer(
         n_nodes,
-        :myinterlayer_1_2,
+        :interlayer_1_2,
         :layer_1,
         :layer_2,
         SimpleGraph{Int64},
@@ -26,7 +26,7 @@ interlayers_u = [
     ),
     Interlayer(
         n_nodes,
-        :myinterlayer_1_3,
+        :interlayer_1_3,
         :layer_1,
         :layer_3,
         SimpleWeightedGraph{Int64,Float64},
@@ -47,11 +47,11 @@ random_multilayergraph = MultilayerGraph(
 )
 
 # Test getproperty and getters
-random_multilayergraph.interlayers
-random_multilayergraph.interlayer_1_2
-random_multilayergraph.layer_1
-random_multilayergraph.layers
-random_multilayergraph.graphs
+multilayergraph.interlayers
+multilayergraph.interlayer_1_2
+multilayergraph.layer_1
+multilayergraph.layers
+multilayergraph.graphs
 get_layer(multilayergraph, :layer_1)
 get_interlayer(multilayergraph, :layer_1, :layer_2)
 get_subgraph(multilayergraph, :layer_1, :layer_2)
@@ -167,11 +167,11 @@ degree_variance(multilayergraph)
 #
 randoms_u = [
     MultilayerGraph(
-        4,
+        num_layers_u,
         n_nodes,
         min_edges,
         max_edges,
-        [SimpleGraph{Int64}, SimpleWeightedGraph{Int64,Float64}],
+        [SimpleGraph{Int64}, SimpleWeightedGraph{Int64,Float64}, MetaGraph{Int64, Float64}],
     ) for i in 1:4
 ]
 @test_broken multilayer_global_clustering_coefficient.(randoms_u) .==
@@ -180,7 +180,7 @@ overlays_randoms_u = get_overlay_monoplex_graph.(randoms_u)
 @test_broken global_clustering_coefficient.(overlays_randoms_u) .==
     overlay_clustering_coefficient.(randoms_u)
 
-multilayer_weighted_global_clustering_coefficient.(randoms_u, Ref(repeat([1. / num_layers_u], num_layers_u))) .≈
+multilayer_weighted_global_clustering_coefficient.(randoms_u, Ref([1/3,1/3,1/3])) .≈
 multilayer_global_clustering_coefficient.(randoms_u)
 
 eig_centr_u, errs_u = eigenvector_centrality(randoms_u[1]; norm="n", tol=1e-3)
@@ -191,6 +191,8 @@ modularity.(
 )
 
 von_neumann_entropy.(randoms_u)
+
+get_graph_of_layers.(randoms_u)
 
 # Test that, given a 1-dimensional multilayergraph, we obtain the same metrics as we would by using Graphs.jl's utilities on the one and only layer
 
@@ -325,3 +327,28 @@ for vertex in vertices(layer_w_graph)
         ] .== outneighbors(layer_w_graph, vertex),
     )
 end
+
+
+
+
+# test multiplex graph
+
+multiplexgraph = MultiplexGraph(layers_u)
+
+multiplexgraph_random = MultiplexGraph(    num_layers_u, n_nodes, min_edges, max_edges, [SimpleGraph{Int64}, SimpleWeightedGraph{Int64, Float64}, MetaGraph{Int64, Float64}])
+
+add_edge!(multiplexgraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1) )
+@test multiplexgraph.adjacency_tensor[1,2,1,1] == 1.0
+
+@test_throws ErrorException add_edge!(multiplexgraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1), 3.14 )
+
+
+add_edge!(multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2), 3.14 )
+@test multiplexgraph.adjacency_tensor[1,2,2,2] == 3.14
+
+
+@test rem_edge!(multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2))
+@test multiplexgraph.adjacency_tensor[1,2,2,2] == 0.0
+
+
+get_graph_of_layers(multiplexgraph)

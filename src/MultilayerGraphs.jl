@@ -10,6 +10,7 @@ export getindex,
     MultilayerGraph,
     MultilayerDiGraph,
     MultiplexGraph,
+    MultiplexDiGraph,
     AbstractVertex,
     AbstractMultilayerVertex,
     MultilayerVertex,
@@ -79,10 +80,11 @@ include("abstractmultilayergraph.jl")
 include("abstractmultilayerugraph.jl")
 include("abstractmultilayerdigraph.jl")
 include("abstractmultiplexugraph.jl")
-# include("abstractmultilayerdigraph.jl")
+include("abstractmultiplexdigraph.jl")
 include("multilayergraph.jl")
 include("multiplexgraph.jl")
 include("multilayerdigraph.jl")
+include("multiplexdigraph.jl")
 
 
 end

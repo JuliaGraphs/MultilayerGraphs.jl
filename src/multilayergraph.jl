@@ -16,9 +16,9 @@ mutable struct MultilayerGraph{T,U} <: AbstractMultilayerUGraph{T,U}
 end
 
 """
-    MultilayerGraph(num_layers::Int64, n_nodes::Int64, min_edges::Int64, max_edges::Int64, graph_type::Type{<: AbstractGraph})
+    MultilayerGraph(num_layers::Int64, n_nodes::Int64, min_edges::Int64, max_edges::Int64, graph_types::Vector{DataType})
 
-Return a random `MultilayerGraph` with `num_layers` layers, `n_nodes` nodes and each `Layer` and `Interlayer` has a random number of edges between `min_edges` and `max_edges`. `Layers` and `Interlayers` have parametric type `graph_type`.
+Return a random `MultilayerGraph` with `num_layers` layers, `n_nodes` nodes and each `Layer` and `Interlayer` has a random number of edges between `min_edges` and `max_edges`. `Layers` and `Interlayers` have underlying graphs randomly chosen from `graph_types`.
 """
 function MultilayerGraph(
     num_layers::Int64,
@@ -372,7 +372,7 @@ end
 
 # Multilayer-specific functions
 # function get_graph_of_layers end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
-"""
+#= """
     get_graph_of_layers(mg::M) where {M <: MultilayerGraph}
 
 Get a [`DiGraphOfGraph`](@ref) of the layers of `mg`. the weight of each edge between layers are obtained by summing all edge weights in the corresponding interlayer. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
@@ -401,6 +401,6 @@ function get_graph_of_layers(
     return GraphOfGraphs(
         getproperty.(collect(values(mg.layers)), :graph), symmetric_adjacency_matrix
     )
-end
+end =#
 
 

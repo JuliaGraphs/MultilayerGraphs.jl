@@ -1,5 +1,7 @@
 """
-AbstractMultiplexGraph{T}
+    AbstractMultiplexUGraph{T,U} <: AbstractMultilayerUGraph{T,U}
+
+Abstract type representing an undirecte multiplex graph.
 """
 abstract type AbstractMultiplexUGraph{T,U} <: AbstractMultilayerUGraph{T,U} end
 

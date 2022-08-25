@@ -18,7 +18,7 @@ end
 @traitimpl IsDirected{MultilayerDiGraph}
 
 """
-    MultilayerDiGraph(num_layers::Int64, n_nodes::Int64, min_edges::Int64, max_edges::Int64, graph_type::Type{<: AbstractGraph})
+    MultilayerDiGraph(num_layers::Int64, n_nodes::Int64, min_edges::Int64, max_edges::Int64, graph_types::Vector{DataType})
 
 Return a random `MultilayerDiGraph` with `num_layers` layers, `n_nodes` nodes and each `Layer` and `Interlayer` has a random number of edges between `min_edges` and `max_edges`. `Layers` and `Interlayers` have parametric type `graph_type`.
 """
@@ -347,32 +347,4 @@ function Graphs.rem_edge!(
             return false
         end
     end
-end
-
-
-
-#function get_graph_of_layers end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
-"""
-    get_graph_of_layers(mg::M) where {M <: MultilayerDiGraph}
-
-Get a [`DiGraphOfGraph`](@ref) of the layers of `mg`. the weight of each edge between layers are obtained by summing all edge weights in the corresponding interlayer. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
-"""
-function get_graph_of_layers(
-    mg::M; normalization::String="total_edges"
-) where {M<:MultilayerDiGraph}
-    num_layers = length(mg.layers)
-    norm_factor = 1
-    if cmp(normalization, "total_edges") == 0
-        norm_factor = ne(mg)
-    end
-    adjacency_matrix = reshape(
-        [
-            i != j ? (1 / norm_factor) * sum(mg.adjacency_tensor[:, :, i, j]) / 2 : 0.0 for
-            i in 1:num_layers for j in 1:num_layers
-        ],
-        (num_layers, num_layers),
-    )
-    return DiGraphOfGraphs(
-        getproperty.(collect(values(mg.layers)), :graph), adjacency_matrix
-    )
 end

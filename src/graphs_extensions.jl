@@ -124,7 +124,7 @@ end =#
 """
     MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
 
-Random  MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying grpah is a SimpleGraph. 
+Random MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying graph is a SimpleGraph. 
 """
 MetaGraphs.MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}= MetaGraph{T,U}(SimpleGraph(n_vertices,n_edges))
 
@@ -132,6 +132,23 @@ MetaGraphs.MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}= Me
 """
     MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
 
-Random  MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying grpah is a SimpleGraph. 
+Randoms MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying graph is a SimpleDiGraph. 
 """
-MetaGraphs.MetaDiGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}= MetaGraph{T,U}(SimpleDiGraph(n_vertices,n_edges))
+MetaGraphs.MetaDiGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}= MetaDiGraph{T,U}(SimpleDiGraph(n_vertices,n_edges))
+
+
+"""
+    MetaGraph{T,U}(adjm::Matrix) where {T,U}
+
+MetaGraph with adjacency matrix `adjm`, vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleGraph. 
+"""
+MetaGraphs.MetaGraph{T,U}(adjm::Union{Matrix, SparseMatrixCSC}) where {T,U}= MetaGraph{T,U}(SimpleGraph(adjm))
+
+
+"""
+    MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
+
+MetaDiGraph with adjacency matrix `adjm`, vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleDiGraph. 
+"""
+MetaGraphs.MetaDiGraph{T,U}(adjm::Union{Matrix, SparseMatrixCSC}) where {T,U}= MetaDiGraph{T,U}(SimpleDiGraph(adjm))
+

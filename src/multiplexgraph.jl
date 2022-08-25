@@ -26,7 +26,7 @@ mutable struct MultiplexGraph{T,U} <: AbstractMultiplexUGraph{T,U}
 end
 
 """
-    MultiplexGraph(num_layers::Int64, n_nodes::Int64, min_edges::Int64, max_edges::Int64, graph_type::Type{<: AbstractGraph})
+    MultiplexGraph(num_layers::Int64, n_nodes::Int64, min_edges::Int64, max_edges::Int64, graph_types::Vector{DataType})
 
 Return a random `MultiplexGraph` with `num_layers` layers, `n_nodes` nodes and each `Layer` has a random number of edges between `min_edges` and `max_edges`. `Layers` have parametric type `graph_type`.
 """
@@ -75,17 +75,6 @@ function MultiplexGraph(n_nodes::Int64, T::Type{<:Number}, U::Type{<:Number})
         OrderedDict{Tuple{Int64,Int64},Interlayer{T}}(),
     )
 end
-
-#= """
-    MultiplexGraph(layers::Vector{ <: Layer{T,U}};  default_interlayer::String  = "multiplex") where {T,U} 
-
-Construct a MultiplexGraph with layers `layers` and all interlayers of type `default_interlayer` (only "multiplex" is allowed).
-"""
-function MultiplexGraph(
-    layers::Vector{<:Layer{T,U}}; default_interlayer::String="multiplex"
-) where {T,U}
-    return MultiplexGraph(layers, Interlayer{T,U}[]; default_interlayer=default_interlayer)
-end =#
 
 """
     MultiplexGraph(layers::Vector{ <: Layer{T,U }}) where {T, U}      
