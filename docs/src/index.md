@@ -136,7 +136,8 @@ We may define more `Interlayer`s for future use:
 ```julia
 interlayers = [
                 Interlayer(n_nodes, :interlayer_layer_1_layer_2, :layer_1, :layer_2, SimpleGraph{Int64}, rand(min_edges:max_edges); U = Float64),
-                Interlayer(n_nodes, :interlayer_layer_1_layer_3, :layer_1, :layer_3, SimpleWeightedGraph{Int64,Float64}, rand(min_edges:max_edges))
+                Interlayer(n_nodes, :interlayer_layer_1_layer_3, :layer_1, :layer_3, SimpleWeightedGraph{Int64,Float64}, rand(min_edges:max_edges)),
+                
               ]
 ```
 

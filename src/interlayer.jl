@@ -85,6 +85,8 @@ mutable struct Interlayer{T<:Union{<:Integer,AbstractVertex},U<:Real,G<:Abstract
     end
 end
 
+Interlayer(name::Symbol, layer_1::Symbol, layer_2::Symbol, graph::G; forbidden_vertices::Vector{MultilayerVertex{T}} = MultilayerVertex{T}[], forbidden_edges::Vector{NTuple{2,MultilayerVertex{T}}} = NTuple{2,MultilayerVertex{T}}[], U::Union{Type{<:Real},Nothing}=nothing) where {T<:Union{<:Integer,AbstractVertex},G<:AbstractGraph{T}} = Interlayer(name, layer_1, layer_2, graph, forbidden_vertices, forbidden_edges; U = U )
+
 # Outer constructors for unweighted and weighted Interlayers
 #= """
     Interlayer(nv::Int64, name::Symbol,layer_1::Symbol, layer_2::Symbol, graph_type::Type{G}, edge_list::Tuple{Vararg{ <: MultilayerEdge{MultilayerVertex{T},U} }}; forbidden_vertices::Vector{MultilayerVertex{T}} = MultilayerVertex{T}[], forbidden_edges::Vector{NTuple{2, MultilayerVertex{T}}} = NTuple{2, MultilayerVertex{T}}[]) where {T <: Union{ <: Integer, AbstractVertex}, U <: Real, G <: AbstractGraph{T}}
