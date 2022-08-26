@@ -1,13 +1,13 @@
 """
-    MultiplexDiGraph{T, U} <: AbstractMultiplexDiGraph{T,U}
+    MultiplexDiGraph{T, U, G <: AbstractGraph{T}} <: AbstractMultiplexUGraph{T,U}
 
-A concrete type that can represent a general directed multilayer graph.
+A concrete type that can represent a general directed MultiplexDiGraph graph. That is, a multilayer graph whos einterlayers are all trivial in the sense that they only have links between vertices that represent the same node.
 
 # FIELDS
 
 - `adjacency_tensor::Array{U, 4}`: the 4-dimensional tensor that encodes all (weighted) connections within the graph. adjacency_tensor[1,2,3,4] encodes the strength of the (directed or undirected) link between node 1 in layer 3 and node 2 in layer 4.
-- `layers::OrderedDict{ Tuple{Int64,Int64}, Layer{T,U,G}}`: the ordered dictionary containing all the layers of the multilayer graph. Their underlying graphs must be all directed.
-- `interlayers::OrderedDict{ Tuple{Int64,Int64}, Interlayer{T,U}}`: the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all directed.
+- `layers::OrderedDict{ Tuple{Int64,Int64}, Layer{T,U,G}}`: the ordered dictionary containing all the layers of the MultiplexDiGraph graph. Their underlying graphs must be all undirected.
+- `interlayers::OrderedDict{ Tuple{Int64,Int64}, Interlayer{T,U}}`: the ordered dictionary containing all the interlayers of the MultiplexDiGraph graph. 
 """
 mutable struct MultiplexDiGraph{T,U} <: AbstractMultiplexDiGraph{T,U}
     adjacency_tensor::Array{U,4}
@@ -32,7 +32,7 @@ end
 """
     MultiplexDiGraph(num_layers::Int64, n_nodes::Int64, min_edges::Int64, max_edges::Int64, graph_types::Vector{DataType})
 
-Return a random `MultiplexDiGraph` with `num_layers` layers, `n_nodes` nodes and each `Layer` and `Interlayer` has a random number of edges between `min_edges` and `max_edges`. `Layers` and `Interlayers` have parametric type `graph_type`.
+Return a random `MultiplexDiGraph` with `num_layers` layers, `n_nodes` nodes and each `Layer` and `Interlayer` has a random number of edges between `min_edges` and `max_edges`. `Layers` underlying graph type is randomly chosen among `graph_types`.
 """
 function MultiplexDiGraph(
     num_layers::Int64,

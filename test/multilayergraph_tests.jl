@@ -1,10 +1,4 @@
 # Specify layers
-# layers_u = [
-#     Layer(:layer_1, get_SimpleGraph(); U=Float64),
-#     Layer(:layer_2, get_SimpleWeightedGraph(); U=Float64),
-#     Layer(:layer_3, get_SimpleWeightedGraph(); U=Float64),
-# ]
-
 layers_u = [Layer(n_nodes, :layer_1, SimpleGraph{Int64}, rand(min_edges:max_edges); U = Float64), 
           Layer(n_nodes, :layer_2, SimpleWeightedGraph{Int64}, rand(min_edges:max_edges); U = Float64),
           Layer(n_nodes, :layer_3, MetaGraph{Int64, Float64}, rand(min_edges:max_edges); U = Float64),

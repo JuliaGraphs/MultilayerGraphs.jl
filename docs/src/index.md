@@ -79,7 +79,7 @@ A `Layer` has a name (here `:layer_1`), an underlying graph (`SimpleGraph(n_node
 Notice that `U` does not need to coincide with the `eltype` of the adjacency matrix of the underlying graph: as far as we know, there is no way to set it explicitly for all Graphs.jl extensions, nor it is required for extensions to implement such feature, so our package converts to `U` the `eltype` of `Layer`s and `Interlayer`s weight (/adjacency) matrices every time they are invoked
 
 ```julia
-adjacency_matrix(layers[1])
+adjacency_matrix(layer)
 ```
 ```nothing
 5×5 SparseMatrixCSC{Float64, Int64} with 16 stored entries:

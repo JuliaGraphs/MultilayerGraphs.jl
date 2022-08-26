@@ -20,7 +20,7 @@ end
 """
     MultilayerDiGraph(num_layers::Int64, n_nodes::Int64, min_edges::Int64, max_edges::Int64, graph_types::Vector{DataType})
 
-Return a random `MultilayerDiGraph` with `num_layers` layers, `n_nodes` nodes and each `Layer` and `Interlayer` has a random number of edges between `min_edges` and `max_edges`. `Layers` and `Interlayers` have parametric type `graph_type`.
+Return a random `MultilayerDiGraph` with `num_layers` layers, `n_nodes` nodes and each `Layer` and `Interlayer` has a random number of edges between `min_edges` and `max_edges`. `Layers` and `Interlayers`' underlying graph type is randomly chosen among `graph_types`..
 """
 function MultilayerDiGraph(
     num_layers::Int64,
