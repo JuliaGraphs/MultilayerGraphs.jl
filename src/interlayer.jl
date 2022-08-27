@@ -85,7 +85,19 @@ mutable struct Interlayer{T<:Union{<:Integer,AbstractVertex},U<:Real,G<:Abstract
     end
 end
 
-Interlayer(name::Symbol, layer_1::Symbol, layer_2::Symbol, graph::G; forbidden_vertices::Vector{MultilayerVertex{T}} = MultilayerVertex{T}[], forbidden_edges::Vector{NTuple{2,MultilayerVertex{T}}} = NTuple{2,MultilayerVertex{T}}[], U::Union{Type{<:Real},Nothing}=nothing) where {T<:Union{<:Integer,AbstractVertex},G<:AbstractGraph{T}} = Interlayer(name, layer_1, layer_2, graph, forbidden_vertices, forbidden_edges; U = U )
+function Interlayer(
+    name::Symbol,
+    layer_1::Symbol,
+    layer_2::Symbol,
+    graph::G;
+    forbidden_vertices::Vector{MultilayerVertex{T}}=MultilayerVertex{T}[],
+    forbidden_edges::Vector{NTuple{2,MultilayerVertex{T}}}=NTuple{2,MultilayerVertex{T}}[],
+    U::Union{Type{<:Real},Nothing}=nothing,
+) where {T<:Union{<:Integer,AbstractVertex},G<:AbstractGraph{T}}
+    return Interlayer(
+        name, layer_1, layer_2, graph, forbidden_vertices, forbidden_edges; U=U
+    )
+end
 
 # Outer constructors for unweighted and weighted Interlayers
 #= """
@@ -288,11 +300,13 @@ end
 
 Check that Interlayer `interlayer` is a multiplex-type interlayer.
 """
-function is_multiplex_interlayer(interlayer::In) where {In <: Interlayer}
+function is_multiplex_interlayer(interlayer::In) where {In<:Interlayer}
     graph_adjm = adjacency_matrix(interlayer.graph)
     n_vertices = nv(interlayer)
     n_vertices_half = n_vertices ÷ 2
-    return graph_adjm[1:n_vertices_half, (n_vertices_half+1):end] == graph_adjm[(n_vertices_half+1):end, 1:n_vertices_half] == I(n_vertices_half) 
+    return graph_adjm[1:n_vertices_half, (n_vertices_half + 1):end] ==
+           graph_adjm[(n_vertices_half + 1):end, 1:n_vertices_half] ==
+           I(n_vertices_half)
 end
 
 # Extend all Graphs.jl required methods (https://juliagraphs.org/Graphs.jl/dev/ecosystem/interface/)

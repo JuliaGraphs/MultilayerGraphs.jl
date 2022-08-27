@@ -125,10 +125,6 @@ function MultilayerGraph(
     return multilayergraph
 end
 
-
-
-
-
 """
     specify_interlayer!(mg::M, layer_1::Symbol, layer_2::Symbol, graph::G; new_interlayer_name::Symbol, symmetric_interlayer_name::Symbol ,  forbidden_vertices::Tuple{Vararg{MultilayerVertex{T}}}, forbidden_edges::Tuple{Vararg{NTuple{2, MultilayerVertex{T}}}} ) where { T, U, G<: AbstractGraph{T}, M <: MultilayerGraph{T, U}}
 
@@ -173,7 +169,6 @@ Add edge from `src` to `dst` with weight `weight` to `mg`.
 function Graphs.add_edge!(
     mg::M, src::V, dst::V, weight::U
 ) where {T,U<:Real,M<:MultilayerGraph{T,U},V<:MultilayerVertex{T}}
-
     if !(has_vertex(mg, src) && has_vertex(mg, dst))
         return false
     end
@@ -302,8 +297,6 @@ function Graphs.add_edge!(
     return added
 end
 
-
-
 """
     rem_edge!(mg::M, V1::V, V2::V) where { T, U, M <: MultilayerGraph{T,U}, V <: MultilayerVertex{T}}
 
@@ -369,7 +362,6 @@ function Graphs.rem_edge!(
     end
 end
 
-
 # Multilayer-specific functions
 # function get_graph_of_layers end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
 #= """
@@ -402,5 +394,3 @@ function get_graph_of_layers(
         getproperty.(collect(values(mg.layers)), :graph), symmetric_adjacency_matrix
     )
 end =#
-
-

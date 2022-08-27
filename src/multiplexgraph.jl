@@ -13,15 +13,15 @@ mutable struct MultiplexGraph{T,U} <: AbstractMultiplexUGraph{T,U}
     adjacency_tensor::Array{U,4}
     layers::OrderedDict{Tuple{Int64,Int64},Layer{T}}
     interlayers::OrderedDict{Tuple{Int64,Int64},Interlayer{T}}
-    
-    function MultiplexGraph(adjacency_tensor::Array{U,4}, layers::OrderedDict{Tuple{Int64,Int64},Layer{T}}, interlayers::OrderedDict{Tuple{Int64,Int64},Interlayer{T}}) where {T,U}
 
-        
+    function MultiplexGraph(
+        adjacency_tensor::Array{U,4},
+        layers::OrderedDict{Tuple{Int64,Int64},Layer{T}},
+        interlayers::OrderedDict{Tuple{Int64,Int64},Interlayer{T}},
+    ) where {T,U}
         @assert all(is_multiplex_interlayer.(values(interlayers)))
-        
-        
-        return new{T,U}(adjacency_tensor, layers, interlayers)
 
+        return new{T,U}(adjacency_tensor, layers, interlayers)
     end
 end
 
@@ -81,18 +81,10 @@ end
 
 Construct a MultiplexGraph with layers given by `layers`.
 """
-function MultiplexGraph(
-    layers::Vector{<:Layer{T,U}},
-) where {T,U}
+function MultiplexGraph(layers::Vector{<:Layer{T,U}}) where {T,U}
     # Check that all layers are undirected
     # specified_subgraphs = layers
-    all([
-        !istrait(IsDirected{typeof(subgraph.graph)}) for subgraph in layers
-    ]) || throw(
-        ErrorException(
-            "Not all the underlying layers' graphs are undirected."
-        ),
-    )
+    all([!istrait(IsDirected{typeof(subgraph.graph)}) for subgraph in layers]) || throw(ErrorException("Not all the underlying layers' graphs are undirected."))
 
     num_nodes = nv(layers[1])
     multiplexgraph = MultiplexGraph(num_nodes, T, U)

@@ -131,9 +131,6 @@ function MultilayerDiGraph(
     return multilayerdigraph
 end
 
-
-
-
 """
     specify_interlayer!(mg::M, layer_1::Symbol, layer_2::Symbol, graph::G; new_interlayer_name::Symbol, symmetric_interlayer_name::Symbol ,  forbidden_vertices::Tuple{Vararg{MultilayerVertex{T}}}, forbidden_edges::Tuple{Vararg{NTuple{2, MultilayerVertex{T}}}} ) where { T, U, G<: AbstractGraph{T}, M <: MultilayerDiGraph{T,U}}
 
@@ -166,8 +163,6 @@ function specify_interlayer!(
         mg, interlayer; symmetric_interlayer_name=symmetric_interlayer_name
     )
 end
-
-
 
 """
     add_edge!(mg::M, src::V, dst::V, weight::U) where { T, U <: Real, M <: MultilayerDiGraph{T,U}, V <: MultilayerVertex{T}}
@@ -289,7 +284,6 @@ function Graphs.add_edge!(
     end
     return added
 end
-
 
 """
     rem_edge!(mg::M, src::V, dst::V) where { T, U, M <: MultilayerDiGraph{T,U}, V <: MultilayerVertex{T}}

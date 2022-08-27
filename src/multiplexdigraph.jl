@@ -14,16 +14,15 @@ mutable struct MultiplexDiGraph{T,U} <: AbstractMultiplexDiGraph{T,U}
     layers::OrderedDict{Tuple{Int64,Int64},Layer{T,U}}
     interlayers::OrderedDict{Tuple{Int64,Int64},Interlayer{T,U}}
 
-    function MultiplexDiGraph(adjacency_tensor::Array{U,4}, layers::OrderedDict{Tuple{Int64,Int64},Layer{T,U}}, interlayers::OrderedDict{Tuple{Int64,Int64},Interlayer{T,U}}) where {T,U}
-
-        
+    function MultiplexDiGraph(
+        adjacency_tensor::Array{U,4},
+        layers::OrderedDict{Tuple{Int64,Int64},Layer{T,U}},
+        interlayers::OrderedDict{Tuple{Int64,Int64},Interlayer{T,U}},
+    ) where {T,U}
         @assert all(is_multiplex_interlayer.(values(interlayers)))
-        
-        
-        return new{T,U}(adjacency_tensor, layers, interlayers)
 
+        return new{T,U}(adjacency_tensor, layers, interlayers)
     end
-    
 end
 
 @traitimpl IsDirected{MultiplexDiGraph}
@@ -96,25 +95,15 @@ end
 
 Construct a MultiplexDiGraph with layers given by `layers`. The interlayers will be constructed by default according to `default_interlayer` (only `"multiplex"` is allowed), except for those specified in `specified_interlayers`.
 """
-function MultiplexDiGraph(
-    layers::Vector{<:Layer{T,U}},
-) where {T,U}
+function MultiplexDiGraph(layers::Vector{<:Layer{T,U}}) where {T,U}
     # Check that all layers and specified interlayers are directed
-    all([
-        istrait(IsDirected{typeof(layer.graph)}) for layer in layers
-    ]) || throw(
-        ErrorException(
-            "Not all the underlying layers' graphs are directed."
-        ),
-    )
+    all([istrait(IsDirected{typeof(layer.graph)}) for layer in layers]) || throw(ErrorException("Not all the underlying layers' graphs are directed."))
 
     num_nodes = nv(layers[1])
     multilayerdigraph = MultiplexDiGraph(num_nodes, T, U)
 
     for layer in layers
-        add_layer!(
-            multilayerdigraph, layer
-        )
+        add_layer!(multilayerdigraph, layer)
     end
 
     return multilayerdigraph

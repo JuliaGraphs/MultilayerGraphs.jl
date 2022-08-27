@@ -1,8 +1,23 @@
 # Specify layers
-layers_u = [Layer(n_nodes, :layer_1, SimpleGraph{Int64}, rand(min_edges:max_edges); U = Float64), 
-          Layer(n_nodes, :layer_2, SimpleWeightedGraph{Int64}, rand(min_edges:max_edges); U = Float64),
-          Layer(n_nodes, :layer_3, MetaGraph{Int64, Float64}, rand(min_edges:max_edges); U = Float64),
-          Layer(:layer_4, ValGraph( SimpleGraph{Int64}(5, rand(min_edges:max_edges)), edgeval_types=(Int64, ), edgeval_init=(s, d) -> (s + d, ), vertexval_types=(String, ), vertexval_init=undef); U = Float64)
+layers_u = [
+    Layer(n_nodes, :layer_1, SimpleGraph{Int64}, rand(min_edges:max_edges); U=Float64),
+    Layer(
+        n_nodes, :layer_2, SimpleWeightedGraph{Int64}, rand(min_edges:max_edges); U=Float64
+    ),
+    Layer(
+        n_nodes, :layer_3, MetaGraph{Int64,Float64}, rand(min_edges:max_edges); U=Float64
+    ),
+    Layer(
+        :layer_4,
+        ValGraph(
+            SimpleGraph{Int64}(5, rand(min_edges:max_edges));
+            edgeval_types=(Int64,),
+            edgeval_init=(s, d) -> (s + d,),
+            vertexval_types=(String,),
+            vertexval_init=undef,
+        );
+        U=Float64,
+    ),
 ]
 
 const num_layers_u = length(layers_u)
@@ -165,7 +180,7 @@ randoms_u = [
         n_nodes,
         min_edges,
         max_edges,
-        [SimpleGraph{Int64}, SimpleWeightedGraph{Int64,Float64}, MetaGraph{Int64, Float64}],
+        [SimpleGraph{Int64}, SimpleWeightedGraph{Int64,Float64}, MetaGraph{Int64,Float64}],
     ) for i in 1:4
 ]
 @test_broken multilayer_global_clustering_coefficient.(randoms_u) .==
@@ -174,7 +189,7 @@ overlays_randoms_u = get_overlay_monoplex_graph.(randoms_u)
 @test_broken global_clustering_coefficient.(overlays_randoms_u) .==
     overlay_clustering_coefficient.(randoms_u)
 
-multilayer_weighted_global_clustering_coefficient.(randoms_u, Ref([1/3,1/3,1/3])) .≈
+multilayer_weighted_global_clustering_coefficient.(randoms_u, Ref([1 / 3, 1 / 3, 1 / 3])) .≈
 multilayer_global_clustering_coefficient.(randoms_u)
 
 eig_centr_u, errs_u = eigenvector_centrality(randoms_u[1]; norm="n", tol=1e-3)
@@ -322,27 +337,33 @@ for vertex in vertices(layer_w_graph)
     )
 end
 
-
-
-
 # test multiplex graph
 
 multiplexgraph = MultiplexGraph(layers_u)
 
-multiplexgraph_random = MultiplexGraph( num_layers_u, n_nodes, min_edges, max_edges, [SimpleGraph{Int64}, SimpleWeightedGraph{Int64, Float64}, MetaGraph{Int64, Float64}])
+multiplexgraph_random = MultiplexGraph(
+    num_layers_u,
+    n_nodes,
+    min_edges,
+    max_edges,
+    [SimpleGraph{Int64}, SimpleWeightedGraph{Int64,Float64}, MetaGraph{Int64,Float64}],
+)
 
-add_edge!(multiplexgraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1) )
-@test multiplexgraph.adjacency_tensor[1,2,1,1] == 1.0
+add_edge!(multiplexgraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1))
+@test multiplexgraph.adjacency_tensor[1, 2, 1, 1] == 1.0
 
-@test_throws ErrorException add_edge!(multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_1), 3.14 )
+@test_throws ErrorException add_edge!(
+    multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_1), 3.14
+)
 
+add_edge!(
+    multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2), 3.14
+)
+@test multiplexgraph.adjacency_tensor[1, 2, 2, 2] == 3.14
 
-add_edge!(multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2), 3.14 )
-@test multiplexgraph.adjacency_tensor[1,2,2,2] == 3.14
-
-
-@test rem_edge!(multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2))
-@test multiplexgraph.adjacency_tensor[1,2,2,2] == 0.0
-
+@test rem_edge!(
+    multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2)
+)
+@test multiplexgraph.adjacency_tensor[1, 2, 2, 2] == 0.0
 
 get_graph_of_layers(multiplexgraph)
