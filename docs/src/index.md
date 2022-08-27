@@ -42,7 +42,8 @@ Let's import some necessary packages
 
 ```julia
 # Import necessary dependencies
-using Graphs, SimpleWeightedGraphs, MultilayerGraphs
+using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
+using MultilayerGraphs
 ```
 
 We define some methods and constants that will prove useful later in the tutorial
@@ -52,19 +53,6 @@ We define some methods and constants that will prove useful later in the tutoria
 const n_nodes   = 5
 const min_edges = n_nodes
 const max_edges = 10
-
-# Define methods generating random graphs
-get_SimpleGraph()   = SimpleGraph(n_nodes, rand(min_edges:max_edges))   # Undirected graph
-get_SimpleDiGraph() = SimpleDiGraph(n_nodes, rand(min_edges:max_edges)) # Directed graph
-
-# Define variables for random weighted graphs
-const simpleweightedgraph_sources      = 1:n_nodes
-const simpleweightedgraph_destinations = rand(1:n_nodes, n_nodes)
-const simpleweightedgraph_weights      = rand(n_nodes)
-
-# Define methods generating random weighted graphs
-get_SimpleWeightedGraph()   = SimpleWeightedGraph(simpleweightedgraph_sources, rand(1:n_nodes, n_nodes), rand(n_nodes))    # Undirected graph
-get_SimpleWeightedDiGraph() = SimpleWeightedDiGraph(simpleweightedgraph_sources, rand(1:n_nodes, n_nodes), rand(n_nodes))  # Directed graph
 ```
 
 As said before, to define a multilayer graph we need to specify its layers and interlayers. We proceed by constructing a layer (see [`Layer`](@ref))
@@ -82,22 +70,22 @@ Notice that `U` does not need to coincide with the `eltype` of the adjacency mat
 adjacency_matrix(layer)
 ```
 ```nothing
-5×5 SparseMatrixCSC{Float64, Int64} with 16 stored entries:
-  ⋅   1.0   ⋅   1.0  1.0
- 1.0   ⋅   1.0  1.0   ⋅
-  ⋅   1.0   ⋅   1.0  1.0
- 1.0  1.0  1.0   ⋅   1.0
- 1.0   ⋅   1.0  1.0   ⋅
+5×5 SparseMatrixCSC{Float64, Int64} with 12 stored entries:
+  ⋅    ⋅   1.0   ⋅    ⋅ 
+  ⋅    ⋅   1.0  1.0   ⋅ 
+ 1.0  1.0   ⋅   1.0  1.0
+  ⋅   1.0  1.0   ⋅   1.0
+  ⋅    ⋅   1.0  1.0   ⋅ 
 ```
 
 We may define more `Layer`s for future use
 
 ```julia
-layers = [
-            Layer(:layer_1, get_SimpleGraph(); U = Float64),
-            Layer(:layer_2, get_SimpleWeightedGraph(); U = Float64),
-            Layer(:layer_3, get_SimpleWeightedGraph(); U = Float64),
-         ]
+layers = [Layer(n_nodes, :layer_1, SimpleGraph{Int64}, rand(min_edges:max_edges); U = Float64), 
+          Layer(n_nodes, :layer_2, SimpleWeightedGraph{Int64}, rand(min_edges:max_edges); U = Float64),
+          Layer(n_nodes, :layer_3, MetaGraph{Int64, Float64}, rand(min_edges:max_edges); U = Float64),
+          Layer(:layer_4, ValGraph( SimpleGraph{Int64}(5, rand(min_edges:max_edges)), edgeval_types=(Int64, ), edgeval_init=(s, d) -> (s + d, ), vertexval_types=(String, ), vertexval_init=undef); U = Float64)
+]
 ```
 
 There are other constructors for the `Layer` struct you may want to consult via `?Layer`.
@@ -116,17 +104,17 @@ The adjacency matrix of an `Interlayer` is that of a bipartite graph
 adjacency_matrix(interlayer)
 ```
 ```nothing
-10×10 SparseMatrixCSC{Float64, Int64} with 18 stored entries:
+10×10 SparseMatrixCSC{Float64, Int64} with 14 stored entries:
+  ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅    ⋅ 
+  ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅   1.0  1.0
+  ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
+  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅   1.0   ⋅   1.0
   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅   1.0
-  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅   1.0  1.0   ⋅
-  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅
-  ⋅    ⋅    ⋅    ⋅    ⋅   1.0  1.0   ⋅    ⋅   1.0
-  ⋅    ⋅    ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅
-  ⋅   1.0  1.0  1.0  1.0   ⋅    ⋅    ⋅    ⋅    ⋅
-  ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅
-  ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅
-  ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅
- 1.0   ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅
+  ⋅    ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
+  ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
+ 1.0   ⋅    ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
+  ⋅   1.0   ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅    ⋅ 
+  ⋅   1.0   ⋅   1.0  1.0   ⋅    ⋅    ⋅    ⋅    ⋅ 
 ```
 
 It is a 4 block matrix where the first `n_nodes` rows and columns refer to `:layer_1`'s vertices, while the last `n_nodes` rows and columns refer to `:layer_2`'s vertices.
@@ -136,9 +124,10 @@ We may define more `Interlayer`s for future use:
 ```julia
 interlayers = [
                 Interlayer(n_nodes, :interlayer_layer_1_layer_2, :layer_1, :layer_2, SimpleGraph{Int64}, rand(min_edges:max_edges); U = Float64),
-                Interlayer(n_nodes, :interlayer_layer_1_layer_3, :layer_1, :layer_3, SimpleWeightedGraph{Int64,Float64}, rand(min_edges:max_edges)),
+                Interlayer(n_nodes, :interlayer_layer_1_layer_3, :layer_1, :layer_3, SimpleWeightedGraph{Int64,Float64}, rand(min_edges:max_edges); U = Float64),
+                Interlayer(n_nodes, :interlayer_layer_1_layer_4, :layer_2, :layer_3, MetaGraph{Int64, Float64}, rand(min_edges:max_edges); U = Float64),
                 
-              ]
+]
 ```
 
 There are other constructors for the `Interlayer` struct you may want to consult via `?Interlayer`.
@@ -193,10 +182,11 @@ It is an `OrderedDict` where the keys are the layers' indexes within the multila
 multilayergraph.layers
 ```
 ```nothing
-OrderedDict{Tuple{Int64, Int64}, Layer{Int64, U, G} where {U<:Real, G<:AbstractGraph{Int64}}} with 3 entries:
-  (1, 1) => Layer{Int64, Float64, SimpleGraph{Int64}}(:layer_1, SimpleGraph{Int64}(5, [[2, 4], [1, 3, 4], [2], [1, 2, 5], [4]]), MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVertex{Int64}}[])
-  (2, 2) => Layer{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(:layer_2, {5, 4} undirected simple Int64 graph with Float64 weights, MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVertex{Int64}}[])
-  (3, 3) => Layer{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(:layer_3, {5, 4} undirected simple Int64 graph with Float64 weights, MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVertex{Int64}}[])
+OrderedCollections.OrderedDict{Tuple{Int64, Int64}, Layer{Int64, U, G} where {U<:Real, G<:AbstractGraph{Int64}}} with 4 entries:
+  (1, 1) => Layer{Int64, Float64, SimpleGraph{Int64}}(:layer_1, SimpleGraph{Int…
+  (2, 2) => Layer{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(:layer_2…
+  (3, 3) => Layer{Int64, Float64, MetaGraph{Int64, Float64}}(:layer_3, {5, 10} …
+  (4, 4) => Layer{Int64, Float64, ValGraph{Int64, Tuple{String}, Tuple{Int64}, …
 ```
 
 #### Interlayers
@@ -207,13 +197,19 @@ It is an `OrderedDict` where each key is the pair of indexes of the layers that 
 multilayergraph.interlayers
 ```
 ```nothing
-OrderedDict{Tuple{Int64, Int64}, Interlayer{Int64, U, G} where {U<:Real, G<:AbstractGraph{Int64}}} with 6 entries:
-  (2, 1) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_2_layer_1, :layer_2, :layer_1, SimpleGraph{Int64}(9, [[7, 8, 9, 10], [9], [7], [7], [6, 9], [5], [1, 3, 4], [1], [1, 2, 5], [1]]), MultilayerVertex{Int64}[], Tuple{MultilayerVerte…  
-  (1, 2) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_1_layer_2, :layer_1, :layer_2, SimpleGraph{Int64}(9, [[10], [6, 8, 9], [6], [6, 7, 10], [6], [2, 3, 4, 5], [4], [2], [2], [1, 4]]), MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64},…  
-  (3, 1) => Interlayer{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(:interlayer_layer_3_layer_1, :layer_3, :layer_1, {10, 7} undirected simple Int64 graph with Float64 weights, MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVer…  
-  (1, 3) => Interlayer{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(:interlayer_layer_1_layer_3, :layer_1, :layer_3, {10, 4} undirected simple Int64 graph with Float64 weights, MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVertex{Int64}…  
-  (3, 2) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_3_layer_2, :layer_3, :layer_2, SimpleGraph{Int64}(5, [[6], [7], [8], [9], [10], [1], [2], [3], [4], [5]]), MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVert…  
-  (2, 3) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_2_layer_3, :layer_2, :layer_3, SimpleGraph{Int64}(5, [[6], [7], [8], [9], [10], [1], [2], [3], [4], [5]]), MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVert…
+OrderedCollections.OrderedDict{Tuple{Int64, Int64}, Interlayer{Int64, U, G} where {U<:Real, G<:AbstractGraph{Int64}}} with 12 entries:
+  (2, 1) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_2_…
+  (1, 2) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_1_…
+  (3, 1) => Interlayer{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(:in…
+  (1, 3) => Interlayer{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(:in…
+  (3, 2) => Interlayer{Int64, Float64, MetaGraph{Int64, Float64}}(:interlayer_l…
+  (2, 3) => Interlayer{Int64, Float64, MetaGraph{Int64, Float64}}(:interlayer_l…
+  (4, 1) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_4_…
+  (1, 4) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_1_…
+  (4, 2) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_4_…
+  (2, 4) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_2_…
+  (4, 3) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_4_…
+  (3, 4) => Interlayer{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_3_…
 ```
 
 Note that the (1,2) interlayer (i.e. the interlayer between layer (1,1) and layer (2,2)) is very similar to interlayer (2,1), but not identical: its adjacency matrix rows and columns are reordered. One may get interlayer (2,1) from interlayer (1,2) (i.e. one may get the *symmetric* interlayer of (1,2)) as follows
@@ -232,7 +228,7 @@ You may access individual layers and interlayers with the "dot" notation:
 multilayergraph.layer_1
 ```
 ```nothing
-Layer{Int64, Float64, SimpleGraph{Int64}}(:layer_1, SimpleGraph{Int64}(7, [[2, 3, 4, 5], [1, 4], [1, 5], [1, 2, 5], [1, 3, 4]]), MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVertex{Int64}}[])
+Layer{Int64, Float64, SimpleGraph{Int64}}(:layer_1, SimpleGraph{Int64}(5, [[2, 3, 5], [1, 3], [1, 2], [5], [1, 4]]), MultilayerVertex{Int64}[], Tuple{MultilayerVertex{Int64}, MultilayerVertex{Int64}}[])
 ```
 
 #### Adjacency Tensor
@@ -243,7 +239,7 @@ The adjacency tensor is a 4-dimensional array
 multilayergraph.adjacency_tensor
 ```
 ```nothing
-5×5×3×3 Array{Float64, 4}:
+5×5×4×4 Array{Float64, 4}:
 ...
 ```
 
@@ -305,7 +301,7 @@ layer_1 = get_layer(multilayergraph, :layer_1)
 Same for interlayers
 
 ```julia
-interlayer_2_1 = get_layer(multilayergraph, :interlayer_layer_2_layer_1)
+interlayer_2_1 = get_interlayer(multilayergraph, :layer_2, :layer_1)
 ```
 
 Both `MultilayerGraph` and `MultilayerDiGraph` fully extend `Graphs.jl`, so they have access to Graphs.jl API as one would expect, just keeping in mind that vertices are `MultilayerVertex`s and not subtypes of `Integer` (`MultilayerVertex` is actually a subtype of `AbstractVertex` that this package defines, see [Future Developments](#Future-Developments)), and that edges are `MultilayerEdge`s, which subtype `AbstractEdge`.
@@ -316,23 +312,27 @@ Some notable examples are
 edges(multilayergraph)
 ```
 ```nothing
-34-element Vector{MultilayerEdge}:
+73-element Vector{MultilayerEdge}:
  MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(1, :layer_1), MultilayerVertex{Int64}(2, :layer_1), 1)
  MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(1, :layer_1), MultilayerVertex{Int64}(3, :layer_1), 1)
- MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(1, :layer_1), MultilayerVertex{Int64}(4, :layer_1), 1)
  MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(1, :layer_1), MultilayerVertex{Int64}(5, :layer_1), 1)
  MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(2, :layer_1), MultilayerVertex{Int64}(3, :layer_1), 1)
- MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(2, :layer_1), MultilayerVertex{Int64}(5, :layer_1), 1)
- MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(3, :layer_1), MultilayerVertex{Int64}(5, :layer_1), 1)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_2), MultilayerVertex{Int64}(1, :layer_2), 0.7188425521261754)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_2), MultilayerVertex{Int64}(3, :layer_2), 0.9012061650463197)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_2), MultilayerVertex{Int64}(4, :layer_2), 0.6163304419976594)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(3, :layer_2), MultilayerVertex{Int64}(5, :layer_2), 1.0046265072746847)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_3), MultilayerVertex{Int64}(2, :layer_3), 0.2819477742859873)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_3), MultilayerVertex{Int64}(4, :layer_3), 0.40111133874926597)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(3, :layer_3), MultilayerVertex{Int64}(4, :layer_3), 0.9498077050078636)
- MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_3), MultilayerVertex{Int64}(5, :layer_3), 0.9618455695308973)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(4, :layer_1), MultilayerVertex{Int64}(5, :layer_1), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_2), MultilayerVertex{Int64}(2, :layer_2), 0.32349997890438353)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_2), MultilayerVertex{Int64}(4, :layer_2), 0.3023269958672971)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(3, :layer_2), MultilayerVertex{Int64}(4, :layer_2), 0.2660051156748072)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(1, :layer_2), MultilayerVertex{Int64}(5, :layer_2), 0.23249716071401488)
+ MultilayerEdge{MultilayerVertex{Int64}, Float64}(MultilayerVertex{Int64}(2, :layer_2), MultilayerVertex{Int64}(5, :layer_2), 0.05755829337786644)
  ⋮
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(2, :layer_4), MultilayerVertex{Int64}(2, :layer_2), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(3, :layer_4), MultilayerVertex{Int64}(3, :layer_2), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(4, :layer_4), MultilayerVertex{Int64}(4, :layer_2), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(5, :layer_4), MultilayerVertex{Int64}(5, :layer_2), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(1, :layer_4), MultilayerVertex{Int64}(1, :layer_3), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(2, :layer_4), MultilayerVertex{Int64}(2, :layer_3), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(3, :layer_4), MultilayerVertex{Int64}(3, :layer_3), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(4, :layer_4), MultilayerVertex{Int64}(4, :layer_3), 1)
+ MultilayerEdge{MultilayerVertex{Int64}, Int64}(MultilayerVertex{Int64}(5, :layer_4), MultilayerVertex{Int64}(5, :layer_3), 1)
 ```
 
 The implementation of `MultilayerEdge` is
@@ -425,15 +425,14 @@ To get all the inneighbors of a vertex we just need to write
 inneighbors(multilayergraph, MultilayerVertex(1, :layer_1))
 ```
 ```nothing
-8-element Vector{MultilayerVertex{Int64}}:
+7-element Vector{MultilayerVertex{Int64}}:
  MultilayerVertex{Int64}(2, :layer_1)
  MultilayerVertex{Int64}(3, :layer_1)
- MultilayerVertex{Int64}(4, :layer_1)
  MultilayerVertex{Int64}(5, :layer_1)
- MultilayerVertex{Int64}(1, :layer_3)
+ MultilayerVertex{Int64}(2, :layer_2)
  MultilayerVertex{Int64}(2, :layer_3)
- MultilayerVertex{Int64}(4, :layer_3)
  MultilayerVertex{Int64}(5, :layer_3)
+ MultilayerVertex{Int64}(1, :layer_4)
 ```
 
 [`outneighbors`](@ref) would be analogous.
@@ -444,7 +443,7 @@ inneighbors(multilayergraph, MultilayerVertex(1, :layer_1))
 multilayer_global_clustering_coefficient(multilayergraph)
 ```
 ```nothing
-0.12667622867320932
+0.10125075759461827
 ```
 
 Since our implementation of the global clustering coefficient follows [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022) rather than `Graphs.jl`'s implementation, we did not override `Graphs.jl`'s `global_clustering_coefficient`, which works on `MultilayerGraph` and `MultilayerDiGraph` but yields different results. For details, consult `?multilayer_global_clustering_coefficient` or read the comments in the source code.
@@ -461,7 +460,7 @@ Get the overlay monoplex graph: the monoplex graph whose nodes are the nodes of 
 get_overlay_monoplex_graph(multilayergraph)
 ```
 ```nothing
-{5, 8} undirected simple Int64 graph with Float64 weights
+{5, 10} undirected simple Int64 graph with Float64 weights
 ```
 
 #### Depth-Weighted Clustering Coefficient
@@ -473,7 +472,7 @@ w =  [1/3, 1/3, 1/3]
 multilayer_weighted_global_clustering_coefficient(multilayergraph,w)
 ```
 ```nothing
-0.12667622867320916
+0.10125075759461745
 ```
 
 The first component of `w` is the weight associated to triplets that are contained in one layer, the second component to triplets whose vertices are spread across exactly two layers, the third to triplets whose vertices are spread across exactly three layers. Weights must sum to `1.0`. When they are all equal (like in this example), the weighted global clustering coefficient coincides with the global clustering coefficient.
@@ -487,7 +486,7 @@ Calculated via an iterative algorithm, its normalization is different from the G
 eig_centrality, errs = eigenvector_centrality(multilayergraph; norm = "n", tol = 1e-3)
 ```
 ```nothing
-([0.260450377858897 0.02358226618172732 0.08408641909534659; 0.6517125919818912 0.646849109975291 0.25212976452498587; … ; 0.21160486454350666 0.24850764907380082 0.2809259415084613; 0.5089709123112656 0.27775286552140954 0.22663014660085468], [10.000000000000004, 0.7095737447337795, 0.329314405320397, 0.16256401870083886, 0.07860800793625616, 0.04125218689190476, 0.021191358681432643, 0.011056758224944913, 0.006831972142635288, 0.0035133270128280235, 0.0024675719418019056, 0.0013403531942171656, 0.0009739276503972424])
+([0.38448513173718 0.27376350094456875 0.29826894940433096 0.27928525958391875; 0.2095929988838825 0.212196610759091 0.440289042003606 0.2674763179954188; … ; 0.16489215196660842 0.17144436260745544 0.27826601575999654 0.23633134587445048; 0.27317146954683846 0.09008404085312828 0.3071561889077506 0.24335745518752538], [15.0, 0.2594289747318097, 0.11219926189825861, 0.045817552094948685, 0.02592915947732642, 0.011130317397910233, 0.006662267409348527, 0.003338105729180016, 0.0019678266671620814, 0.001239872171004075, 0.0007450702254126473])
 ```
 
 #### Modularity
@@ -500,7 +499,7 @@ modularity(multilayergraph,
           )
 ```
 ```nothing
--0.039890139283044884
+-0.08991619711269938
 ```
 
 #### Von Neumann Entropy
@@ -511,12 +510,37 @@ Compute the Von Neumann entropy as presented in [De Domenico et al. (2013)](http
 von_neumann_entropy(multilayergraph)
 ```
 ```nothing
-3.3980014398404834
+4.126274547913075
 ```
 
 The Von Neumann entropy is currently available only for undirected multilayer graphs.
 
 Other extended functions are: [`is_directed`](@ref), [`has_vertex`](@ref), [`ne`](@ref), [`nv`](@ref), [`outneighbors`](@ref), [`indegree`](@ref), [`outdegree`](@ref), [`degree`](@ref), [`mean_degree`](@ref), [`degree_second_moment`](@ref), [`degree_variance`](@ref), [`nn`](@ref), [`nodes`](@ref).
+
+### Multiplex graphs
+
+Special support has been given to multiplex graphs, i.e. multilayer graphs whose interlayer links are only allowed between vertices representing the same node. Such graphs come both in undirected `MultiplexGraph` and directed `MultiplexDiGraph` form. Their usage is completely analogous to `MultilayerGraph` and `MultilayerDiGraph`, with the few exceptions listed below.
+
+Multiplex graphs need only the layers to be specified:
+
+```julia
+multiplexgraph = MultiplexGraph(layers)
+```
+
+They have been given a specialized random constructor:
+
+```julia
+multiplexgraph_random = MultiplexGraph( 4, n_nodes, min_edges, max_edges, [SimpleGraph{Int64}, SimpleWeightedGraph{Int64, Float64}, MetaGraph{Int64, Float64}])
+```
+
+One may not add edges between vertices  belonging to different layers:
+
+```julia
+add_edge!(multiplexgraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_2), 3.14 )
+```
+```nothing
+Adding an edge between vertices of different layers is not allowed within a multiplex graph.
+```
 
 ## How to Contribute
 

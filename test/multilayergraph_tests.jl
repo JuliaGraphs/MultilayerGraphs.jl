@@ -329,12 +329,12 @@ end
 
 multiplexgraph = MultiplexGraph(layers_u)
 
-multiplexgraph_random = MultiplexGraph(    num_layers_u, n_nodes, min_edges, max_edges, [SimpleGraph{Int64}, SimpleWeightedGraph{Int64, Float64}, MetaGraph{Int64, Float64}])
+multiplexgraph_random = MultiplexGraph( num_layers_u, n_nodes, min_edges, max_edges, [SimpleGraph{Int64}, SimpleWeightedGraph{Int64, Float64}, MetaGraph{Int64, Float64}])
 
 add_edge!(multiplexgraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1) )
 @test multiplexgraph.adjacency_tensor[1,2,1,1] == 1.0
 
-@test_throws ErrorException add_edge!(multiplexgraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1), 3.14 )
+@test_throws ErrorException add_edge!(multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_1), 3.14 )
 
 
 add_edge!(multiplexgraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2), 3.14 )
