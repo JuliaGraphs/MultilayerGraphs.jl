@@ -25,7 +25,6 @@ function add_layer!(
     end
 end
 
-
 """
     specify_interlayer!(mg::M, new_interlayer::In; symmetric_interlayer_name::Symbol) where { T, U, G<: AbstractGraph{T}, M <: AbstractMultilayerDiGraph{T, U}, In <: Interlayer{T,G}; IsDirected{M}}
 
