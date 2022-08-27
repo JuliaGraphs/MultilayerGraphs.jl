@@ -5,7 +5,6 @@ Abstract type representing an undirecte multiplex graph.
 """
 abstract type AbstractMultiplexUGraph{T,U} <: AbstractMultilayerUGraph{T,U} end
 
-
 # Graphs.jl's internals extra overrides
 
 """
@@ -16,12 +15,15 @@ Add edge from `src` to `dst` with weight `weight` to `mg`.
 function Graphs.add_edge!(
     mg::M, src::V, dst::V, weight::U
 ) where {T,U<:Real,M<:AbstractMultiplexUGraph{T,U},V<:MultilayerVertex{T}}
-
     if !(has_vertex(mg, src) && has_vertex(mg, dst))
         println("Either vertex $src or $dst does not exist within the multiplex graph")
         return false
     elseif src.layer != dst.layer
-        throw(ErrorException("Adding an edge between vertices of different layers is not allowed within a multiplex graph."))
+        throw(
+            ErrorException(
+                "Adding an edge between vertices of different layers is not allowed within a multiplex graph.",
+            ),
+        )
     end
 
     src_layer_cartIdxs, _src_layer = get_layer(mg, src.layer)
@@ -57,14 +59,16 @@ Add edge from `src` to `dst` with weight `one(U)` to `mg`.
 function Graphs.add_edge!(
     mg::M, src::V, dst::V
 ) where {T,U<:Real,M<:AbstractMultiplexUGraph{T,U},V<:MultilayerVertex{T}}
-
     if !(has_vertex(mg, src) && has_vertex(mg, dst))
         println("Either vertex $src or $dst does not exist within the multiplex graph")
         return false
     elseif src.layer != dst.layer
-        throw(ErrorException("Adding an edge between vertices of different layers is not allowed within a multiplex graph."))
+        throw(
+            ErrorException(
+                "Adding an edge between vertices of different layers is not allowed within a multiplex graph.",
+            ),
+        )
     end
-
 
     src_layer_cartIdxs, _src_layer = get_layer(mg, src.layer)
     dst_layer_cartIdxs, _dst_layer = get_layer(mg, dst.layer)
@@ -86,8 +90,6 @@ function Graphs.add_edge!(
     return added
 end
 
-
-
 """
     rem_edge!(mg::M, V1::V, V2::V) where { T, U, M <: AbstractMultiplexUGraph{T,U}, V <: MultilayerVertex{T}}
 
@@ -97,12 +99,15 @@ Remove edge from `src` to `dst` in `mg`.
 function Graphs.rem_edge!(
     mg::M, src::V, dst::V
 ) where {T,U,M<:AbstractMultiplexUGraph{T,U},V<:MultilayerVertex{T}}
-
     if !(has_vertex(mg, src) && has_vertex(mg, dst))
         println("Either vertex $src or $dst does not exist within the multiplex graph")
         return false
     elseif src.layer != dst.layer
-        throw(ErrorException("Removing an edge between vertices of different layers is not allowed within a multiplex graph."))
+        throw(
+            ErrorException(
+                "Removing an edge between vertices of different layers is not allowed within a multiplex graph.",
+            ),
+        )
     end
 
     if !has_edge(mg, src, dst)
@@ -126,9 +131,7 @@ function Graphs.rem_edge!(
     else
         return false
     end
-
 end
-
 
 # Multilayer-specific functions
 # function get_graph_of_layers end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
@@ -148,8 +151,8 @@ function get_graph_of_layers(
     n_nodes = nn(mg)
     adjacency_matrix = reshape(
         [
-            i != j ? (1 / norm_factor) * n_nodes / 1 : 0.0 for
-            i in 1:num_layers for j in 1:num_layers
+            i != j ? (1 / norm_factor) * n_nodes / 1 : 0.0 for i in 1:num_layers for
+            j in 1:num_layers
         ],
         (num_layers, num_layers),
     )

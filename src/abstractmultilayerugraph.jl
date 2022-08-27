@@ -6,8 +6,6 @@ Abstract type representing an undirected multilayer graph.
 """
 abstract type AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 
-
-
 """
     add_layer!(mg::M,layer::L; interlayers_type = "multiplex") where { T, U, G<: AbstractGraph{T}, M <: AbstractMultilayerUGraph{T, U}, L <: Layer{T,U,G}}
 
@@ -27,7 +25,6 @@ function add_layer!(
         _add_layer!(mg, new_layer; new_default_interlayers_type=SimpleGraph{T})
     end
 end
-
 
 """
     specify_interlayer!(mg::M, new_interlayer::In; symmetric_interlayer_name::String) where { T, U, G<: AbstractGraph{T}, M <: AbstractMultilayerUGraph{T, U}, In <: Interlayer{T,U,G}}
@@ -52,14 +49,12 @@ function specify_interlayer!(
     )
 end
 
-
 # Graphs.jl's internals extra overrides
 function Graphs.degree(
     mg::M, v::V
 ) where {T,M<:AbstractMultilayerUGraph{T,<:Real},V<:MultilayerVertex{T}}
     return indegree(mg, v)
 end
-
 
 """
     add_edge!(mg::M, me::E) where { T, U <: Real, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{MultilayerVertex{T},U}}
@@ -68,7 +63,9 @@ Add weighted edge `me` to `mg`.
 """
 function Graphs.add_edge!(
     mg::M, me::E
-) where {T,U<:Real,M<:AbstractMultilayerUGraph{T,U},E<:MultilayerEdge{MultilayerVertex{T},U}}
+) where {
+    T,U<:Real,M<:AbstractMultilayerUGraph{T,U},E<:MultilayerEdge{MultilayerVertex{T},U}
+}
     return add_edge!(mg, src(me), dst(me), weight(me))
 end
 
@@ -79,10 +76,11 @@ Add unweighted edge `me` to `mg`.
 """
 function Graphs.add_edge!(
     mg::M, me::E
-) where {T,U,M<:AbstractMultilayerUGraph{T,U},E<:MultilayerEdge{MultilayerVertex{T},Nothing}}
+) where {
+    T,U,M<:AbstractMultilayerUGraph{T,U},E<:MultilayerEdge{MultilayerVertex{T},Nothing}
+}
     return add_edge!(mg, src(me), dst(me))
 end
-
 
 """
     is_directed(m::M) where { M <: AbstractMultilayerUGraph}
@@ -97,7 +95,6 @@ Graphs.is_directed(m::M) where {M<:AbstractMultilayerUGraph} = false
 Returns `true` if `m` is directed, `false` otherwise. 
 """
 Graphs.is_directed(m::M) where {M<:Type{<:AbstractMultilayerUGraph}} = false
-
 
 # Multilayer-specific functions
 # TODO:
@@ -140,9 +137,6 @@ function get_overlay_monoplex_graph(mg::M) where {M<:AbstractMultilayerUGraph}
         projected_overlay_adjacency_matrix
     )
 end
-
-
-
 
 """
     von_neumann_entropy(mg::M) where {T,U,  M <: AbstractMultilayerUGraph{T, U}}
@@ -189,6 +183,3 @@ function von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
 
     return -ein"ijkm,jimk ->"(Λ, log2Λ)[]
 end
-
-
-

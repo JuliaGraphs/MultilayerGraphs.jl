@@ -92,8 +92,6 @@ Returns `true` if `mg` is directed, `false` otherwise.
 """
 Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerDiGraph}} = true
 
-
-
 # TODO:
 # it may be not well inferred
 # function get_projected_monoplex_graph end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124

@@ -126,29 +126,33 @@ end =#
 
 Random MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying graph is a SimpleGraph. 
 """
-MetaGraphs.MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}= MetaGraph{T,U}(SimpleGraph(n_vertices,n_edges))
-
+function MetaGraphs.MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}
+    return MetaGraph{T,U}(SimpleGraph(n_vertices, n_edges))
+end
 
 """
     MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
 
 Randoms MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying graph is a SimpleDiGraph. 
 """
-MetaGraphs.MetaDiGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}= MetaDiGraph{T,U}(SimpleDiGraph(n_vertices,n_edges))
-
+function MetaGraphs.MetaDiGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}
+    return MetaDiGraph{T,U}(SimpleDiGraph(n_vertices, n_edges))
+end
 
 """
     MetaGraph{T,U}(adjm::Matrix) where {T,U}
 
 MetaGraph with adjacency matrix `adjm`, vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleGraph. 
 """
-MetaGraphs.MetaGraph{T,U}(adjm::Union{Matrix, SparseMatrixCSC}) where {T,U}= MetaGraph{T,U}(SimpleGraph(adjm))
-
+function MetaGraphs.MetaGraph{T,U}(adjm::Union{Matrix,SparseMatrixCSC}) where {T,U}
+    return MetaGraph{T,U}(SimpleGraph(adjm))
+end
 
 """
     MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
 
 MetaDiGraph with adjacency matrix `adjm`, vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleDiGraph. 
 """
-MetaGraphs.MetaDiGraph{T,U}(adjm::Union{Matrix, SparseMatrixCSC}) where {T,U}= MetaDiGraph{T,U}(SimpleDiGraph(adjm))
-
+function MetaGraphs.MetaDiGraph{T,U}(adjm::Union{Matrix,SparseMatrixCSC}) where {T,U}
+    return MetaDiGraph{T,U}(SimpleDiGraph(adjm))
+end

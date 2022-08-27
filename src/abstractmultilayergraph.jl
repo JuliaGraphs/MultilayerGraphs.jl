@@ -748,7 +748,6 @@ function Graphs.modularity(
     return (1 / K) * ein"ija,ikjm,kma->"(S, B, S)[]
 end
 
-
 #function get_graph_of_layers end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
 """
     get_graph_of_layers(mg::M) where {M <: AbstractMultilayerGraph}
