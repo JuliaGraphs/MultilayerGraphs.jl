@@ -209,7 +209,7 @@ end
 """
     get_graph_of_layers(mg::M) where {M <: AbstractMultiplexDiGraph}
 
-Get a [`DiGraphOfGraph`](@ref) of the layers of `mg`. the weight of each edge between layers are obtained by summing all edge weights in the corresponding interlayer. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
+Get a [`DiGraphOfGraph`](@ref) of the layers of `mg`. The weight of each edge between layers are obtained by summing all edge weights in the corresponding interlayer. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
 function get_graph_of_layers(
     mg::M; normalization::String="total_edges"

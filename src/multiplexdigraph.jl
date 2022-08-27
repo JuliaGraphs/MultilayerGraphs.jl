@@ -1,7 +1,7 @@
 """
     MultiplexDiGraph{T, U, G <: AbstractGraph{T}} <: AbstractMultiplexUGraph{T,U}
 
-A concrete type that can represent a general directed MultiplexDiGraph graph. That is, a multilayer graph whos einterlayers are all trivial in the sense that they only have links between vertices that represent the same node.
+A concrete type that can represent a general directed MultiplexDiGraph graph. That is, a multilayer graph whose interlayers are all trivial in the sense that they only have links between vertices that represent the same node.
 
 # FIELDS
 
