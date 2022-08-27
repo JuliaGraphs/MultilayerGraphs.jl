@@ -59,7 +59,9 @@ Add weighted edge `me` to `mg`.
 """
 function Graphs.add_edge!(
     mg::M, me::E
-) where {T,U<:Real,M<:AbstractMultilayerDiGraph{T,U},E<:MultilayerEdge{MultilayerVertex{T},U}}
+) where {
+    T,U<:Real,M<:AbstractMultilayerDiGraph{T,U},E<:MultilayerEdge{MultilayerVertex{T},U}
+}
     return add_edge!(mg, src(me), dst(me), weight(me))
 end
 
