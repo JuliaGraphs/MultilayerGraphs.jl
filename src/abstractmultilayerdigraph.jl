@@ -72,10 +72,11 @@ Add unweighted edge `me` to `mg`.
 """
 function Graphs.add_edge!(
     mg::M, me::E
-) where {T,U,M<:AbstractMultilayerDiGraph{T,U},E<:MultilayerEdge{MultilayerVertex{T},Nothing}}
+) where {
+    T,U,M<:AbstractMultilayerDiGraph{T,U},E<:MultilayerEdge{MultilayerVertex{T},Nothing}
+}
     return add_edge!(mg, src(me), dst(me))
 end
-
 
 """
     is_directed(mg::M) where { M <: AbstractMultilayerDiGraph}
