@@ -86,5 +86,4 @@ include("multiplexgraph.jl")
 include("multilayerdigraph.jl")
 include("multiplexdigraph.jl")
 
-
 end
