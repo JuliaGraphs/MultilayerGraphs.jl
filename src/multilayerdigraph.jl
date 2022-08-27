@@ -81,7 +81,7 @@ function MultilayerDiGraph(n_nodes::Int64, T::Type{<:Number}, U::Type{<:Number})
 end
 
 """
-    MultilayerDiGraph(layers::Vector{ <: Layer{T,U}};  default_interlayer::String  = "multiplex") where {T,U} 
+    MultilayerDiGraph(layers::Vector{ <: Layer{T,U}};  default_interlayer::String  = "multiplex") where {T,U}
 
 Construct a MultilayerDiGraph with layers `layers` and all interlayers of type `default_interlayer` (only "multiplex" is allowed).
 """
@@ -94,7 +94,7 @@ function MultilayerDiGraph(
 end
 
 """
-    MultilayerDiGraph(layers::Vector{ <: Layer{T,U }}, specified_interlayers::Vector{ <: Interlayer{T,U}};  default_interlayer::String  = "multiplex") where {T, U} 
+    MultilayerDiGraph(layers::Vector{ <: Layer{T,U }}, specified_interlayers::Vector{ <: Interlayer{T,U}};  default_interlayer::String  = "multiplex") where {T, U}
 
 Construct a MultilayerDiGraph with layers given by `layers`. The interlayers will be constructed by default according to `default_interlayer` (only `"multiplex"` is allowed), except for those specified in `specified_interlayers`.
 """
@@ -148,7 +148,7 @@ function specify_interlayer!(
     symmetric_interlayer_name::String="interlayer_$(layer_2)_$(layer_1)",
     forbidden_vertices::Tuple{Vararg{MultilayerVertex{T}}},
     forbidden_edges::Tuple{Vararg{NTuple{2,MultilayerVertex{T}}}},
-) where {T,U,G<:AbstractGraph{T},M<:MultilayerDiGraph{T,U}} # 
+) where {T,U,G<:AbstractGraph{T},M<:MultilayerDiGraph{T,U}} #
     istrait(isDirected{G}) || throw(
         ErrorException(
             "The new interlayer's underlying graph $(graph) is undirected, so it is not compatible with a `MultilayerDiGraph`.",
