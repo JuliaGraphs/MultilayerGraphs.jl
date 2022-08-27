@@ -5,7 +5,6 @@ Abstract type representing an undirected multilayer graph.
 """
 abstract type AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 
-
 """
     add_layer!(mg::M,layer::L; interlayers_type = "multiplex") where { T, undef, M <: AbstractMultilayerDiGraph{T, G, U}, L <: Layer{T,U,G}}
 
