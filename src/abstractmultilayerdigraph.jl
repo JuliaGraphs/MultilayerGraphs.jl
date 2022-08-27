@@ -52,7 +52,6 @@ function Graphs.degree(
     return indegree(mg, v) + outdegree(mg, v)
 end
 
-
 """
     add_edge!(mg::M, me::E) where { T, U <: Real, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{MultilayerVertex{T},U}}
 
