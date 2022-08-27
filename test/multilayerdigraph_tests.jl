@@ -1,8 +1,46 @@
-layers_d = [
+#= layers_d = [
     Layer(:layer_1, get_SimpleDiGraph(); U=Float64),
     Layer(:layer_2, get_SimpleWeightedDiGraph(); U=Float64),
     Layer(:layer_3, get_SimpleWeightedDiGraph(); U=Float64),
+] =#
+
+layers_d = [
+    Layer(n_nodes, :layer_1, SimpleDiGraph{Int64}, rand(min_edges:max_edges); U=Float64),
+    Layer(
+        n_nodes,
+        :layer_2,
+        SimpleWeightedDiGraph{Int64},
+        rand(min_edges:max_edges);
+        U=Float64,
+    ),
+    Layer(
+        n_nodes, :layer_3, MetaDiGraph{Int64,Float64}, rand(min_edges:max_edges); U=Float64
+    ),
+    Layer(
+        :layer_4,
+        ValOutDiGraph(
+            SimpleDiGraph{Int64}(5, rand(min_edges:max_edges));
+            edgeval_types=(Int64,),
+            edgeval_init=(s, d) -> (s + d,),
+            vertexval_types=(String,),
+            vertexval_init=undef,
+        );
+        U=Float64,
+    ),
+    Layer(
+        :layer_5,
+        ValDiGraph(
+            SimpleDiGraph{Int64}(5, rand(min_edges:max_edges));
+            edgeval_types=(Int64,),
+            edgeval_init=(s, d) -> (s + d,),
+            vertexval_types=(String,),
+            vertexval_init=undef,
+        );
+        U=Float64,
+    ),
 ]
+
+const num_layers_d = length(layers_d)
 
 # Specify interlayers
 interlayers_d = [
@@ -30,11 +68,15 @@ multilayerdigraph = MultilayerDiGraph(layers_d, interlayers_d)
 
 # Test random multilayer
 random_multilayerdigraph = MultilayerDiGraph(
-    3,
+    num_layers_d,
     n_nodes,
     min_edges,
     max_edges,
-    [SimpleDiGraph{Int64}, SimpleWeightedDiGraph{Int64,Float64}],
+    [
+        SimpleDiGraph{Int64},
+        SimpleWeightedDiGraph{Int64,Float64},
+        MetaDiGraph{Int64,Float64},
+    ],
 )
 
 # Test getproperty and getters
@@ -181,6 +223,8 @@ modularity.(
     Ref(rand([1, 2, 3, 4], length(nodes(randoms_d[1])), length(randoms_d[1].layers))),
 )
 
+get_graph_of_layers.(randoms_d)
+
 # Test that, given a 1-dimensional multilayerdigraph, we obtain the same metrics as we would by using Graphs.jl's utilities on the one and only layer
 
 ## unweighted case
@@ -313,3 +357,38 @@ for vertex in vertices(layer_w_graph)
         ] .== outneighbors(layer_w_graph, vertex),
     )
 end
+
+# test multiplex graph
+
+multiplexdigraph = MultiplexDiGraph(layers_d)
+
+multiplexgraph_random = MultiplexDiGraph(
+    num_layers_d,
+    n_nodes,
+    min_edges,
+    max_edges,
+    [
+        SimpleDiGraph{Int64},
+        SimpleWeightedDiGraph{Int64,Float64},
+        MetaDiGraph{Int64,Float64},
+    ],
+)
+
+add_edge!(multiplexdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1))
+@test multiplexdigraph.adjacency_tensor[1, 2, 1, 1] == 1.0
+
+@test_throws ErrorException add_edge!(
+    multiplexdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1), 3.14
+)
+
+add_edge!(
+    multiplexdigraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2), 3.14
+)
+@test multiplexdigraph.adjacency_tensor[1, 2, 2, 2] == 3.14
+
+@test rem_edge!(
+    multiplexdigraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2)
+)
+@test multiplexdigraph.adjacency_tensor[1, 2, 2, 2] == 0.0
+
+get_graph_of_layers(multiplexdigraph)

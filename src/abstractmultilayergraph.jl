@@ -747,3 +747,29 @@ function Graphs.modularity(
 
     return (1 / K) * ein"ija,ikjm,kma->"(S, B, S)[]
 end
+
+#function get_graph_of_layers end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
+"""
+    get_graph_of_layers(mg::M) where {M <: AbstractMultilayerGraph}
+
+Get a [`DiGraphOfGraph`](@ref) of the layers of `mg`. the weight of each edge between layers are obtained by summing all edge weights in the corresponding interlayer. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
+"""
+function get_graph_of_layers(
+    mg::M; normalization::String="total_edges"
+) where {M<:AbstractMultilayerGraph}
+    num_layers = length(mg.layers)
+    norm_factor = 1
+    if cmp(normalization, "total_edges") == 0
+        norm_factor = ne(mg)
+    end
+    adjacency_matrix = reshape(
+        [
+            i != j ? (1 / norm_factor) * sum(mg.adjacency_tensor[:, :, i, j]) : 0.0 for
+            i in 1:num_layers for j in 1:num_layers
+        ],
+        (num_layers, num_layers),
+    )
+    return DiGraphOfGraphs(
+        getproperty.(collect(values(mg.layers)), :graph), adjacency_matrix
+    )
+end

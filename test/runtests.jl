@@ -1,6 +1,6 @@
 using Test
 using MultilayerGraphs
-using Graphs, SimpleWeightedGraphs, MetaGraphs
+using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
 
 # Test that methods work on a general multilayer graph
 ## Define variables and utilities
@@ -49,5 +49,9 @@ metagraph = MetaGraph(simpleweightedgraph)
 
     @testset "multilayerdigraph" begin
         include("multilayerdigraph_tests.jl")
+    end
+
+    @testset "multiplexgraph" begin
+        include("multiplexgraph_tests.jl")
     end
 end
