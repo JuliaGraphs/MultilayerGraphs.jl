@@ -1,6 +1,7 @@
 using Test
 using MultilayerGraphs
 using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
+using Aqua
 
 # Test that methods work on a general multilayer graph
 ## Define variables and utilities
@@ -55,3 +56,6 @@ metagraph = MetaGraph(simpleweightedgraph)
         include("multiplexgraph_tests.jl")
     end
 end
+
+# Test for automatic quality assurance (Aqua)
+## Aqua.test_all(MultilayerGraphs)
