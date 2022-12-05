@@ -18,11 +18,14 @@ CurrentModule = MultilayerGraphs
 
 ## Overview
 
-**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). It mainly revolves around two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), encoding undirected and directed multilayer graphs respectively.
+**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022) together with insights from [Kivela et al. (2014)](https://doi.org/10.1093/comnet/cnu016) and  [Bianconi 2018]([??](https://global.oup.com/academic/product/multilayer-networks-9780198753919?cc=us&lang=en&)). It mainly revolves around two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), encoding undirected and directed multilayer graphs respectively.
 
-Roughly speaking, a multilayer graph is a collection of *layers*, i.e. graphs whose vertices are representations of the same set of nodes, and *interlayers*, i.e the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) whose vertices are those of any two layers and whose edges are those between vertices of the same two layers. See below for the distinction between ***nodes*** and ***vertices***.
+Roughly speaking, a multilayer graph is a collection of *layers*, i.e. graphs whose vertices are representations of the same set of nodes (no tall nodes have to be present in all layers), and *interlayers*, i.e the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) whose vertices are those of any two layers and whose edges are those between vertices of the same two layers. A vertex of a multilayer graph will be represented via a [`MultilayerVertex`](@ref) struct, and nodes via a [`Node`](@ref) struct.
 
-[`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed so that their layers and interlayers can be of any type (as long as they are Graphs.jl extensions themselves) and they need not be all of the same type. It is anyway required that all layers and interlayers of [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are respectively undirected and directed. Directedness is checked via the `IsDirected` trait defined in Graphs.jl adopting [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl). Since the layers' and interlayers' graph types don't need to be the same, multilayer graph types are considered weighted graphs by default, and thus are assigned the trait `IsWeighted`.
+[`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed so that their layers and interlayers can be of any type (as long as they are Graphs.jl extensions themselves) and they can be of different types. It is anyway required that all layers and interlayers of [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are respectively undirected and directed. Directedness is checked via the `IsDirected` trait defined in Graphs.jl adopting [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl). Since the layers' and interlayers' graph types don't need to be the same, multilayer graph types are considered weighted graphs by default, and thus are assigned the trait `IsWeighted`.
+
+Both [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) allow for vertex and edge metadata, provided that the layer or interlayer the vertex or the edge belong to supports metadata. This is checked via the `IsMeta` trait.
+
 
 ## Installation
 
@@ -49,20 +52,42 @@ using MultilayerGraphs
 We define some methods and constants that will prove useful later in the tutorial
 
 ```julia
-# Set the number of nodes, minimum and maximum number of edges for random graphs
-const n_nodes   = 5
-const min_edges = n_nodes
-const max_edges = 10
+# Set the minimum and maximum number of nodes and edges for random graphs
+const vertextype   = Int64
+const _weighttype  = Float64 
+const min_vertices = 5
+const max_vertices = 7
+const min_edges    = 1
+const max_edges    = max_vertices*(max_vertices-1)
+
+# Instantiate `Node`s and `MultilayerVertex`s.
+## The constructor for nodes (which are immutable) only requires a name (`id`) for the node
+const nodes = [Node("node_$i") for i in 1:max_vertices]
+## Covert nodes to multilayer vertices
+const multilayervertices = MV.(nodes)
 ```
+
+Printing a `MultilayerVertex` returns
+
+```julia
+multilayervertices[1]
+```
+```bash
+MV(Node("node_1"), :nothing, NamedTuple())
+```
+
+The first field is the `Node` being represented, the second the (name of) layer the vertex is represented in (here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex (no metadata are currently represented via an empty `NamedTuple`).  
 
 As said before, to define a multilayer graph we need to specify its layers and interlayers. We proceed by constructing a layer (see [`Layer`](@ref))
 
 ```julia
 # Construct a layer
-layer = Layer(:layer_1, SimpleGraph(n_nodes, rand(min_edges:max_edges)); U = Float64)
+_nv = rand(min_vertices:max_vertices)
+_ne =  rand(_nv:(_nv*(_nv-1)) ÷ 2 )
+layer_sg = Layer(:layer_sg, sample(multilayervertices, _nv, replace = false), _ne, SimpleGraph{vertextype}(), _weighttype)
 ```
 
-A `Layer` has a name (here `:layer_1`), an underlying graph (`SimpleGraph(n_nodes, rand(min_edges:max_edges))`) and a weight matrix `eltype` `U` (it defaults to the adjacency matrix's `eltype` if the graph is unweighted). To correctly specify a multilayer graph all layers and interlayers must have the same `U`, otherwise the multilayers's adjacency tensor would be poorly specified.
+A `Layer` has a name (here `:layer_1`), an underlying graph (`SimpleGraph(n_nodes, rand(min_edges:max_edges))`) and a weight matrix `eltype` `U` (it defaults to the adjacency matrix's `eltype` if the graph is unweighted). To correctly specify a multilayer graph all layers and interlayers must have the same `U`, otherwise the multilayer's adjacency tensor would be poorly specified.
 
 Notice that `U` does not need to coincide with the `eltype` of the adjacency matrix of the underlying graph: as far as we know, there is no way to set it explicitly for all Graphs.jl extensions, nor it is required for extensions to implement such feature, so our package converts to `U` the `eltype` of `Layer`s and `Interlayer`s weight (/adjacency) matrices every time they are invoked
 
@@ -236,7 +261,7 @@ Layer{Int64, Float64, SimpleGraph{Int64}}(:layer_1, SimpleGraph{Int64}(5, [[2, 3
 The adjacency tensor is a 4-dimensional array
 
 ```julia
-multilayergraph.adjacency_tensor
+multilayergraph.array
 ```
 ```nothing
 5×5×4×4 Array{Float64, 4}:
@@ -246,7 +271,7 @@ multilayergraph.adjacency_tensor
 To understand its indexing, consider the following example
 
 ```julia
-multilayergraph.adjacency_tensor[1,5,2,3]
+multilayergraph.array[1,5,2,3]
 ```
 ```nothing
 0.0
@@ -255,7 +280,7 @@ multilayergraph.adjacency_tensor[1,5,2,3]
 This means that there is an edge of zero weight between the vertex representing node 1 in layer 5 and the vertex representing node 2 in layer 3. It is a good time to note the difference between *nodes* and *vertices*. In the context of multilayer graphs, the vertices of every layer and interlayer represent the same set of nodes. That is, vertex 1 in layer (1,1) represents the same node as vertex 1 in layer (2,2) and so on. To make this distinction clearer the package implements the `MultilayerVertex` type, that represents vertices within the multilayer graph. The implementation of `MultilayerVertex` is
 
 ```julia
-struct MultilayerVertex{T <: Integer} <: AbstractMultilayerVertex{T}
+struct MultilayerVertex{T <: Integer} <: AbstractMultilayerVertex
     node::T        # The node  the vertex represents
     layer::Symbol  # The layer the vertex belongs to
 end
@@ -388,10 +413,10 @@ The multilayer doesn't have any edge between MultilayerVertex{Int64}(1, :layer_1
 false
 ```
 
-The message tells us that the edge was already non existent. In fact, if we check the `adjacency_tensor` in the corresponding entry, we see that
+The message tells us that the edge was already non existent. In fact, if we check the `weight_tensor` in the corresponding entry, we see that
 
 ```julia
-multilayergraph.adjacency_tensor[1,2,1,2]
+multilayergraph.array[1,2,1,2]
 ```
 ```nothing
 0.0

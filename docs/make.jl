@@ -1,5 +1,8 @@
+using Revise
 using MultilayerGraphs
 using Documenter
+
+# cd("dev/MultilayerGraphs/docs")
 
 DocMeta.setdocmeta!(
     MultilayerGraphs, :DocTestSetup, :(using MultilayerGraphs); recursive=true
@@ -16,6 +19,7 @@ makedocs(;
         assets=String[],
     ),
     pages=["Home" => "index.md", "Internals" => "internals.md"],
+    clean = false
 )
 
 deploydocs(;

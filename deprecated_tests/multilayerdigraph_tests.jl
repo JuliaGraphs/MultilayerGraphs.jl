@@ -134,7 +134,7 @@ add_edge!(multilayerdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, 
 @test has_edge(
     multilayerdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_2)
 )
-@test multilayerdigraph.adjacency_tensor[1, 2, 1, 2] == 1.0
+@test multilayerdigraph.array[1, 2, 1, 2] == 1.0
 
 add_edge!(
     multilayerdigraph,
@@ -143,7 +143,7 @@ add_edge!(
 @test has_edge(
     multilayerdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_3)
 )
-@test multilayerdigraph.adjacency_tensor[1, 2, 1, 3] == 3.14
+@test multilayerdigraph.array[1, 2, 1, 3] == 3.14
 
 add_edge!(
     multilayerdigraph,
@@ -152,7 +152,7 @@ add_edge!(
 @test has_edge(
     multilayerdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1)
 )
-@test multilayerdigraph.adjacency_tensor[1, 2, 1, 1] == 1.0
+@test multilayerdigraph.array[1, 2, 1, 1] == 1.0
 
 add_edge!(
     multilayerdigraph,
@@ -161,7 +161,7 @@ add_edge!(
 @test has_edge(
     multilayerdigraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2)
 )
-@test multilayerdigraph.adjacency_tensor[1, 2, 2, 2] == 3.14
+@test multilayerdigraph.array[1, 2, 2, 2] == 3.14
 
 inneighbors(multilayerdigraph, MultilayerVertex(1, :layer_1))
 @inferred inneighbors(multilayerdigraph, MultilayerVertex(1, :layer_1))
@@ -278,14 +278,14 @@ for vertex in vertices(layer_graph)
 
     @test all(
         [
-            mv_neighbor.node for
+            mv_neighbor.layer_vertex for
             mv_neighbor in inneighbors(monolayerdigraph, MultilayerVertex(vertex, :layer_1))
         ] .== inneighbors(layer_graph, vertex),
     )
 
     @test all(
         [
-            mv_neighbor.node for mv_neighbor in
+            mv_neighbor.layer_vertex for mv_neighbor in
             outneighbors(monolayerdigraph, MultilayerVertex(vertex, :layer_1))
         ] .== outneighbors(layer_graph, vertex),
     )
@@ -345,14 +345,14 @@ for vertex in vertices(layer_w_graph)
 
     @test all(
         [
-            mv_neighbor.node for mv_neighbor in
+            mv_neighbor.layer_vertex for mv_neighbor in
             inneighbors(monolayerweighteddigraph, MultilayerVertex(vertex, :layer_1))
         ] .== inneighbors(layer_w_graph, vertex),
     )
 
     @test all(
         [
-            mv_neighbor.node for mv_neighbor in
+            mv_neighbor.layer_vertex for mv_neighbor in
             outneighbors(monolayerweighteddigraph, MultilayerVertex(vertex, :layer_1))
         ] .== outneighbors(layer_w_graph, vertex),
     )
@@ -375,7 +375,7 @@ multiplexgraph_random = MultiplexDiGraph(
 )
 
 add_edge!(multiplexdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1))
-@test multiplexdigraph.adjacency_tensor[1, 2, 1, 1] == 1.0
+@test multiplexdigraph.array[1, 2, 1, 1] == 1.0
 
 @test_throws ErrorException add_edge!(
     multiplexdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :layer_1), 3.14
@@ -384,11 +384,11 @@ add_edge!(multiplexdigraph, MultilayerVertex(1, :layer_1), MultilayerVertex(2, :
 add_edge!(
     multiplexdigraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2), 3.14
 )
-@test multiplexdigraph.adjacency_tensor[1, 2, 2, 2] == 3.14
+@test multiplexdigraph.array[1, 2, 2, 2] == 3.14
 
 @test rem_edge!(
     multiplexdigraph, MultilayerVertex(1, :layer_2), MultilayerVertex(2, :layer_2)
 )
-@test multiplexdigraph.adjacency_tensor[1, 2, 2, 2] == 0.0
+@test multiplexdigraph.array[1, 2, 2, 2] == 0.0
 
 get_graph_of_layers(multiplexdigraph)

@@ -39,7 +39,7 @@ function GraphOfGraphs(
 ) where {T<:AbstractGraph}
     size(adjacency_matrix, 1) == length(graphs) || throw(
         ErrorException(
-            "The `adjacency_matrix` has more columns than the number of graphs specified in `graphs`. Found $(size(adjacency_matrix,1)) and $(length(graphs))",
+            "The `adjacency_matrix` has more columns than the number of graphs specified in `graphs`. Found $(size(adjacency_matrix,1)) and $(length(graphs)).",
         ),
     )
     nodes = OrderedDict{Int64,T}(i => graph for (i, graph) in enumerate(graphs))
@@ -76,7 +76,7 @@ function DiGraphOfGraphs(
 ) where {T<:AbstractGraph}
     size(adjacency_matrix, 1) == length(graphs) || throw(
         ErrorException(
-            "The `adjacency_matrix` has more columns than the number of graphs specified in `graphs`. Found $(size(adjacency_matrix,1)) and $(length(graphs))",
+            "The `adjacency_matrix` has more columns than the number of graphs specified in `graphs`. Found $(size(adjacency_matrix,1)) and $(length(graphs)).",
         ),
     )
     nodes = Dict{Int64,T}(i => graph for (i, graph) in enumerate(graphs))
@@ -87,12 +87,3 @@ end
 @traitimpl IsWeighted{GraphOfGraphs}
 @traitimpl IsWeighted{DiGraphOfGraphs}
 @traitimpl IsDirected{DiGraphOfGraphs}
-
-#= for sbt in get_concrete_subtypes(AbstractGraph)
-    if !istrait(IsDirected{sbt})
-        @traitimpl IsWeighted{GraphOfGraphs{sbt}}
-    else
-        @traitimpl IsWeighted{DiGraphOfGraphs{sbt}}
-        @traitimpl IsDirected{DiGraphOfGraphs{sbt}}
-    end
-end =#
