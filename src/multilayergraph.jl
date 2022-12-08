@@ -184,7 +184,7 @@ Return a random `MultilayerGraph` with degree sequence `degree_sequence`. `allow
 """
 function MultilayerGraph(empty_multilayergraph::MultilayerGraph{T,U}, degree_sequence::Vector{<:Integer}; allow_self_loops::Bool = false, perform_checks::Bool = true) where {T,U}
 
-    (allow_self_loops && perform_checks) || @warn "Checks for graphicality and coherence with the provided `empty_multilayergraph` are currently performed without taking into account self-loops. Thus said checks may fail event though the provided `degree_sequence` may be graphical when one allows for self-loops within the multilayer graph to be present. If you are sure that the provided `degree_sequence` is indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient."
+    (allow_self_loops && perform_checks) && @warn "Checks for graphicality and coherence with the provided `empty_multilayergraph` are currently performed without taking into account self-loops. Thus said checks may fail event though the provided `degree_sequence` may be graphical when one allows for self-loops within the multilayer graph to be present. If you are sure that the provided `degree_sequence` is indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient."
     
     _multilayergraph = deepcopy(empty_multilayergraph)
 

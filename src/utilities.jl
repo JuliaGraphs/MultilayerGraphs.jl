@@ -91,7 +91,7 @@ function get_diagonal_weight_tensor(arr::Vector{T}, dims) where {T}
 end
 
 """
-    mutable struct δ{T} <: AbstractVector{T}
+    mutable struct δk{T} <: AbstractVector{T}
 
 The Kronecker delta.
 
@@ -99,20 +99,20 @@ The Kronecker delta.
 
 - `N::Int64`: the number of dimensions;
 - `representation::Matrix{Int64}`: the matrix representing the Kronecker delta;
-- `T`: the return type when called `δ[i,j]`.
+- `T`: the return type when called `δk[i,j]`.
 
 # CONSTRUCTORS
 
-    δ{T}(N::Int64) where {T <: Number}
+    δk{T}(N::Int64) where {T <: Number}
 
 Inner constructor that only requires `N` and the `eltype`.
 """
-mutable struct δ{T} <: AbstractVector{T}
+mutable struct δk{T} <: AbstractVector{T}
     N::Int64
     representation::Matrix{Int64}
 
     # Inner constructor that only requires N and the eltype.
-    function δ{T}(N::Int64) where {T<:Number}
+    function δk{T}(N::Int64) where {T<:Number}
         out = new{T}(N)
         representation = [out[h, k] for h in 1:N, k in 1:N]
         out.representation = representation
@@ -121,33 +121,33 @@ mutable struct δ{T} <: AbstractVector{T}
 end
 
 """
-    δ(N::Int64)
+    δk(N::Int64)
     
 Outer constructor that only requires `N`.
 """
-δ(N::Int64) = δ{Int64}(N)
+δk(N::Int64) = δk{Int64}(N)
 
 """
-    getindex(d::δ{T}, h::Int64, k::Int64) where T 
+    getindex(d::δk{T}, h::Int64, k::Int64) where T 
 
 `getindex` dispatch that allows to easily construct the `representation` field of `δ_Ω` inside its inner constructor.
 """
 
-Base.getindex(d::δ{T}, h::Int64, k::Int64) where {T} = I[h, k] ? one(T) : zero(T)
+Base.getindex(d::δk{T}, h::Int64, k::Int64) where {T} = I[h, k] ? one(T) : zero(T)
 
 """
-    getindex(d::δ{T}, i::Int) where T
+    getindex(d::δk{T}, i::Int) where T
 
 The getindex called by OMEinsum.jl.
 """
-Base.getindex(d::δ{T}, i::Int) where {T} = d.representation[i]
+Base.getindex(d::δk{T}, i::Int) where {T} = d.representation[i]
 
 """
-    size(d::δ)
+    size(d::δk)
 
 Override required by OMEinsum.jl.
 """
-Base.size(d::δ) = (d.N, d.N)
+Base.size(d::δk) = (d.N, d.N)
 
 """
     struct δ_1{T<: Number}

@@ -130,12 +130,12 @@ Return the number of vertices in `mg`, excluding the missing vertices.
 """
 Graphs.nv(mg::M) where {M<:AbstractMultilayerGraph} = length(mg.v_V_associations) #length([mv for mv in image(mg.v_V_associations) if !(mv isa MissingVertex)])
 
-"""
+#= """
     nv_withmissing(mg::M) where {M<:AbstractMultilayerGraph}
 
 Return the number of vertices of `mg`, including the missing vertices.
 """
-nv_withmissing(mg::M) where {M<:AbstractMultilayerGraph} = length(mg.v_V_associations)
+nv_withmissing(mg::M) where {M<:AbstractMultilayerGraph} = length(mg.v_V_associations) =#
 
 """
     vertices(mg::M) where {M<:AbstractMultilayerGraph}
@@ -432,13 +432,6 @@ function get_interlayer(
     layer_1_name ∈ mg.layers_names || throw(ErrorException("$layer_1_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names)."))
     layer_2_name ∈ mg.layers_names || throw(ErrorException("$layer_2_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names)."))
     layer_1_name != layer_2_name || throw(ErrorException("`layer_1` argument is the same as `layer_2`. There is no interlayer between a layer and itself."))
-
-#=     names_set = Set([layer_1_name, layer_2_name])
-    for interlayer_descriptor in values(mg.interlayers)
-        if issetequal(interlayer_descriptor.layers_names, names_set)
-            return get_subgraph(mg, interlayer_descriptor)
-        end
-    end =#
 
     names = [layer_1_name, layer_2_name]
     for interlayer_descriptor in values(mg.interlayers)

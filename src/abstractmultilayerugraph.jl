@@ -418,8 +418,8 @@ function von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
     Δ = ein"ijkm,ik,nj,om -> njom"(
         wgt,
         ones(T, size(wgt)[[1, 3]]),
-        δ(num_nodes),
-        δ(num_layers),
+        δk(num_nodes),
+        δk(num_layers),
     )
 
     # Trace of Δ

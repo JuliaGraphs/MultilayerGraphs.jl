@@ -21,73 +21,102 @@
 module MultilayerGraphs
 
 export 
-    getindex,
-    δ_Ω,
-    tensoreig,
-    AbstractMultilayerGraph,
-    AbstractMultilayerUGraph,
-    AbstractMultilayerDiGraph,
-    IsWeighted,
-    MultilayerGraph,
-    MultilayerDiGraph,
-    # MultiplexGraph,
-    # MultiplexDiGraph,
+    # Node.jl 
     AbstractNode,
     Node,
+    # abstractvertex.jl
     AbstractVertex,
+    # abstractmultilayervertex.jl
     AbstractMultilayerVertex,
+    # multilayervertex.jl 
     MultilayerVertex,
     MV,
-    ME,
-    AbstractMultilayerEdge,
+    node,
+    layer,
+    metadata,
+    # missingvertex.jl
+    MissingVertex,
+    # multilayeredge.jl
+    AbstractMultilayerEdge, 
     MultilayerEdge,
-    MultilayerWeightedEdge,
-    AbstractIntraLayerEdge,
-    IntraLayerEdge,
-    # GraphOfGraphs,
-    # DiGraphOfGraphs,
+    ME,
+    weight,
+    metadata,
+    # halfedge.jl
+    # layerdescriptor.jl
+    # interlayerdescriptor.jl
+    # abstractsubgraph.jl
+    nodes,
+    eltype,
+    has_vertex,
+    nv,
+    vertices,
+    mv_vertices,
+    inneighbors,
+    mv_inneighbors,
+    outneighbors,
+    mv_outneighbors,
+    neighbors,
+    mv_neighbors,
+    edgetype,
+    has_edge,
+    ne,
+    edges,
     add_edge!,
-    LayerDescriptor,
+    rem_edge!,
+    get_metadata,
+    get_weight,
+    is_directed,
+    adjacency_matrix,
+    weights,
+    name,
+    # layer.jl
+    AbstractLayer,
     Layer,
+    has_node,
+    rem_vertex!,
+    # interlayer.jl
+    AbstractInterlayer,
+    Interlayer,
+    multiplex_interlayer,
+    empty_interlayer,
+    is_multiplex_interlayer,
+    get_symmetric_interlayer,
+    # abstracttensorrepresentation.jl
+    AbstractTensorRepresentation,
+    getindex,
+    array,
+    # abstractmatrixrrepresentation.jl
+    AbstractMatrixRepresentation,
+    # weighttensor.jl
+    WeightTensor,
+    # metadatatensor.jl
+    MetadataTensor,
+    # supraweightmatrix.jl
+    SupraWeightMatrix,
+    # traits.jl
+    IsWeighted,
+    is_weighted,
+    IsMeta,
+    is_meta,
+    # abstractmultilayergraph.jl
+    AbstractMultilayerGraph,
+    nn,
     add_node!,
     rem_node!,
-    set_prop!,
-    get_prop,
-    InterlayerDescriptor,
-    Interlayer,
-    get_symmetric_interlayer,
-    multiplex_interlayer,
-    is_multiplex_interlayer,
-    has_node,
-    add_vertex!,
-    rem_vertex!,
-    add_layer!,
-    # get_layer,
-    specify_interlayer!,
+    set_metadata!,
+    nl,
+    nIn,
+    has_layer,
+    rem_layer!,
     get_interlayer,
-    get_subgraph,
     indegree,
     outdegree,
     degree,
-    neighbors,
-    mv_neighbors,
-    edges,
-    is_directed,
-    eltype,
-    edgetype,
-    has_edge,
-    has_vertex,
-    inneighbors,
-    node_inneighbors,
-    inneighbors_mv,
-    ne,
-    nv,
-    nn,
-    outneighbors,
-    node_outneighbors,
-    outneighbors_mv,
-    nodes,
-    mv_vertices,
+    weighttype,
+    weight_tensor,
+    supra_weight_matrix,
+    metadata_tensor,
     mean_degree,
     degree_second_moment,
     degree_variance,
@@ -96,44 +125,28 @@ export
     overlay_clustering_coefficient,
     eigenvector_centrality,
     modularity,
-    von_neumann_entropy,
-    get_projected_monoplex_graph,
-    get_overlay_monoplex_graph,
-    # get_graph_of_layers,
-    get_oom,
-    adjacency_matrix, 
-    weights,
-    get_bare_mv,
-    get_rich_mv,
-    mv_inneighbors,
-    mv_outneighbors,
-    getproperty,
-    isequal,
-    weighttype,
-    MissingVertex,
-    nv_withmissing,
-    nl,
-    nIn,
-    get_supra_weight_matrix_from_weight_tensor,
-    get_weight_tensor_from_supra_weight_matrix,
-    rem_layer!,
-    has_layer,
-    weight_tensor,
-    weight,
-    supra_weight_matrix,
-    empty_interlayer,
-    isdigraphical,
-    get_prop,
-    name,
+    # abstractmultilayerugraph.jl
+    AbstractMultilayerUGraph,
     set_weight!,
-    set_metadata!,
-    get_metadata,
-    get_weight,
-    MetadataTensor,
-    metadata_tensor,
-    WeightTensor,
-    node,
-    array
+    add_layer!,
+    specify_interlayer!,
+    von_neumann_entropy,
+    # abstractmultilayerdigraph.jl
+    # multilayergraph.jl
+    MultilayerGraph,
+    fadjlist,
+    # multilayerdigraph.jl
+    MultilayerDiGraph,
+    badjlist,
+    # utilities
+    multilayer_kronecker_delta,
+    δk,
+    size,
+    δ_1,
+    δ_2,
+    δ_3,
+    δ_Ω
+    # tensorfacoriazations.jl
 
 using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections
 using Distributions: Uniform
@@ -142,8 +155,8 @@ using DataStructures, SparseArrays
 using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
 using Agents
 
-include("traits.jl")
-include("tensorsfactorizations.jl")
+
+
 include("node.jl")
 include("vertices/abstractvertex.jl")
 include("vertices/multilayervertex.jl")
@@ -156,16 +169,18 @@ include("subgraphs/abstractsubgraph.jl")
 include("subgraphs/layer.jl")
 include("subgraphs/interlayer.jl")
 include("graphs_extensions/graphs_extensions.jl")
-include("abstracttensorrepresentation.jl")
-include("abstractmatrixrepresentation.jl")
-include("weighttensor.jl")
-include("metadatatensor.jl")
-include("supraweightmatrix.jl")
+include("representations/abstracttensorrepresentation.jl")
+include("representations/abstractmatrixrepresentation.jl")
+include("representations/weighttensor.jl")
+include("representations/metadatatensor.jl")
+include("representations/supraweightmatrix.jl")
+include("traits.jl")
 include("abstractmultilayergraph.jl")
 include("abstractmultilayerugraph.jl")
 include("abstractmultilayerdigraph.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
 include("utilities.jl")
+include("tensorsfactorizations.jl")
 
 end

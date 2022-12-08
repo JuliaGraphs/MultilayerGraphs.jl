@@ -56,6 +56,7 @@ end
 
 # General MultilayerDiGraph Utilities
 fadjlist(mg::MultilayerDiGraph) = mg.fadjlist
+badjlist(mg::MultilayerDiGraph) = mg.badjlist
 
 # Nodes
 

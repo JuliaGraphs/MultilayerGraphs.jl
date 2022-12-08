@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - remove_missingvertex
     tags: '*'
   pull_request:
 concurrency:
@@ -18,12 +19,12 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.7'
-          - 'nightly'
+          - '1.8.2'
+          # - 'nightly'
         os:
           - ubuntu-latest
-          - macOS-latest
-          - windows-latest
+          # - macOS-latest
+          # - windows-latest
         arch:
           - x64
     steps:

@@ -82,7 +82,7 @@ ne_prev = ne(multilayerdigraph)
 # Test vertices
 @test eltype(multilayerdigraph) == Int64
 nv(multilayerdigraph)
-@test nv_withmissing(multilayerdigraph) == length(multilayerdigraph.fadjlist) == length(vertices(multilayerdigraph))
+@test length(multilayerdigraph.fadjlist) == length(vertices(multilayerdigraph)) # nv_withmissing(multilayerdigraph)
 
 ## Test that all multilayer vertices are present
 for mv in vcat(mv_vertices.(all_layers_d)...)
@@ -148,11 +148,11 @@ mt = metadata_tensor(multilayergraph)
 @inferred(degree_variance(multilayerdigraph))
 
 # Test multilayer-specific methods
-@test all(get_supra_weight_matrix_from_weight_tensor(weight_tensor(multilayerdigraph).array) .== supra_weight_matrix(multilayerdigraph).array)
-@test all(get_weight_tensor_from_supra_weight_matrix(multilayerdigraph, supra_weight_matrix(multilayerdigraph).array) .==  weight_tensor(multilayerdigraph).array)
+@test all(MultilayerGraphs.get_supra_weight_matrix_from_weight_tensor(weight_tensor(multilayerdigraph).array) .== supra_weight_matrix(multilayerdigraph).array)
+@test all(MultilayerGraphs.get_weight_tensor_from_supra_weight_matrix(multilayerdigraph, supra_weight_matrix(multilayerdigraph).array) .==  weight_tensor(multilayerdigraph).array)
 @test_broken multilayer_global_clustering_coefficient(multilayerdigraph) .== global_clustering_coefficient(multilayerdigraph)
 
-overlaygraph = get_overlay_monoplex_graph(multilayerdigraph)
+overlaygraph = MultilayerGraphs.get_overlay_monoplex_graph(multilayerdigraph)
 @test_broken global_clustering_coefficient(overlaygraph) .== overlay_clustering_coefficient(multilayerdigraph)
 
 @test multilayer_weighted_global_clustering_coefficient(multilayerdigraph, [1 / 3, 1 / 3, 1 / 3]) .≈ multilayer_global_clustering_coefficient(multilayerdigraph)
