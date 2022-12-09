@@ -110,33 +110,34 @@ end
 @test edgetype(multilayerdigraph) == MultilayerEdge{Float64}
 
 ## Test set_weight!
-_, rand_mv_1_weight, rand_mv_2_weight = _get_srcmv_dstmv_layer(layer_swg)
+_, rand_mv_1_weight, rand_mv_2_weight = _get_srcmv_dstmv_layer(layer_swdg)
 _weight = 3.14
-@test !has_edge(multilayergraph, rand_mv_1_weight, rand_mv_2_weight)
-@test add_edge!(multilayergraph, rand_mv_1_weight, rand_mv_2_weight, weight = _weight)
-@test has_edge(multilayergraph, rand_mv_1_weight, rand_mv_2_weight)
-wgt = weight_tensor(multilayergraph)
-@test wgt[rand_mv_1_weight, rand_mv_2_weight] ==  get_weight(multilayergraph, rand_mv_1_weight, rand_mv_2_weight)  == _weight
-@test set_weight!(multilayergraph , rand_mv_1_weight, rand_mv_2_weight, _weight + 1)
-wgt = weight_tensor(multilayergraph)
-@test wgt[rand_mv_1_weight, rand_mv_2_weight] == get_weight(multilayergraph, rand_mv_1_weight, rand_mv_2_weight) == _weight + 1
+@debug "" rand_mv_1_weight rand_mv_2_weight mv_vertices(multilayerdigraph)
+@test !has_edge(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight)
+@test add_edge!(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight, weight = _weight)
+@test has_edge(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight)
+wgt = weight_tensor(multilayerdigraph)
+@test wgt[rand_mv_1_weight, rand_mv_2_weight] ==  get_weight(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight)  == _weight
+@test set_weight!(multilayerdigraph , rand_mv_1_weight, rand_mv_2_weight, _weight + 1)
+wgt = weight_tensor(multilayerdigraph)
+@test wgt[rand_mv_1_weight, rand_mv_2_weight] == get_weight(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight) == _weight + 1
 
 
 ## Test set_metadata!
-_, rand_mv_1_meta, rand_mv_2_meta = _get_srcmv_dstmv_layer(layer_mg)
+_, rand_mv_1_meta, rand_mv_2_meta = _get_srcmv_dstmv_layer(layer_mdg)
 ### On vertices
-@test set_metadata!(multilayergraph, rand_mv_1_meta, (meta = "new_metadata",))
-@test get_metadata(multilayergraph, rand_mv_1_meta).meta == "new_metadata"
+@test set_metadata!(multilayerdigraph, rand_mv_1_meta, (meta = "new_metadata",))
+@test get_metadata(multilayerdigraph, rand_mv_1_meta).meta == "new_metadata"
 ## On edges
-@test !has_edge(multilayergraph, rand_mv_1_meta, rand_mv_2_meta)
-@test add_edge!(multilayergraph, rand_mv_1_meta, rand_mv_2_meta, metadata =  (meta = "hello",))
-@test has_edge(multilayergraph, rand_mv_1_meta, rand_mv_2_meta)
-mt = metadata_tensor(multilayergraph)
-@test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayergraph, rand_mv_1_meta, rand_mv_2_meta).meta == "hello"
+@test !has_edge(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta)
+@test add_edge!(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta, metadata =  (meta = "hello",))
+@test has_edge(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta)
+mt = metadata_tensor(multilayerdigraph)
+@test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "hello"
 _metadata = (meta = "byebye",)
-@test set_metadata!(multilayergraph , rand_mv_1_meta, rand_mv_2_meta, _metadata)
-mt = metadata_tensor(multilayergraph)
-@test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayergraph, rand_mv_1_meta, rand_mv_2_meta).meta == "byebye"
+@test set_metadata!(multilayerdigraph , rand_mv_1_meta, rand_mv_2_meta, _metadata)
+mt = metadata_tensor(multilayerdigraph)
+@test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "byebye"
 
 
 
