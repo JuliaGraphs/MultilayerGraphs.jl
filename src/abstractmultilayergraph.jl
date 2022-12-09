@@ -533,6 +533,25 @@ Return the list of outneighbors of `v` within `mg`.
 """
 Graphs.outneighbors( mg::M, mv::V ) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = outneighbors(mg, get_v(mg, mv))
 
+
+"""
+    outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
+
+Return the list of outneighbors of `v` within `mg`.
+"""
+function Graphs.outneighbors(
+    mg::M, v::T
+) where {M<:AbstractMultilayerGraph{T,<:Real}} where {T}
+
+    _outneighbors = T[]
+
+    for helfedge in mg.fadjlist[v]
+        push!(_outneighbors, get_v(mg, vertex(helfedge)))
+    end
+
+    return _outneighbors
+end
+
 """
     neighbors(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex}
 

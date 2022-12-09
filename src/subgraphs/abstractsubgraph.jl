@@ -17,7 +17,7 @@ Return the vertex type of `subgraph`.
 Base.eltype(subgraph::S) where {S<:AbstractSubGraph} = typeof(subgraph).parameters[1] 
 
 """
-    has_vertex(subgraph::S, v::MultilayerVertex) where { T,U,G, S <: AbstractSubGraph{T,U,G}}
+    has_vertex(subgraph::S, v::T ) where {T,U,G,S<:AbstractSubGraph{T,U,G}}
 
 Return `true` if `v` is a vertex of `subgraph`.
 """

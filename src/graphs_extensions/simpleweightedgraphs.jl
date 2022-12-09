@@ -143,7 +143,7 @@ end
 
  _get_vertex_metadata(g::AbstractSimpleWeightedGraph{T}, vertex::T) where T = NamedTuple()
 
-function _add_edge!(g::AbstractSimpleWeightedGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, U<: Real, W<: Union{U, Nothing}}
+function _add_edge!(g::AbstractSimpleWeightedGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, W<: Union{<: Real, Nothing}}
     !isempty(metadata) && println("Trying to add an edge with metadata to a graph of type $(typeof(g)). Metadata $metadata will be ignored.")
     isnothing(weight) ? add_edge!(g, src, dst) : add_edge!(g, src, dst, weight)
 end

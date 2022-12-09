@@ -1,3 +1,4 @@
+# develop the overlay and projected monoplex
 # ne
 # has_edge
 # edges
@@ -387,4 +388,39 @@ for helfedge in mg.badjlist[v]
 end
 
 return _inneighbors
+end
+
+
+
+# TODO:
+# It may be not well inferred
+# function get_projected_monoplex_graph end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
+"""
+    get_projected_monoplex_graph(mg::M) where {M<: AbstractMultilayerDiGraph}
+
+Get projected monoplex graph (i.e. the graph that as the same nodes as `mg` but the link between node `i` and `j` has weight equal to the sum of all edges weights between the various vertices representing `i` and `j` in `mg`, accounting for both layers and interlayers). See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
+"""
+function get_projected_monoplex_graph(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
+    projected_monoplex_adjacency_matrix = dropdims(
+        sum(weight_tensor(mg).array; dims=(3, 4)); dims=(3, 4)
+    ) #::Matrix{eltype(mg.array)}
+    return SimpleWeightedDiGraph{T,U}(
+        projected_monoplex_adjacency_matrix
+    )
+end
+
+# function get_overlay_monoplex_graph end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
+"""
+    get_overlay_monoplex_graph(mg::M) where {M<: AbstractMultilayerDiGraph}
+
+Get overlay monoplex graph (i.e. the graph that has the same nodes as `mg` but the link between node `i` and `j` has weight equal to the sum of all edges weights between the various vertices representing `i` and `j` in `mg`, accounting for both layers and interlayers). See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
+"""
+function get_overlay_monoplex_graph(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
+    wgt = weight_tensor(mg).array
+    projected_overlay_adjacency_matrix = sum([
+        wgt[:, :, i, i] for i in 1:size(wgt, 3)
+    ])
+    return SimpleWeightedDiGraph{T,U}(
+        projected_overlay_adjacency_matrix
+    )
 end
