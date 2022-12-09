@@ -1,5 +1,5 @@
 """
-    abstract type AbstractNode end
+    abstract type AbstractNode
 
 An abstract type representing a node.
 """

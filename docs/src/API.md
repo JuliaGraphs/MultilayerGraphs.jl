@@ -43,7 +43,7 @@ nodes(::AbstractSubGraph)
 has_vertex(layer::L, v::MultilayerVertex) where { T,U,G, L <: Layer{T,U,G}}
 has_vertex(interlayer::In, v::MultilayerVertex) where { T,U,G, In <: Interlayer{T,U,G}}
 nv(subgraph::S) where { S <: AbstractSubGraph}
-mv_vertices(subgraph::S) where {S <: AbstractSubGraph{ <: Integer, <: AbstractSimpleGraph}}
+mv_vertices(subgraph::S) where {S<:AbstractSubGraph}
 ```
 
 ### Multilayer-specific methods
@@ -84,15 +84,15 @@ AbstractMultilayerVertex
 
 ```@docs
 AbstractMultilayerEdge
-metadata(he::HalfEdge)
-weight(he::HalfEdge)
+metadata(he::MultilayerGraphs.HalfEdge)
+weight(he::MultilayerGraphs.HalfEdge)
 ```
 
 # Subgraphs
 
 ```@docs
 has_vertex(subgraph::S, v::T ) where {T,U,G,S<:AbstractSubGraph{T,U,G}}
-vertices(subgraph::S) where {S <: AbstractSubGraph{ <: Integer, <: AbstractSimpleGraph}}
+vertices(subgraph::S) where {S <: AbstractSubGraph{ <: Integer, <: AbstractGraph}}
 inneighbors(subgraph::S, v::T) where {T,U,G, S <: AbstractSubGraph{T,U,G}}
 inneighbors(subgraph::S, mv::MultilayerVertex)  where {T,U,G, S <: AbstractSubGraph{T,U,G}}
 ```
@@ -107,7 +107,7 @@ inneighbors(subgraph::S, mv::MultilayerVertex)  where {T,U,G, S <: AbstractSubGr
 has_vertex(mg::M, v::T) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 vertices(mg::M) where {M<:AbstractMultilayerGraph}
 inneighbors(mg::M, v::T) where {M <: AbstractMultilayerUGraph{T} } where { T <: Integer}
-inneighbors(mg::M, v::T) where {M <: AbstractMultilayerDirDiGraph{T} } where { T <: Integer}
+inneighbors(mg::M, v::T) where {M <: AbstractMultilayerDiGraph{T} } where { T <: Integer}
 inneighbors( mg::M, mv::V ) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex}
 ```
 

@@ -1,62 +1,67 @@
+"""
+    abstract type AbstractSubGraph{T <: Integer,U <: Real,G <: AbstractGraph{T}}
+
+An abstract type representing a subgraph (i.e. a layer or an interlayer).
+"""
 abstract type AbstractSubGraph{T <: Integer,U <: Real,G <: AbstractGraph{T}} end
 
 # Nodes
 """
-    nodes(subgraph::S) where { S <: AbstractSubGraph}
+    nodes(subgraph::AbstractSubGraph)
 
 Return the collection of the nodes of `subgraph`.
 """
-nodes(subgraph::S) where {S<:AbstractSubGraph} = unique([mv.node for mv in mv_vertices(subgraph)])
+nodes(subgraph::AbstractSubGraph) = unique([mv.node for mv in mv_vertices(subgraph)])
 
 # Vertices
 """
-    Base.eltype(subgraph::S) where { S <: AbstractSubGraph}
+    Base.eltype(subgraph::AbstractSubGraph)
 
 Return the vertex type of `subgraph`.
 """
-Base.eltype(subgraph::S) where {S<:AbstractSubGraph} = typeof(subgraph).parameters[1] 
+Base.eltype(subgraph::AbstractSubGraph) = typeof(subgraph).parameters[1] 
 
 """
-    has_vertex(subgraph::S, v::T ) where {T,U,G,S<:AbstractSubGraph{T,U,G}}
+    has_vertex( subgraph::S, v::T ) where {T,S<:AbstractSubGraph{T}}
 
 Return `true` if `v` is a vertex of `subgraph`.
 """
-Graphs.has_vertex( subgraph::S, v::T ) where {T,U,G,S<:AbstractSubGraph{T,U,G}} =  has_vertex(subgraph.graph, v)
+Graphs.has_vertex(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}} =  has_vertex(subgraph.graph, v)
 
 """
-    nv(subgraph::S) where { S <: AbstractSubGraph}
+    nv(subgraph::AbstractSubGraph)
 
 Return the number of vertices in `subgraph`.
 """
-Graphs.nv(subgraph::S) where {S<:AbstractSubGraph} = nv(subgraph.graph) #length(vertices(subgraph))
+Graphs.nv(subgraph::AbstractSubGraph) = nv(subgraph.graph) #length(vertices(subgraph))
 
 """
-    vertices(subgraph::S) where {S <: AbstractSubGraph{ <: Integer, <: AbstractSimpleGraph}}
+    vertices(subgraph::AbstractSubGraph)
 
 Return the collection of the vertices of `subgraph`.
 """
-Graphs.vertices(subgraph::S) where {S<:AbstractSubGraph} = vertices(subgraph.graph)
+Graphs.vertices(subgraph::AbstractSubGraph) = vertices(subgraph.graph)
 
 """
-    mv_vertices(subgraph::S) where {S <: AbstractSubGraph{ <: Integer, <: AbstractSimpleGraph}}
+    mv_vertices(subgraph::AbstractSubGraph)
 
 Return the collection of the `MultilayerVertex`s of `subgraph`.
 """
-mv_vertices(subgraph::S) where {S<:AbstractSubGraph} = get_rich_mv.(Ref(subgraph), vertices(subgraph)) 
+mv_vertices(subgraph::AbstractSubGraph) = get_rich_mv.(Ref(subgraph), vertices(subgraph))
 
 """
-    inneighbors(subgraph::S, v::T) where {T,U,G, S <: AbstractSubGraph{T,U,G}} 
+    inneighbors(subgraph::S, v::T) where {T, S <: AbstractSubGraph{T}} 
 
 Return the list of inneighbors of `v` within `subgraph`.
 """
-Graphs.inneighbors(subgraph::S, v::T) where {T,U,G,S<:AbstractSubGraph{T,U,G}} = inneighbors(subgraph.graph, v)
+Graphs.inneighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}} = inneighbors(subgraph.graph, v)
 
 """
-    inneighbors(subgraph::S, mv::MultilayerVertex)  where {T,U,G, S <: AbstractSubGraph{T,U,G}} 
+    inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 
 Return the list of inneighbors of `mv` within `subgraph`.
 """
-Graphs.inneighbors(subgraph::S, mv::MultilayerVertex) where {T,U,G,S<:AbstractSubGraph{T,U,G}} = inneighbors(subgraph, get_v(subgraph,mv))
+Graphs.inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex) = inneighbors(subgraph, get_v(subgraph,mv))
 
 """
     mv_inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex) 
@@ -66,18 +71,18 @@ Return the `MultilayerVertex`s inneighbors of `mv` within `subgraph`.
 mv_inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex) = get_rich_mv.(Ref(subgraph), inneighbors(subgraph,mv))
 
 """
-    outneighbors(subgraph::S, v::T) where {T,U,G, S <: AbstractSubGraph{T,U,G}} 
+    outneighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}} 
 
 Return the list of outneighbors of `v` within `subgraph`.
 """
-Graphs.outneighbors(subgraph::S, v::T) where {T,U,G,S<:AbstractSubGraph{T,U,G}} = outneighbors(subgraph.graph, v)
+Graphs.outneighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}} = outneighbors(subgraph.graph, v)
 
 """
-    outneighbors(subgraph::S, mv::MultilayerVertex)  where {T,U,G, S <: AbstractSubGraph{T,U,G}} 
-
+    outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
+ 
 Return the list of outneighbors of `mv` within `subgraph`.
 """
-Graphs.outneighbors(subgraph::S, mv::MultilayerVertex) where {T,U,G,S<:AbstractSubGraph{T,U,G}} = outneighbors(subgraph, subgraph.v_V_associations(get_bare_mv(mv)))
+Graphs.outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex) = outneighbors(subgraph, subgraph.v_V_associations(get_bare_mv(mv)))
 
 """
     mv_outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)

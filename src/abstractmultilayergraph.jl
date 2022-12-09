@@ -37,7 +37,7 @@ abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} en
 
 Return the nodes of the AbstractMultilayerGraph `mg`, in order of addition.
 """
-nodes(mg::M) where {M<:AbstractMultilayerGraph} = [couple[2] for couple in sort(collect(mg.idx_N_associations), by = first)]
+nodes(mg::AbstractMultilayerGraph) = [couple[2] for couple in sort(collect(mg.idx_N_associations), by = first)]
 
 """
     nn(mg::M) where {M <: AbstractMultilayerGraph }
@@ -95,11 +95,11 @@ end
 
 # Vertices
 """
-    Base.eltype(mg::M) where {M <: AbstractMultilayerGraph}
+    eltype(::M) where {T,M<:AbstractMultilayerGraph{T}}
 
 Return the vertex type of `mg`.
 """
-Base.eltype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} = T
+Base.eltype(::M) where {T,M<:AbstractMultilayerGraph{T}} = T
 
 
 """
