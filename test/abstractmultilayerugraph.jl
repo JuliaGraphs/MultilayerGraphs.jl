@@ -93,10 +93,7 @@ for mv in mv_vertices(multilayergraph)
 
     mv_inneighbors(multilayergraph, mv)
     mv_outneighbors(multilayergraph, mv)
-
 end
-
-
 
 # Test edges
 ne(multilayergraph)
@@ -137,7 +134,6 @@ _metadata = (meta = "byebye",)
 mt = metadata_tensor(multilayergraph)
 @test mt[rand_mv_1_meta, rand_mv_2_meta].meta == mt[rand_mv_2_meta, rand_mv_1_meta].meta == get_metadata(multilayergraph, rand_mv_1_meta, rand_mv_2_meta).meta == get_metadata(multilayergraph, rand_mv_2_meta, rand_mv_1_meta).meta == "byebye"
 
-
 ## Test add_edge! and rem_edge!
 
 # Test Graphs.jl extra overrides
@@ -162,7 +158,6 @@ eig_centr_u, errs_u = eigenvector_centrality(multilayergraph; norm="n", tol=1e-3
 modularity(multilayergraph, rand([1, 2, 3, 4], length(nodes(multilayergraph)), length(multilayergraph.layers)), )
 
 # get_graph_of_layers(multilayergraph)
-
 
 wgt = weight_tensor(multilayergraph)
 sam = supra_weight_matrix(multilayergraph)
@@ -191,7 +186,6 @@ for layer in all_layers_u
 
         @test all(inneighbors.(Ref(monolayergraph), vertices(monolayergraph)) .== inneighbors.(Ref(layer.graph), vertices(layer.graph)))
 
-
         @test all(indegree(monolayergraph) .== indegree(layer.graph))
 
         @test all(outdegree(monolayergraph) .== outdegree(layer.graph))
@@ -200,7 +194,6 @@ for layer in all_layers_u
 
         @test_broken vec(eigenvector_centrality(monolayergraph; norm="n", tol=1e-3)[1]) ==
             eigenvector_centrality(layer.graph)
-
 
         tests = Bool[]
         for i in 1:5

@@ -1,10 +1,10 @@
 using Test, Logging, LoggingExtras
-using StatsBase, Distributions #, Bijections, SparseArrays
+using StatsBase, Distributions 
 using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
 using Agents
 using MultilayerGraphs
 
-# Create the logger ushc that it prints debug messages only coming from our package. Taken from https://julialogging.github.io/how-to/filter-messages/#How-to-filter-messages
+# Create the logger such that it prints debug messages only coming from our package. Taken from https://julialogging.github.io/how-to/filter-messages/#How-to-filter-messages
 logger = EarlyFilteredLogger(ConsoleLogger(stderr, Logging.Debug)) do args
     r =  args._module === MultilayerGraphs || args._module === Main
     return r
@@ -22,7 +22,6 @@ const multilayer_nodes = [Node("node_$i") for i in 1:max_vertices]
 const mvs_layers = MV.(multilayer_nodes)
 # Multilayer vertices with metadata (to be used with MetaGraphs, SimpleValueGraphs, etc)
 const mvs_metadata  = [MV(node, ("I'm node $(node.id)",)) for node in multilayer_nodes]
-
 
 _nv = rand(min_vertices:max_vertices)
 _ne =  rand(_nv:(_nv*(_nv-1)) ÷ 2 )
@@ -53,7 +52,6 @@ layer_vg = Layer(:layer_vg,
                 default_edge_metadata = (src,dst) -> (rand(), "from_$(src)_to_$(dst)"),
                 default_vertex_metadata = mv -> ("This metadata have been generated via the default_vertex_metadata method",)
 )
-
 
 
 layer_vodg = Layer(:layer_vodg, 
@@ -97,8 +95,6 @@ interlayer_multiplex_sg_mg = multiplex_interlayer(layer_sg, layer_mg, ValGraph{v
 
 interlayer_empty_sg_vg = empty_interlayer(layer_sg, layer_vg, SimpleGraph{vertextype}()) 
 
-
-
 _nv =  nv(layer_sdg) + nv(layer_swdg)
 _ne = rand(_nv:(_nv*(_nv-1))÷ 2)
 interlayer_sdg_swdg = Interlayer(layer_sdg, layer_swdg, _ne, SimpleDiGraph{vertextype}())
@@ -122,16 +118,11 @@ _nv = nv(layer_sdg) + nv(layer_mdg)
 _ne = rand(_nv:(_nv*(_nv-1))÷ 2)
 interlayer_sdg_mdg = Interlayer(layer_sdg, layer_mdg, _ne, ValDiGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)",)); default_edge_metadata = (x,y) -> (from_to = "from_$(src)_to_$(dst)",));
 
-
 interlayer_multiplex_sdg_vodg = multiplex_interlayer(layer_sdg, layer_vodg, SimpleDiGraph{vertextype}());
-
 
 interlayer_empty_sdg_vdg = empty_interlayer(layer_sdg, layer_vdg, SimpleWeightedDiGraph{vertextype, _weighttype}(); default_edge_weight = (s,d) -> rand()) 
 
 all_interlayers = [interlayer_sg_swg, interlayer_swg_mg, interlayer_mg_vg, interlayer_multiplex_sg_mg, interlayer_empty_sg_vg,      interlayer_sdg_swdg, interlayer_swdg_mdg, interlayer_mdg_vodg,interlayer_vodg_vdg,interlayer_sdg_mdg,interlayer_multiplex_sdg_vodg,interlayer_empty_sdg_vdg       ]
-
-
-
 
 @testset verbose = true "MultilayerGraphs" begin
     @testset "layer" begin

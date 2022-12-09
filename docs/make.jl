@@ -2,8 +2,6 @@ using Revise
 using MultilayerGraphs
 using Documenter
 
-# cd("dev/MultilayerGraphs/docs")
-
 DocMeta.setdocmeta!(
     MultilayerGraphs, :DocTestSetup, :(using MultilayerGraphs); recursive=true
 )

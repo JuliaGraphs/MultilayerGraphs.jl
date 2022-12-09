@@ -12,7 +12,7 @@ EigenAgent(id, pos; initial_opinion::Float64) = EigenAgent(id, pos, initial_opin
 # Define the ABM
 EigenABM = ABM(EigenAgent, GraphSpace(graph)) # 
 
-# Add agenys so that agent i is in vertex i
+# Add agents so that agent i is in vertex i
 for (i,mv) in enumerate(mv_vertices(graph))
     initial_opinion = 1.0
     add_agent!(i,EigenABM, initial_opinion = initial_opinion)

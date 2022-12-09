@@ -1,6 +1,5 @@
 [deps]
 Agents = "46ada45e-f475-11e8-01d0-f70cc89e6671"
-Bijections = "e2ed5e7c-b2de-5872-ae92-c73ca462fb04"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -9,6 +8,5 @@ MetaGraphs = "626554b9-1ddb-594c-aa3c-2596fe9399a5"
 MultilayerGraphs = "af984530-d72f-4904-8b81-b992bbbeaf3f"
 SimpleValueGraphs = "b43c691f-cac2-5415-8122-396fe16a49fc"
 SimpleWeightedGraphs = "47aef6b3-ad0c-573a-a1e2-d07658019622"
-SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

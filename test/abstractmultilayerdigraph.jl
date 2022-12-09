@@ -1,13 +1,8 @@
-all_layers_d = [layer for layer in all_layers if is_directed(layer)]
+all_layers_d      = [layer for layer in all_layers if is_directed(layer)]
 all_interlayers_d = [interlayer for interlayer in all_interlayers if is_directed(interlayer)]
-
-
 multilayerdigraph = MultilayerDiGraph(all_layers_d, all_interlayers_d)
-
 layers_to_be_emptied =  deepcopy([layer for layer in all_layers_d if !(layer.graph isa SimpleWeightedGraphs.AbstractSimpleWeightedGraph)])
-
 layers_names_to_be_emptied = name.(layers_to_be_emptied)
-
 interlayers_to_be_emptied =  deepcopy([interlayer for interlayer in all_interlayers_d if all(in.(interlayer.layers_names, Ref(layers_names_to_be_emptied))) && !(interlayer.graph isa SimpleWeightedGraphs.AbstractSimpleWeightedGraph) ])
 
 for layer in layers_to_be_emptied
@@ -23,7 +18,6 @@ for interlayer in interlayers_to_be_emptied
 end
 
 @test all(ne.(layers_to_be_emptied) .== 0)
-
 @test all(ne.(interlayers_to_be_emptied) .== 0)
 
 # Instantiate configuration-model multilayerdigraph
@@ -139,9 +133,7 @@ _metadata = (meta = "byebye",)
 mt = metadata_tensor(multilayerdigraph)
 @test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "byebye"
 
-
-
-# Test Graphs.jl's extra overrides
+# Test Graphs.jl extra overrides
 @test all(indegree(multilayerdigraph) .+ outdegree(multilayerdigraph) .== degree(multilayerdigraph))
 
 @inferred(mean_degree(multilayerdigraph))
@@ -171,7 +163,6 @@ for edge in collect(edges(multilayerdigraph.layer_swdg))
     @test wgt[src(edge),dst(edge) ] == MultilayerGraphs.weight(edge)
     @test sam[src(edge),dst(edge)] == MultilayerGraphs.weight(edge)
 end
-
 
 # Test that, given a 1-dimensional multilayerdigraph, we obtain the same metrics as we would by using Graphs.jl utilities on the one and only layer
 ## unweighted and weighted case

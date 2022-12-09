@@ -56,7 +56,6 @@ add_edge!(layer,  rand_mv_1,rand_mv_2)
 @test add_vertex!(layer, rand_mv_1)
 @test has_vertex(layer, rand_mv_1)
 
-
 #= rand_mv_1 =  rand(mv_vertices(layer_sdg))
 rand_mv_2 =  rand(mv_vertices(layer_sdg)) =#
 layer = layer_sdg
