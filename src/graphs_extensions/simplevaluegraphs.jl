@@ -58,7 +58,7 @@ _get_vertex_metadata(g::SimpleValueGraphs.AbstractValGraph{T}, vertex::T) where 
 """
 SimpleValueGraphs.set_vertexval!(layer::L, n::MultilayerVertex, prop::Symbol, val) where {T,U,G <: SimpleValueGraphs.AbstractValGraph{T}, L <: Layer{T,U,G}} = set_vertexval!(layer.graph, layer.v_V_associations(n), prop, val) 
 
-function _add_edge!(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, U<: Real, W<: Union{U, Nothing}}
+function _add_edge!(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, W<: Union{<: Real, Nothing}}
 
     (isnothing(weight) || weight == 1.0) || @warn "Trying to add a weighted edge to an unweighted graph of type $(typeof(g)). Weight $weight will be ignored."
 

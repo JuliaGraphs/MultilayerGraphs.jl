@@ -420,18 +420,6 @@ Return `true` if `v` is a vertex of `interlayer`.
 has_node( interlayer::In, n::Node ) where {T,U,G,In<:Interlayer{T,U,G}}  =  n in nodes(interlayer.layer_1) || n in nodes(interlayer.layer_2) 
 
 
-#= """
-    get_v(interlayer::Interlayer, V::MultilayerVertex)
-
-Return `v` associated with `V`. 
-"""
-function get_v(interlayer::Interlayer, V::MultilayerVertex) 
-    bare_V = get_bare_mv(V)
-    has_vertex(interlayer, V) || return nothing
-
-    interlayer.v_V_associations(bare_V)
-end =#
-
 """
     has_vertex(interlayer::In, v::MultilayerVertex) where { T,U,G, In <: Interlayer{T,U,G}}
 

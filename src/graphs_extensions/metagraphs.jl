@@ -10,7 +10,7 @@ MetaGraphs.MetaGraph{T,U}() where {T,U} =  MetaGraph{T,U}(SimpleGraph{T}())
 
 Empty MetaDiGraph with vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleDiGraph. 
 """
-MetaGraphs.MetaGraph{T,U}() where {T,U} =  MetaDiGraph{T,U}(SimpleDiGraph{T}())
+MetaGraphs.MetaDiGraph{T,U}() where {T,U} =  MetaDiGraph{T,U}(SimpleDiGraph{T}())
 
 """
     MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
@@ -88,7 +88,7 @@ MetaGraphs.get_prop(subgraph::S, s::MultilayerVertex, d::MultilayerVertex, prop)
 
 #_vertices(g::AbstractMetaGraph) = [(v, NamedTuple(props(g,v))) for v in vertices(g)] #[(v, (prop = get_prop(g,v) for prop in keys(props(g,v)))) for v in vertices(g)]
 
-function _add_edge!(g::AbstractMetaGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, U<: Real, W<: Union{U, Nothing}}
+function _add_edge!(g::AbstractMetaGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, W<: Union{<: Real, Nothing}}
     (isnothing(weight) || weight == 1.0) || @warn "Trying to add a weighted edge to an unweighted graph of type $(typeof(g)). Weight $weight will be ignored."
     add_edge!(g, src, dst, Dict(key => value for (key,value) in pairs(metadata) ))
 end

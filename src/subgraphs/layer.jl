@@ -160,34 +160,6 @@ Return `true` if `n` is a node of `layer`.
 """
 has_node(layer::L, n::Node) where {L<:Layer} = MV(n, layer.name) ∈ image(layer.v_V_associations)
 
-#= """
-    add_node!(layer::L, n::Node, args...; kwargs...) where {T, U, G,  L <: Layer{T,U,G}} 
-
-Add node to layer `layer`. 
-"""
-add_node!(layer::L, n::Node, args...; kwargs...) where {T, U, G,  L <: Layer{T,U,G}}  = add_vertex!(layer, n, args...; kwargs...)
-
-"""
-    rem_node!(layer::Layer, n::Node)
-
-Remove node `n` from layer `layer`.
-"""
-rem_node!(layer::Layer, n::Node) = rem_vertex!(layer, n) =#
-
-
-
-#= """
-    get_v(layer::Layer, V::MultilayerVertex)
-
-Return `v` associated with `V`. 
-"""
-function get_v(layer::Layer, V::MultilayerVertex) 
-    bare_V = get_bare_mv(V)
-    has_vertex(layer, bare_V) || return nothing
-
-    layer.v_V_associations(bare_V )
-end =#
-
 
 """
     has_vertex(layer::L, v::MultilayerVertex) where { T,U,G, L <: Layer{T,U,G}}
@@ -335,18 +307,6 @@ function Graphs.add_edge!(layer::L, src::MultilayerVertex, dst::MultilayerVertex
         return false
     end
 end
-
-# TODO:
-#= # We will do it later
-add_edge!(multilayer, MV1, MV2, args...; kwargs...) -> add_edge!(layer/interlayer, N1/MV1, N2/MV2, args...; kwargs...) -> add_edge!(layer.graph/interlayer.graph, src, dst, args...; kwargs...) =#
-
-# TODO:
-#= add_edge!(multilayer, MV1, MV2; weight = nothing, metadata= NamedTuple()) -> add_edge!(layer/interlayer, N1/MV1, N2/MV2; weight = nothing, metadata= NamedTuple()) -> _add_edge!( layer.graph/interlayer.graph, src, dst, weight = weight, metadata = metadata)
-
-add_edge!(multilayer, multilayeredge) -> add_edge!(layer/interlayer, multilayeredge) -> add_edge!(layer/interlayer, src(multilayeredge), dst(multilayeredge); weight = multilayeredge,weight, metadata = multilayeredge.metadata) -> _add_edge!( layer.graph/interlayer.graph, src, dst, weight = weight, metadata = metadata) =#
-
-# TODO:
-#= add_edge!(layer::L, args...; kwargs...) = add_edge!(layer.graph, args...; kwargs...) =#
 
 # Base overloads
 """
