@@ -37,7 +37,7 @@ abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} en
 
 Return the nodes of the AbstractMultilayerGraph `mg`, in order of addition.
 """
-nodes(mg::M) where {M<:AbstractMultilayerGraph} = [couple[2] for couple in sort(collect(mg.idx_N_associations), by = first)]
+nodes(mg::AbstractMultilayerGraph) = [couple[2] for couple in sort(collect(mg.idx_N_associations), by = first)]
 
 """
     nn(mg::M) where {M <: AbstractMultilayerGraph }
@@ -95,19 +95,19 @@ end
 
 # Vertices
 """
-    Base.eltype(mg::M) where {M <: AbstractMultilayerGraph}
+    eltype(::M) where {T,M<:AbstractMultilayerGraph{T}}
 
 Return the vertex type of `mg`.
 """
-Base.eltype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} = T
+Base.eltype(::M) where {T,M<:AbstractMultilayerGraph{T}} = T
 
 
 """
-    has_vertex(mg::M, v::T) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+    has_vertex(mg::M, v::T) where {T,M <: AbstractMultilayerGraph{T}}
 
 Return true if `v` is in mg, else false.
 """
-Graphs.has_vertex(mg::M, v::T ) where {T,U, M <: AbstractMultilayerGraph{T,U}} = v in domain(mg.v_V_associations) # && !(mg.v_V_associations[v] isa MissingVertex)
+Graphs.has_vertex(mg::M, v::T ) where {T, M <: AbstractMultilayerGraph{T}} = v in domain(mg.v_V_associations) # && !(mg.v_V_associations[v] isa MissingVertex)
 
 """
     has_vertex(mg::M, mv::MultilayerVertex) where {T,U, M <: AbstractMultilayerGraph{T,U}}
@@ -128,14 +128,7 @@ mv_vertices(mg::AbstractMultilayerGraph)  =  [get_rich_mv(mg, v) for v in vertic
 
 Return the number of vertices in `mg`, excluding the missing vertices.
 """
-Graphs.nv(mg::M) where {M<:AbstractMultilayerGraph} = length(mg.v_V_associations) #length([mv for mv in image(mg.v_V_associations) if !(mv isa MissingVertex)])
-
-#= """
-    nv_withmissing(mg::M) where {M<:AbstractMultilayerGraph}
-
-Return the number of vertices of `mg`, including the missing vertices.
-"""
-nv_withmissing(mg::M) where {M<:AbstractMultilayerGraph} = length(mg.v_V_associations) =#
+Graphs.nv(mg::AbstractMultilayerGraph) = length(mg.v_V_associations)
 
 """
     vertices(mg::M) where {M<:AbstractMultilayerGraph}

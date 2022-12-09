@@ -574,7 +574,7 @@ Returns a simple graph with a given finite degree sequence of non-negative integ
 2. [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X)
 """
 function havel_hakimi_(empty_graph::SimpleGraph, degree_sequence::Vector{<:Integer}) # Please think about a decent name!
-    # Check wether the given degree sequence contains only non-negative integers
+    # Check whether the given degree sequence contains only non-negative integers
     !any(degree -> degree < 0, degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) is invalid: it must contain non-negative integers only."))
     # Check whether the given degree sequence is compatible with the given multilayer graph 
     nv(empty_graph) == length(degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) and the multilayer graph (empty_mg) are incompatible: the length of the degree sequence doesn't coincide with the number of vertices.")) 

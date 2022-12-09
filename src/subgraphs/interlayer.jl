@@ -413,11 +413,11 @@ function is_multiplex_interlayer(interlayer::In) where {In<:Interlayer}
 end
 
 """
-    has_vertex(interlayer::In, v::MultilayerVertex) where { T,U,G, In <: Interlayer{T,U,G}}
+    has_vertex(interlayer::Interlayer, v::MultilayerVertex)
 
 Return `true` if `v` is a vertex of `interlayer`.
 """
-has_node( interlayer::In, n::Node ) where {T,U,G,In<:Interlayer{T,U,G}}  =  n in nodes(interlayer.layer_1) || n in nodes(interlayer.layer_2) 
+has_node( interlayer::Interlayer, n::Node ) =  n in nodes(interlayer.layer_1) || n in nodes(interlayer.layer_2) 
 
 
 """

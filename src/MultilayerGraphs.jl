@@ -46,6 +46,7 @@ export
     # layerdescriptor.jl
     # interlayerdescriptor.jl
     # abstractsubgraph.jl
+    AbstractSubGraph,
     nodes,
     eltype,
     has_vertex,
@@ -132,6 +133,7 @@ export
     specify_interlayer!,
     von_neumann_entropy,
     # abstractmultilayerdigraph.jl
+    AbstractMultilayerDiGraph,
     # multilayergraph.jl
     MultilayerGraph,
     fadjlist,
@@ -153,7 +155,6 @@ using Distributions: Uniform
 using LinearAlgebra, Statistics, OMEinsum, TensorOperations, Distributions
 using DataStructures, SparseArrays
 using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
-using Agents
 
 
 

@@ -162,11 +162,11 @@ has_node(layer::L, n::Node) where {L<:Layer} = MV(n, layer.name) ∈ image(layer
 
 
 """
-    has_vertex(layer::L, v::MultilayerVertex) where { T,U,G, L <: Layer{T,U,G}}
+    has_vertex(layer::Layer, v::MultilayerVertex)
 
 Return `true` if `v` is a vertex of `layer`.
 """
-Graphs.has_vertex(layer::L, mv::MultilayerVertex) where {T,U,G,L<:Layer{T,U,G}} = MV(node(mv), name(layer)) ∈ collect(image(layer.v_V_associations))
+Graphs.has_vertex(layer::Layer, mv::MultilayerVertex) = MV(node(mv), name(layer)) ∈ collect(image(layer.v_V_associations))
 
 # TODO:
 # Implement a MultilayerVertex constructor that leaves the .layer field unspecified, for ease of use of the following function

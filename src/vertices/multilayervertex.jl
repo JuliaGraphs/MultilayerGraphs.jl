@@ -1,5 +1,5 @@
 """
-    AbstractMultilayerVertex{S}
+    AbstractMultilayerVertex{S} <: AbstractVertex
 
 An abstract type representing an abstract MultilayerGraph vertex.
 """
