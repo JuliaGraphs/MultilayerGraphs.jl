@@ -26,7 +26,7 @@ end
 @test all(ne.(interlayers_to_be_emptied) .== 0)
 
 # Instantiate configuration-model multilayergraph
-configuration_multilayergraph = MultilayerGraph(layers_to_be_emptied, interlayers_to_be_emptied, truncated(Normal(10), 0.0, 20.0));
+# configuration_multilayergraph = MultilayerGraph(layers_to_be_emptied, interlayers_to_be_emptied, truncated(Normal(10), 0.0, 20.0));
 
 # Test get_interlayer
 for (layer_1, layer_2) in Iterators.product(multilayergraph.layers_names, multilayergraph.layers_names)
