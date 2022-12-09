@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - dev
     tags: '*'
   pull_request:
 concurrency:
@@ -18,21 +19,21 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.7'
-          - 'nightly'
+          - '1.8.2'
+          # - 'nightly'
         os:
           - ubuntu-latest
-          - macOS-latest
-          - windows-latest
+          # - macOS-latest
+          # - windows-latest
         arch:
           - x64
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: actions/checkout@v3
+      - uses: julia-actions/setup-julia@v1.8
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         env:
           cache-name: cache-artifacts
         with:
@@ -57,8 +58,8 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: actions/checkout@v3
+      - uses: julia-actions/setup-julia@v1.8
         with:
           version: '1'
       - uses: julia-actions/julia-buildpkg@v1

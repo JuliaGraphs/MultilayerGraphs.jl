@@ -44,9 +44,15 @@ const min_vertices = 5
 const max_vertices = 7
 const min_edges    = 1
 const max_edges    = max_vertices*(max_vertices-1)
-const n_nodes      = max_vertices
-; #hide
+const n_nodes    = max_vertices
 ```
+
+
+
+
+    7
+
+
 
 Next we define nodes:
 
@@ -162,8 +168,15 @@ function _get_srcmv_dstmv_layer(layer::Layer)
 
     return mvs, src_mv, dst_mv
 end
-; #hide
+
 ```
+
+
+
+
+    _get_srcmv_dstmv_layer (generic function with 1 method)
+
+
 
 We are now are ready to define some `Layer`s. Every type of graph from the Graphs.jl ecosystem may underlie a `Layer` (or an `Interlayer`). We will construct a few of them, each time with a different number of vertices and edges.
 
@@ -212,8 +225,7 @@ layer_vg = Layer(   :layer_vg,
 )
 
 # Collect all layers in an ordered list. Order will be recorded when instantiating the multilayer graph.
-layers = [layer_sg, layer_swg, layer_mg, layer_vg]
-; #hide
+layers = [layer_sg, layer_swg, layer_mg, layer_vg];
 ```
 
 The API that inspects and modifies `Layer`s will be shown below togheter with that of `Interlayer`s, since they are usually the same. There are of course other constructors that you may discover by typing `?Layer` in the console.
@@ -253,8 +265,15 @@ function rand_ne_interlayer(layer_1, layer_2)
     _ne = rand(_nv:(_nv*(_nv-1)) ÷ 2 )
     return _ne
 end
-; #hide
+ 
 ```
+
+
+
+
+    rand_ne_interlayer (generic function with 1 method)
+
+
 
 An `Interlayer` is constructed by passing its name, the two `Layer`s it should connect, and the other parameters just like the `Layer`'s constructor. The random constructor reads:
 ```julia
@@ -312,8 +331,19 @@ interlayer_empty_sg_vg = empty_interlayer(  layer_sg,
 
 # Collect all interlayers. Even though the list is ordered, order will not matter when instantiating the multilayer graph.
 interlayers = [interlayer_sg_swg, interlayer_swg_mg, interlayer_mg_vg, interlayer_multiplex_sg_mg, interlayer_empty_sg_vg]
-; #hide
 ```
+
+
+
+
+    5-element Vector{Interlayer{Int64, Float64, G} where G<:AbstractGraph{Int64}}:
+     Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:random_interlayer, :layer_sg, :layer_swg, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(28, [[7, 8, 9, 10, 11], [7, 9, 10, 11, 12], [7, 8, 10, 11], [7, 10, 11, 12], [7, 9, 10, 11, 12], [7, 8, 9, 10, 12], [1, 2, 3, 4, 5, 6], [1, 3, 6], [1, 2, 5, 6], [1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5], [2, 4, 5, 6]]), Bijection{Int64,MultilayerVertex} (with 12 pairs))
+     Interlayer{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(InterlayerDescriptor{Int64, Float64, SimpleWeightedGraph{Int64, Float64}}(:interlayer_layer_swg_layer_mg, :layer_swg, :layer_mg, {0, 0} undirected simple Int64 graph with Float64 weights, var"#17#18"(), MultilayerGraphs.var"#93#97"(), false), {13, 34} undirected simple Int64 graph with Float64 weights, Bijection{Int64,MultilayerVertex} (with 13 pairs))
+     Interlayer{Int64, Float64, MetaGraph{Int64, Float64}}(InterlayerDescriptor{Int64, Float64, MetaGraph{Int64, Float64}}(:interlayer_layer_mg_layer_vg, :layer_mg, :layer_vg, {0, 0} undirected Int64 metagraph with Float64 weights defined by :weight (default weight 1.0), MultilayerGraphs.var"#92#96"(), var"#19#20"(), true), {14, 30} undirected Int64 metagraph with Float64 weights defined by :weight (default weight 1.0), Bijection{Int64,MultilayerVertex} (with 14 pairs))
+     Interlayer{Int64, Float64, ValGraph{Int64, Tuple{}, NamedTuple{(:from_to,), Tuple{String}}, Tuple{}, Tuple{}, NamedTuple{(:from_to,), Tuple{Vector{Vector{String}}}}}}(InterlayerDescriptor{Int64, Float64, ValGraph{Int64, Tuple{}, NamedTuple{(:from_to,), Tuple{String}}, Tuple{}, Tuple{}, NamedTuple{(:from_to,), Tuple{Vector{Vector{String}}}}}}(:interlayer_layer_sg_layer_mg, :layer_sg, :layer_mg, ValGraph{Int64, Tuple{}, NamedTuple{(:from_to,), Tuple{String}}, Tuple{}, Tuple{}, NamedTuple{(:from_to,), Tuple{Vector{Vector{String}}}}}(0, Vector{Int64}[], (), (from_to = Vector{String}[],), ()), MultilayerGraphs.var"#110#114"(), var"#22#24"(), false), ValGraph{Int64, Tuple{}, NamedTuple{(:from_to,), Tuple{String}}, Tuple{}, Tuple{}, NamedTuple{(:from_to,), Tuple{Vector{Vector{String}}}}}(6, [[9], [11], [12], [13], [7], [8], [5], [6], [1], Int64[], [2], [3], [4]], (), (from_to = [["from_src_to_dst"], ["from_src_to_dst"], ["from_src_to_dst"], ["from_src_to_dst"], ["from_src_to_dst"], ["from_src_to_dst"], ["from_src_to_dst"], ["from_src_to_dst"], ["from_src_to_dst"], String[], ["from_src_to_dst"], ["from_src_to_dst"], ["from_src_to_dst"]],), ()), Bijection{Int64,MultilayerVertex} (with 13 pairs))
+     Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:interlayer_layer_sg_layer_vg, :layer_sg, :layer_vg, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#134#138"(), MultilayerGraphs.var"#135#139"(), false), SimpleGraph{Int64}(0, [Int64[], Int64[], Int64[], Int64[], Int64[], Int64[], Int64[], Int64[], Int64[], Int64[], Int64[], Int64[], Int64[]]), Bijection{Int64,MultilayerVertex} (with 13 pairs))
+
+
 
 Next, we explore the API associated to modify and analyze `Layer`s and `Interlayer`s.
 
@@ -339,12 +369,12 @@ layer_sg_nodes = nodes(layer_sg)
 
 
     6-element Vector{Node}:
-     Node("node_2")
-     Node("node_3")
-     Node("node_4")
-     Node("node_6")
      Node("node_5")
+     Node("node_4")
+     Node("node_3")
+     Node("node_2")
      Node("node_7")
+     Node("node_1")
 
 
 
@@ -359,13 +389,13 @@ interlayer_sg_swg_nodes  = nodes(interlayer_sg_swg)
 
 
     7-element Vector{Node}:
-     Node("node_2")
-     Node("node_3")
-     Node("node_4")
-     Node("node_6")
      Node("node_5")
+     Node("node_4")
+     Node("node_3")
+     Node("node_2")
      Node("node_7")
      Node("node_1")
+     Node("node_6")
 
 
 
@@ -396,12 +426,12 @@ layer_sg_vertices = mv_vertices(layer_sg)
 
 
     6-element Vector{MultilayerVertex{:layer_sg}}:
-     MV(Node("node_2"), :layer_sg, NamedTuple())
-     MV(Node("node_3"), :layer_sg, NamedTuple())
-     MV(Node("node_4"), :layer_sg, NamedTuple())
-     MV(Node("node_6"), :layer_sg, NamedTuple())
      MV(Node("node_5"), :layer_sg, NamedTuple())
+     MV(Node("node_4"), :layer_sg, NamedTuple())
+     MV(Node("node_3"), :layer_sg, NamedTuple())
+     MV(Node("node_2"), :layer_sg, NamedTuple())
      MV(Node("node_7"), :layer_sg, NamedTuple())
+     MV(Node("node_1"), :layer_sg, NamedTuple())
 
 
 
@@ -415,13 +445,14 @@ mv_vertices(layer_mg)
 
 
 
-    6-element Vector{MultilayerVertex{:layer_mg}}:
+    7-element Vector{MultilayerVertex{:layer_mg}}:
      MV(Node("node_7"), :layer_mg, (var"1" = "I'm node node_7",))
-     MV(Node("node_6"), :layer_mg, (var"1" = "I'm node node_6",))
-     MV(Node("node_2"), :layer_mg, (var"1" = "I'm node node_2",))
-     MV(Node("node_4"), :layer_mg, (var"1" = "I'm node node_4",))
      MV(Node("node_1"), :layer_mg, (var"1" = "I'm node node_1",))
      MV(Node("node_5"), :layer_mg, (var"1" = "I'm node node_5",))
+     MV(Node("node_6"), :layer_mg, (var"1" = "I'm node node_6",))
+     MV(Node("node_4"), :layer_mg, (var"1" = "I'm node node_4",))
+     MV(Node("node_3"), :layer_mg, (var"1" = "I'm node node_3",))
+     MV(Node("node_2"), :layer_mg, (var"1" = "I'm node node_2",))
 
 
 
@@ -435,18 +466,19 @@ interlayer_sg_swg_vertices = mv_vertices(interlayer_sg_swg)
 
 
 
-    11-element Vector{MultilayerVertex}:
-     MV(Node("node_2"), :layer_sg, NamedTuple())
-     MV(Node("node_3"), :layer_sg, NamedTuple())
-     MV(Node("node_4"), :layer_sg, NamedTuple())
-     MV(Node("node_6"), :layer_sg, NamedTuple())
+    12-element Vector{MultilayerVertex}:
      MV(Node("node_5"), :layer_sg, NamedTuple())
+     MV(Node("node_4"), :layer_sg, NamedTuple())
+     MV(Node("node_3"), :layer_sg, NamedTuple())
+     MV(Node("node_2"), :layer_sg, NamedTuple())
      MV(Node("node_7"), :layer_sg, NamedTuple())
-     MV(Node("node_1"), :layer_swg, NamedTuple())
-     MV(Node("node_4"), :layer_swg, NamedTuple())
+     MV(Node("node_1"), :layer_sg, NamedTuple())
      MV(Node("node_5"), :layer_swg, NamedTuple())
-     MV(Node("node_2"), :layer_swg, NamedTuple())
+     MV(Node("node_7"), :layer_swg, NamedTuple())
      MV(Node("node_3"), :layer_swg, NamedTuple())
+     MV(Node("node_6"), :layer_swg, NamedTuple())
+     MV(Node("node_4"), :layer_swg, NamedTuple())
+     MV(Node("node_1"), :layer_swg, NamedTuple())
 
 
 
@@ -478,10 +510,12 @@ Thus, if we consider a layer whose underlying graph is a `MetaGraph`, the follow
 - The *standard* interface:
 ```julia
 add_vertex!(layer_mg, new_vertex)
+rem_vertex!(layer_mg, new_vertex) # hide
 ```
 - The *uniform* interface. This signature has one keyword argument, `metadata`:
 ```julia
 add_vertex!(layer_mg, new_node, metadata = new_metadata)
+rem_vertex!(layer_mg, new_vertex) # hide
 ```
 
 The *transparent* interface. After you pass to `add_vertex` the `Layer` and the `Node` you wish to add, you  may pass the same `args` and `kwargs`  that you would pass to the `add_vertex!` dispatch that acts on the underlying graph (after the graph argument). This is a way to let the user directly exploit the API of the underlying graph package, which could be useful for two reasons:
@@ -543,16 +577,12 @@ collect(edges(layer_sg))
 
 
 
-    9-element Vector{MultilayerEdge{Float64}}:
-     ME(MV(Node("node_2"), :layer_sg, NamedTuple()) --> MV(Node("node_4"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
-     ME(MV(Node("node_2"), :layer_sg, NamedTuple()) --> MV(Node("node_6"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
-     ME(MV(Node("node_2"), :layer_sg, NamedTuple()) --> MV(Node("node_5"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
-     ME(MV(Node("node_3"), :layer_sg, NamedTuple()) --> MV(Node("node_4"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
-     ME(MV(Node("node_3"), :layer_sg, NamedTuple()) --> MV(Node("node_6"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
-     ME(MV(Node("node_4"), :layer_sg, NamedTuple()) --> MV(Node("node_6"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
-     ME(MV(Node("node_4"), :layer_sg, NamedTuple()) --> MV(Node("node_5"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
-     ME(MV(Node("node_6"), :layer_sg, NamedTuple()) --> MV(Node("node_5"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
-     ME(MV(Node("node_6"), :layer_sg, NamedTuple()) --> MV(Node("node_7"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
+    5-element Vector{MultilayerEdge{Float64}}:
+     ME(MV(Node("node_5"), :layer_sg, NamedTuple()) --> MV(Node("node_7"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
+     ME(MV(Node("node_4"), :layer_sg, NamedTuple()) --> MV(Node("node_3"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
+     ME(MV(Node("node_3"), :layer_sg, NamedTuple()) --> MV(Node("node_2"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
+     ME(MV(Node("node_2"), :layer_sg, NamedTuple()) --> MV(Node("node_7"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
+     ME(MV(Node("node_2"), :layer_sg, NamedTuple()) --> MV(Node("node_1"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
 
 
 
@@ -574,7 +604,7 @@ me_w = ME(src_w, dst_w, _weight) # ME is an alias for MultilayerEdge
 
 
 
-    ME(MV(Node("node_4"), :layer_swg, NamedTuple()) --> MV(Node("node_1"), :layer_swg, NamedTuple()),	weight = 0.6369546116248217,	metadata = NamedTuple())
+    ME(MV(Node("node_7"), :layer_swg, NamedTuple()) --> MV(Node("node_6"), :layer_swg, NamedTuple()),	weight = 0.7638191802433313,	metadata = NamedTuple())
 
 
 
@@ -585,10 +615,12 @@ Thus, if we consider a layer whose underlying graph is a `SimpleWeightedGraph`, 
 - The *standard* interface:
 ```julia
 add_edge!(layer_swg, me_w)
+rem_edge!(layer_swg, src_w, dst_w) # hide
 ```
 - The *uniform* interface. This signature has two keyword arguments, `weight` and `metadata` that could be used exclusively (if, respectively, the underlying graph is weighted or supports edge-level metadata) or in combination (if the underlying graph supports both edge weights and edge-level metadata):
 ```julia
 add_edge!(layer_swg, src_w, dst_w, weight = _weight)
+rem_edge!(layer_swg, src_w, dst_w) # hide
 ```
 
 The *transparent* interface. After you pass to `add_edge!` the `Layer` and the two vertices you wish to connect, you  may pass the same `args` and `kwargs`  that you would pass to the `add_edge!` dispatch that acts on the underlying graph (after the graph and vertices arguments). This is done for the same reasons explained above.
@@ -633,7 +665,7 @@ me_m = ME(src_m, dst_m, _metadata)
 
 
 
-    ME(MV(Node("node_6"), :layer_mg, NamedTuple()) --> MV(Node("node_5"), :layer_mg, NamedTuple()),	weight = nothing,	metadata = (meta = "mymetadata",))
+    ME(MV(Node("node_2"), :layer_mg, NamedTuple()) --> MV(Node("node_6"), :layer_mg, NamedTuple()),	weight = nothing,	metadata = (meta = "mymetadata",))
 
 
 
@@ -642,16 +674,19 @@ Then the following three signatures would be equivalent:
 - *standard* interface:
 ```julia
 add_edge!(layer_mg, me_m)
+rem_edge!(layer_mg, src_m, dst_m) # hide
 ```
 
 - *uniform* interface:
 ```julia
 add_edge!(layer_mg, src_m, dst_m, metadata = _metadata)
+rem_edge!(layer_mg, src_m, dst_m) # hide
 ```
 
 - *transparent* interface
 ```julia
 add_edge!(layer_mg, src_m, dst_m, Dict(pairs(_metadata)))
+rem_edge!(layer_mg, src_m, dst_m) # hide
 ```
 
 To extract metadata:
@@ -738,6 +773,8 @@ end
 configuration_multilayergraph = MultilayerGraph(empty_layers, empty_interlayers, truncated(Normal(10), 0.0, 20.0));
 ```
 
+    ┌ Warning: Checks for graphicality and coherence with the provided `empty_multilayergraph` are currently performed without taking into account self-loops. Thus said checks may fail event though the provided `degree_sequence` may be graphical when one allows for self-loops within the multilayer graph to be present. If you are sure that the provided `degree_sequence` is indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient.
+    └ @ MultilayerGraphs E:\other_drives\developer07\package_development\MultilayerGraphs\dev\MultilayerGraphs\src\multilayergraph.jl:187
     ┌ Info: Looping through wirings to find one that works...
     └ @ MultilayerGraphs E:\other_drives\developer07\package_development\MultilayerGraphs\dev\MultilayerGraphs\src\utilities.jl:441
     
@@ -900,7 +937,7 @@ multilayergraph.new_layer
 
 
 
-    Layer{Int64, Float64, SimpleGraph{Int64}}(LayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_layer, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#54#60"(), MultilayerGraphs.var"#55#61"(), MultilayerGraphs.var"#56#62"()), SimpleGraph{Int64}(10, [[3, 5, 7], [4, 5, 6], [1, 6], [2, 7], [1, 2, 6], [2, 3, 5, 7], [1, 4, 6]]), Bijection{Int64,MultilayerVertex{:new_layer}} (with 7 pairs))
+    Layer{Int64, Float64, SimpleGraph{Int64}}(LayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_layer, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#54#60"(), MultilayerGraphs.var"#55#61"(), MultilayerGraphs.var"#56#62"()), SimpleGraph{Int64}(1, [[3], Int64[], [1], Int64[], Int64[], Int64[]]), Bijection{Int64,MultilayerVertex{:new_layer}} (with 6 pairs))
 
 
 
@@ -913,7 +950,7 @@ multilayergraph.new_interlayer
 
 
 
-    Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer, :layer_sg, :new_layer, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(19, [[7, 12], [7, 8, 10, 11, 13], [7, 10], [7, 13], [7, 9, 11, 13], [7, 8, 12, 13], [1, 2, 3, 4, 5, 6], [2, 6], [5], [2, 3], [2, 5], [1, 6], [2, 4, 5, 6]]), Bijection{Int64,MultilayerVertex} (with 13 pairs))
+    Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer, :layer_sg, :new_layer, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(28, [[7, 8, 9, 10, 12], [7, 9, 10, 11, 12], [8, 10, 11, 12], [7, 10, 11, 12], [7, 8, 9, 10, 11, 12], [7, 10, 11, 12], [1, 2, 4, 5, 6], [1, 3, 5], [1, 2, 5], [1, 2, 3, 4, 5, 6], [2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6]]), Bijection{Int64,MultilayerVertex} (with 12 pairs))
 
 
 
@@ -928,7 +965,7 @@ get_interlayer(multilayergraph, :new_layer, :layer_sg )
 
 
 
-    Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer_rev, :new_layer, :layer_sg, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(19, [[8, 9, 10, 11, 12, 13], [9, 13], [12], [9, 10], [9, 12], [8, 13], [9, 11, 12, 13], [1, 6], [1, 2, 4, 5, 7], [1, 4], [1, 7], [1, 3, 5, 7], [1, 2, 6, 7]]), Bijection{Int64,MultilayerVertex} (with 13 pairs))
+    Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer_rev, :new_layer, :layer_sg, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(28, [[7, 8, 10, 11, 12], [7, 9, 11], [7, 8, 11], [7, 8, 9, 10, 11, 12], [8, 9, 10, 11, 12], [7, 8, 9, 10, 11, 12], [1, 2, 3, 4, 6], [1, 3, 4, 5, 6], [2, 4, 5, 6], [1, 4, 5, 6], [1, 2, 3, 4, 5, 6], [1, 4, 5, 6]]), Bijection{Int64,MultilayerVertex} (with 12 pairs))
 
 
 
@@ -969,7 +1006,7 @@ wgt = weight_tensor(multilayergraph)
 
 
 
-    WeightTensor{Float64}([0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0;;; 0.0 1.0 … 0.0 0.0; 1.0 1.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 1.0 … 1.0 0.0;;; 1.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 1.0 0.0; 0.0 0.0 … 0.0 0.0;;; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0;;;; 0.0 1.0 … 0.0 0.0; 1.0 1.0 … 0.0 1.0; … ; 0.0 0.0 … 0.0 1.0; 0.0 0.0 … 0.0 0.0;;; 0.0 0.9828581516714545 … 0.0 0.7736606234481569; 0.9828581516714545 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.7736606234481569 0.0 … 0.0 0.0;;; 0.19989407135094706 0.0 … 0.0 0.16650315003660054; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.6643136923736794 … 0.0 0.0; 0.40879510776523964 0.7458197468092816 … 0.0 0.0;;; 1.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 1.0;;;; 1.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 1.0 0.0; 0.0 0.0 … 0.0 0.0;;; 0.19989407135094706 0.0 … 0.0 0.40879510776523964; 0.0 0.0 … 0.6643136923736794 0.7458197468092816; … ; 0.0 0.0 … 0.0 0.0; 0.16650315003660054 0.0 … 0.0 0.0;;; 0.0 0.0 … 0.0 1.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 1.0 0.0 … 0.0 0.0;;; 1.0 0.0 … 1.0 1.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 1.0 0.0; 0.0 0.0 … 1.0 1.0;;;; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0;;; 1.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 1.0;;; 1.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 1.0 0.0 … 1.0 1.0; 1.0 0.0 … 0.0 1.0;;; 0.0 0.0 … 1.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 1.0 0.0 … 0.0 1.0; 0.0 0.0 … 1.0 0.0], [:layer_sg, :layer_swg, :layer_mg, :layer_vg], Bijection{Int64,Node} (with 7 pairs))
+    WeightTensor{Float64}([0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0;;; 1.0 1.0 … 1.0 0.0; 1.0 1.0 … 0.0 0.0; … ; 0.0 1.0 … 1.0 0.0; 1.0 1.0 … 1.0 0.0;;; 1.0 0.0 … 0.0 0.0; 0.0 1.0 … 0.0 0.0; … ; 0.0 0.0 … 1.0 0.0; 0.0 0.0 … 0.0 0.0;;; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0;;;; 1.0 1.0 … 0.0 1.0; 1.0 1.0 … 1.0 1.0; … ; 1.0 0.0 … 1.0 1.0; 0.0 0.0 … 0.0 0.0;;; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.8200628066962015; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.8200628066962015 … 0.0 0.0;;; 0.9033389573830184 0.6393827377271314 … 0.24982773943747483 0.8773768571758578; 0.4374100126158237 0.9149131713156469 … 0.4730663839827559 0.5808902961039311; … ; 0.9915647726364184 0.6057444539792283 … 0.5925096527937354 0.0; 0.9123590587396082 0.1187275440072375 … 0.5515936673380633 0.2637919531765843;;; 1.0 0.0 … 0.0 0.0; 0.0 1.0 … 0.0 0.0; … ; 0.0 0.0 … 1.0 0.0; 0.0 0.0 … 0.0 1.0;;;; 1.0 0.0 … 0.0 0.0; 0.0 1.0 … 0.0 0.0; … ; 0.0 0.0 … 1.0 0.0; 0.0 0.0 … 0.0 0.0;;; 0.9033389573830184 0.4374100126158237 … 0.9915647726364184 0.9123590587396082; 0.6393827377271314 0.9149131713156469 … 0.6057444539792283 0.1187275440072375; … ; 0.24982773943747483 0.4730663839827559 … 0.5925096527937354 0.5515936673380633; 0.8773768571758578 0.5808902961039311 … 0.0 0.2637919531765843;;; 0.0 1.0 … 0.0 1.0; 1.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 1.0 0.0 … 0.0 0.0;;; 1.0 1.0 … 0.0 0.0; 0.0 1.0 … 1.0 0.0; … ; 1.0 1.0 … 0.0 0.0; 1.0 1.0 … 1.0 1.0;;;; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0;;; 1.0 0.0 … 0.0 0.0; 0.0 1.0 … 0.0 0.0; … ; 0.0 0.0 … 1.0 0.0; 0.0 0.0 … 0.0 1.0;;; 1.0 0.0 … 1.0 1.0; 1.0 1.0 … 1.0 1.0; … ; 0.0 1.0 … 0.0 1.0; 0.0 0.0 … 0.0 1.0;;; 0.0 1.0 … 1.0 1.0; 1.0 0.0 … 1.0 0.0; … ; 1.0 1.0 … 0.0 1.0; 1.0 0.0 … 1.0 0.0], [:layer_sg, :layer_swg, :layer_mg, :layer_vg], Bijection{Int64,Node} (with 7 pairs))
 
 
 
@@ -978,8 +1015,157 @@ Note that `wgt` is an object of type [`WeightTensor`](@ref). You may access its 
 
 ```julia
 array(wgt)
-; # hide
 ```
+
+
+
+
+    7×7×4×4 Array{Float64, 4}:
+    [:, :, 1, 1] =
+     0.0  0.0  0.0  0.0  1.0  0.0  0.0
+     0.0  0.0  1.0  0.0  0.0  0.0  0.0
+     0.0  1.0  0.0  1.0  0.0  0.0  0.0
+     0.0  0.0  1.0  0.0  1.0  1.0  0.0
+     1.0  0.0  0.0  1.0  0.0  0.0  0.0
+     0.0  0.0  0.0  1.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+    
+    [:, :, 2, 1] =
+     1.0  1.0  1.0  1.0  1.0  1.0  0.0
+     1.0  1.0  1.0  1.0  1.0  0.0  0.0
+     1.0  1.0  0.0  0.0  1.0  1.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     1.0  0.0  1.0  0.0  0.0  1.0  0.0
+     0.0  1.0  0.0  1.0  1.0  1.0  0.0
+     1.0  1.0  1.0  1.0  1.0  1.0  0.0
+    
+    [:, :, 3, 1] =
+     1.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  1.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  1.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  1.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  1.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  1.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+    
+    [:, :, 4, 1] =
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+    
+    [:, :, 1, 2] =
+     1.0  1.0  1.0  0.0  1.0  0.0  1.0
+     1.0  1.0  1.0  0.0  0.0  1.0  1.0
+     1.0  1.0  0.0  0.0  1.0  0.0  1.0
+     1.0  1.0  0.0  0.0  0.0  1.0  1.0
+     1.0  1.0  1.0  0.0  0.0  1.0  1.0
+     1.0  0.0  1.0  0.0  1.0  1.0  1.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+    
+    [:, :, 2, 2] =
+     0.0  0.0       0.0  0.0  0.0       0.0  0.0
+     0.0  0.0       0.0  0.0  0.725108  0.0  0.820063
+     0.0  0.0       0.0  0.0  0.0       0.0  0.0
+     0.0  0.0       0.0  0.0  0.0       0.0  0.0
+     0.0  0.725108  0.0  0.0  0.0       0.0  0.0
+     0.0  0.0       0.0  0.0  0.0       0.0  0.0
+     0.0  0.820063  0.0  0.0  0.0       0.0  0.0
+    
+    [:, :, 3, 2] =
+     0.903339  0.639383  0.0       0.0  0.0       0.249828   0.877377
+     0.43741   0.914913  0.898954  0.0  0.350657  0.473066   0.58089
+     0.0       0.0       0.0       0.0  0.0       0.189995   0.894098
+     0.723232  0.223408  0.335961  0.0  0.644352  0.111545   0.316487
+     0.21464   0.380974  0.829428  0.0  0.943657  0.0510236  0.756868
+     0.991565  0.605744  0.985303  0.0  0.0       0.59251    0.0
+     0.912359  0.118728  0.335744  0.0  0.945987  0.551594   0.263792
+    
+    [:, :, 4, 2] =
+     1.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  1.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  1.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  1.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  1.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  1.0
+    
+    [:, :, 1, 3] =
+     1.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  1.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  1.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  1.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  1.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  1.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+    
+    [:, :, 2, 3] =
+     0.903339  0.43741   0.0       0.723232  0.21464    0.991565  0.912359
+     0.639383  0.914913  0.0       0.223408  0.380974   0.605744  0.118728
+     0.0       0.898954  0.0       0.335961  0.829428   0.985303  0.335744
+     0.0       0.0       0.0       0.0       0.0        0.0       0.0
+     0.0       0.350657  0.0       0.644352  0.943657   0.0       0.945987
+     0.249828  0.473066  0.189995  0.111545  0.0510236  0.59251   0.551594
+     0.877377  0.58089   0.894098  0.316487  0.756868   0.0       0.263792
+    
+    [:, :, 3, 3] =
+     0.0  1.0  0.0  0.0  1.0  0.0  1.0
+     1.0  0.0  1.0  0.0  0.0  0.0  0.0
+     0.0  1.0  0.0  0.0  0.0  0.0  1.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     1.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     1.0  0.0  1.0  0.0  0.0  0.0  0.0
+    
+    [:, :, 4, 3] =
+     1.0  1.0  0.0  0.0  0.0  0.0  0.0
+     0.0  1.0  1.0  1.0  0.0  1.0  0.0
+     1.0  1.0  0.0  1.0  0.0  1.0  1.0
+     1.0  1.0  1.0  0.0  1.0  1.0  1.0
+     0.0  0.0  1.0  0.0  1.0  1.0  1.0
+     1.0  1.0  0.0  0.0  1.0  0.0  0.0
+     1.0  1.0  1.0  1.0  0.0  1.0  1.0
+    
+    [:, :, 1, 4] =
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+    
+    [:, :, 2, 4] =
+     1.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  1.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  1.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+     0.0  0.0  0.0  0.0  1.0  0.0  0.0
+     0.0  0.0  0.0  0.0  0.0  1.0  0.0
+     0.0  0.0  0.0  0.0  0.0  0.0  1.0
+    
+    [:, :, 3, 4] =
+     1.0  0.0  1.0  1.0  0.0  1.0  1.0
+     1.0  1.0  1.0  1.0  0.0  1.0  1.0
+     0.0  1.0  0.0  1.0  1.0  0.0  1.0
+     0.0  1.0  1.0  0.0  0.0  0.0  1.0
+     0.0  0.0  0.0  1.0  1.0  1.0  0.0
+     0.0  1.0  1.0  1.0  1.0  0.0  1.0
+     0.0  0.0  1.0  1.0  1.0  0.0  1.0
+    
+    [:, :, 4, 4] =
+     0.0  1.0  1.0  1.0  1.0  1.0  1.0
+     1.0  0.0  0.0  0.0  0.0  1.0  0.0
+     1.0  0.0  0.0  0.0  0.0  0.0  0.0
+     1.0  0.0  0.0  0.0  1.0  0.0  0.0
+     1.0  0.0  0.0  1.0  0.0  1.0  0.0
+     1.0  1.0  0.0  0.0  1.0  0.0  1.0
+     1.0  0.0  0.0  0.0  0.0  1.0  0.0
+
+
 
 Also, you may index it using `MultilayerVertex`s:
 
@@ -1012,5 +1198,4 @@ Read a complete list of analytical methods exclusive to multilayer graphs in the
 1. [Faster graph realization algorithms]();
 2. [More general configuration model]();
 3. [Graph of layers implementation]();
-4. [Projected monolplex and overlay graphs]();
-5. [More default multilayer graphs]() (e.g. multiplex graphs).
+4. [More default multilayer graphs]() (e.g. multiplex graphs).

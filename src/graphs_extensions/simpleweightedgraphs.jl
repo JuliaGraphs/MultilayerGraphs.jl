@@ -1,5 +1,4 @@
 # Some custom extensions of Graphs.jl and SimpleWeightedGraphs.jl
-
 """
     SimpleWeightedGraph(n_vertices::Integer, n_edges::Integer; T::Type = Int64, U::Type = Float64)
 
@@ -12,7 +11,7 @@ function SimpleWeightedGraphs.SimpleWeightedGraph(
     rand_nnz_cart_idxs = rand(CartesianIndices(adjm), n_edges)
 
     for cart_idx in rand_nnz_cart_idxs
-        adjm[cart_idx] = rand()
+        adjm[cart_idx] = U(rand())
     end
 
     adjm .= (adjm .+ adjm') ./ U(2)
@@ -32,7 +31,7 @@ function SimpleWeightedGraphs.SimpleWeightedGraph{T}(
     rand_nnz_cart_idxs = rand(CartesianIndices(adjm), n_edges)
 
     for cart_idx in rand_nnz_cart_idxs
-        adjm[cart_idx] = rand()
+        adjm[cart_idx] = U(rand())
     end
 
     adjm .= (adjm .+ adjm') ./ U(2)
@@ -46,13 +45,19 @@ end
 Random  SimpleWeightedGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. Edge weights are uniformly extracted between 0 and 1. 
 """
 function SimpleWeightedGraphs.SimpleWeightedGraph{T,U}(
-    n_vertices::Integer, n_edges::Integer
+    n_vertices::Integer, n_edges::Integer; weight_range::Tuple{U,U} = (zero(U),one(U)),
 ) where {T,U}
     adjm = zeros(U, n_vertices, n_vertices)
     rand_nnz_cart_idxs = rand(CartesianIndices(adjm), n_edges)
 
     for cart_idx in rand_nnz_cart_idxs
-        adjm[cart_idx] = rand()
+        if U <: Integer
+            adjm[cart_idx] = U(rand(weight_range[1]:weight_range[2]))
+        elseif U <: Real
+            adjm[cart_idx] = U(rand(Uniform(weight_range[1],weight_range[2])))
+        else
+            throw(ErrorException("The rand function suited for U = $U has not yet been implemented. Please file an issue."))
+        end
     end
 
     adjm .= (adjm .+ adjm') ./ U(2)
@@ -72,7 +77,7 @@ function SimpleWeightedGraphs.SimpleWeightedDiGraph(
     rand_nnz_cart_idxs = rand(CartesianIndices(adjm), n_edges)
 
     for cart_idx in rand_nnz_cart_idxs
-        adjm[cart_idx] = rand()
+        adjm[cart_idx] = U(rand())
     end
 
     return SimpleWeightedDiGraph{T,U}(adjm)
@@ -90,7 +95,7 @@ function SimpleWeightedGraphs.SimpleWeightedDiGraph{T}(
     rand_nnz_cart_idxs = rand(CartesianIndices(adjm), n_edges)
 
     for cart_idx in rand_nnz_cart_idxs
-        adjm[cart_idx] = rand()
+        adjm[cart_idx] = U(rand())
     end
 
     return SimpleWeightedDiGraph{T,U}(adjm)
@@ -102,57 +107,51 @@ end
 Random  SimpleWeightedDiGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. Edge weights are uniformly extracted between 0 and 1. 
 """
 function SimpleWeightedGraphs.SimpleWeightedDiGraph{T,U}(
-    n_vertices::Integer, n_edges::Integer
+    n_vertices::Integer, n_edges::Integer, weight_range::Tuple{U,U} = (zero(U),one(U))
 ) where {T,U}
     adjm = zeros(U, n_vertices, n_vertices)
     rand_nnz_cart_idxs = rand(CartesianIndices(adjm), n_edges)
 
     for cart_idx in rand_nnz_cart_idxs
-        adjm[cart_idx] = rand()
+        if U <: Integer
+            adjm[cart_idx] = U(rand(weight_range[1]:weight_range[2]))
+        elseif U <: Real
+            adjm[cart_idx] = U(rand(Uniform(weight_range[1],weight_range[2])))
+        else
+            throw(ErrorException("The rand function suited for U = $U has not yet been implemented. Please file an issue."))
+        end
     end
-
     return SimpleWeightedDiGraph{T,U}(adjm)
 end
 
-# FIXME:
-# We cannot define a constructor of random SimpleValueGraphs.ValGraph that we may use inside the random layer and interlayer constructor that takes the SimpleValueGraphs.ValGraph concrete type, nv and ne  since in the SimpleValueGraphs.ValGraph concrete type are not stored infromations like the function associated to the `edgeval_init` argument. This would be solved with point 2. of https://github.com/JuliaGraphs/Graphs.jl/issues/165
-#= function SimpleValueGraphs.ValGraph{V, V_VALS, E_VALS, V_VALS_C, E_VALS_C}(n_vertices::Integer, n_edges::Integer)
+weights(g::G) where {T, G <: AbstractSimpleWeightedGraph{T}} = SimpleWeightedGraphs.weights(g)
 
-    return ValGraph{}
-end =#
+#= function _vertices(g::AbstractSimpleWeightedGraph{T}) where T 
 
-"""
-    MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
+    _vs = vertices(g)
+    _nv = length(_vs)
 
-Random MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying graph is a SimpleGraph. 
-"""
-function MetaGraphs.MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}
-    return MetaGraph{T,U}(SimpleGraph(n_vertices, n_edges))
+    return  zip(_vs,repeat([NamedTuple()], _nv))
+
+end
+ =#
+
+function __add_vertex!(g::AbstractSimpleWeightedGraph{T}; metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer}
+    !isempty(metadata) && println("Trying to add a vertex with metadata to a graph of type $(typeof(g)). Metadata $(metadata) will be ignored.")
+    add_vertex!(g)
 end
 
-"""
-    MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
+ _get_vertex_metadata(g::AbstractSimpleWeightedGraph{T}, vertex::T) where T = NamedTuple()
 
-Randoms MetaGraph with `n_vertices` vertices and `n_edges` edges, vertex type `T` and adjacency matrix eltype `U`. the underlying graph is a SimpleDiGraph. 
-"""
-function MetaGraphs.MetaDiGraph{T,U}(n_vertices::Integer, n_edges::Integer) where {T,U}
-    return MetaDiGraph{T,U}(SimpleDiGraph(n_vertices, n_edges))
+function _add_edge!(g::AbstractSimpleWeightedGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, W<: Union{<: Real, Nothing}}
+    !isempty(metadata) && println("Trying to add an edge with metadata to a graph of type $(typeof(g)). Metadata $metadata will be ignored.")
+    isnothing(weight) ? add_edge!(g, src, dst) : add_edge!(g, src, dst, weight)
 end
 
-"""
-    MetaGraph{T,U}(adjm::Matrix) where {T,U}
+_get_edge_weight(g::AbstractSimpleWeightedGraph{T}, src::T, dst::T, weighttype::Type{U} ) where {T, U <: Real} = U(weights(g)[src,dst])
 
-MetaGraph with adjacency matrix `adjm`, vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleGraph. 
-"""
-function MetaGraphs.MetaGraph{T,U}(adjm::Union{Matrix,SparseMatrixCSC}) where {T,U}
-    return MetaGraph{T,U}(SimpleGraph(adjm))
-end
+_get_edge_metadata(g::AbstractSimpleWeightedGraph{T}, src::T, dst::T ) where T = NamedTuple()
 
-"""
-    MetaGraph{T,U}(n_vertices::Integer, n_edges::Integer)
 
-MetaDiGraph with adjacency matrix `adjm`, vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleDiGraph. 
-"""
-function MetaGraphs.MetaDiGraph{T,U}(adjm::Union{Matrix,SparseMatrixCSC}) where {T,U}
-    return MetaDiGraph{T,U}(SimpleDiGraph(adjm))
-end
+_set_weight!!(g::AbstractSimpleWeightedGraph{T}, src::T, dst::T, weight::U) where {T,U} = add_edge!(g, src, dst, weight)
+
