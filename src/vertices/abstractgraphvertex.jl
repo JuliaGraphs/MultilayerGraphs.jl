@@ -1,3 +1,3 @@
 abstract type AbstractGraphVertex{G <: AbstractGraph} end
 
-struct LayerVertex{L} <: AbstractGraphVertex{G}
+struct LayerVertex{L} <: AbstractGraphVertex{G} end
