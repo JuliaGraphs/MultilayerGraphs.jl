@@ -22,6 +22,7 @@ TensorOperations = "6aa20fa7-93e2-5fca-9bc0-fbd0db3c71a2"
 
 [compat]
 DataStructures = "0.18"
+Distributions = "0.25"
 Graphs = "1.7"
 IterTools = "1.4"
 MetaGraphs = "0.7"
