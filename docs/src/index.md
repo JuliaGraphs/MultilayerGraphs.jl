@@ -18,13 +18,13 @@ CurrentModule = MultilayerGraphs
 
 ## Overview
 
-**MultilayerGraphs.jl** implements the mathematical formulation of multilayer graphs proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022) together with insights from [Kivelä et al. (2014)](https://doi.org/10.1093/comnet/cnu016) and [Bianconi (2018)](https://global.oup.com/academic/product/multilayer-networks-9780192865540). It mainly revolves around two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), encoding undirected and directed multilayer graphs respectively.
+**MultilayerGraphs.jl** provides an implementation of the mathematical formulation of multilayer graphs as proposed by [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022) and incorporates insights from [Kivelä et al. (2014)](https://doi.org/10.1093/comnet/cnu016) and [Bianconi (2018)](https://global.oup.com/academic/product/multilayer-networks-9780192865540). The package focuses on two custom types, [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref), which represent undirected and directed multilayer graphs, respectively.
 
-Roughly speaking, a multilayer graph is a collection of ***layers***, i.e. graphs whose vertices are representations of the same set of nodes (not all nodes have to be represented in every layer), and ***interlayers***, i.e the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) whose two sets of vertices are those of any two layers. A vertex of a multilayer graph will be represented via a [`MultilayerVertex`](@ref) struct, and nodes via a [`Node`](@ref) struct.
+A multilayer graph is composed of *layers*, i.e. graphs whose vertices represent the same set of nodes (not all nodes need to be represented in every layer), and *interlayers*, i.e. the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) that connect vertices in two different layers. Vertices in a multilayer graph are represented using the [`MultilayerVertex`](@ref) struct, while nodes are represented using the [`Node`](@ref) struct.
 
-[`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed so that their layers and interlayers can be of any type (as long as they are Graphs.jl extensions themselves) and they can be of different types. It is anyway required that all layers and interlayers of [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are respectively undirected and directed.
+[`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed to allow for layers and interlayers of any type (as long as they are Graphs.jl extensions themselves) and to permit layers and interlayers of different types. However, it is required that all layers and interlayers in [`MultilayerGraph`](@ref) are undirected, and all layers and interlayers in [`MultilayerDiGraph`](@ref) are directed.
 
-Both [`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) allow for vertex and edge metadata, provided that the layer (or interlayer) vertex or the layer (or interlayer) edge belongs to supports metadata.
+[`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) support the specification of vertex and edge metadata, provided that the underlying layer or interlayer also supports metadata.
 
 ## Installation
 
@@ -873,9 +873,11 @@ We therefore encourage you to participate in [discussions](https://github.com/Ju
 
 ## How to Cite
 
-If you use this package in your work, please cite this repository using the metadata in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib).
+If you utilize this package in your project, please consider citing this repository using the citation information provided in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib). This will help to give appropriate credit to the [contributors](https://github.com/JuliaGraphs/MultilayerGraphs.jl/graphs/contributors) and support the continued development of the package.
 
 ## Announcements 
+
+The package and its features were announced on the following platforms:
 
 - [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988)
 - [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22)
