@@ -64,6 +64,21 @@ weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
 name(subgraph::AbstractSubGraph)
 Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}}
 Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
+Layer(nv::Int64, name::Symbol, graph_type::Type{G}, ne::Int64; U::Union{Type{ <: Real},Nothing} = nothing)  where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}}
+has_node(layer::Layer, n::Node)
+rem_vertex!(layer::Layer, mv::MultilayerVertex)
+rem_vertex!(layer::Layer, n::Node)
+Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}}Interlayer(layer_1::Layer{T,U}, layer_2::Layer{T,U}, ne::Int64, null_graph::G; default_edge_weight::Function = (x,y) -> nothing, default_edge_metadata::Function = (x,y) -> NamedTuple(), name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"), transfer_vertex_metadata::Bool = false) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+
+multiplex_interlayer(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    null_graph::G;
+    default_edge_weight::Function = (x,y) -> nothing,
+    default_edge_metadata::Function = (x,y) -> NamedTuple(),
+    transfer_vertex_metadata::Bool = false,
+    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} =  _multiplex_interlayer(collect(mv_vertices(layer_1)), collect(mv_vertices(layer_2)),  null_graph, U; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata, transfer_vertex_metadata = transfer_vertex_metadata , name = name)
 ```
 
 ### Multilayer-specific methods
@@ -96,7 +111,9 @@ is_directed(mg::AbstractMultilayerUGraph)
 is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
 is_directed(mg::AbstractMultilayerDiGraph)
 is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
-
+has_node(mg::AbstractMultilayerGraph, n::Node)
+rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
+rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 ```
 
 ----------------------------------------------------
@@ -148,7 +165,9 @@ has_edge(subgraph::S, s::MultilayerVertex, d::MultilayerVertex) where { T, S <: 
 add_edge!(subgraph::S, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple, NamedTuple}= NamedTuple()) where {T, U<: Real, W<:Union{ U, Nothing},G<:AbstractGraph{T},S<:AbstractSubGraph{T,U,G}} 
 rem_edge!(subgraph::S, src::T, dst::T) where {T, S<:AbstractSubGraph{T}}
 AbstractLayer
-Layer(descriptor::LayerDescriptor{T}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer}
+Layer(descriptor::MultilayerGraphs.LayerDescriptor{T}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer}
+rem_vertex!(layer::L, v::T) where {T, L <: Layer{T}} 
+AbstractInterlayer
 ```
 
 ### Traits

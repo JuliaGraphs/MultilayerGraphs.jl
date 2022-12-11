@@ -37,11 +37,11 @@ function Graphs.add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: Abstra
 end
 
 """
-    rem_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
+    rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 
 Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
+function Graphs.rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
     # Check that the node exists and then that the vertex exists
     has_node(mg, V.node) || return false
     has_vertex(mg, V) || return false
