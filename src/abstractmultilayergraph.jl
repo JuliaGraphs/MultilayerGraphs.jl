@@ -47,11 +47,11 @@ Return the number of nodes in `mg`.
 nn(mg::M) where {M<:AbstractMultilayerGraph} = length(nodes(mg))
 
 """
-    has_node(mg::M, n::Node) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+    has_node(mg::AbstractMultilayerGraph, n::Node)
 
 Return true if `n` is a node of `mg`.
 """
-has_node(mg::M, n::Node) where {T,U, M <: AbstractMultilayerGraph{T,U}} = n in image(mg.idx_N_associations)
+has_node(mg::AbstractMultilayerGraph, n::Node) = n in image(mg.idx_N_associations)
 
 """
     add_node!(mg::M, n::Node)  where {T,U, M <: AbstractMultilayerGraph{T,U}}
