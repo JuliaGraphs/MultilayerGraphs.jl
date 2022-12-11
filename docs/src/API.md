@@ -62,7 +62,8 @@ is_directed(::Type{S}) where {T,U,G,S <: AbstractSubGraph{T,U,G}}
 adjacency_matrix(subgraph::AbstractSubGraph)
 weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
 name(subgraph::AbstractSubGraph)
-Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}} <: AbstractLayer{T,U,G}
+Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}}
+Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
 ```
 
 ### Multilayer-specific methods
@@ -147,6 +148,7 @@ has_edge(subgraph::S, s::MultilayerVertex, d::MultilayerVertex) where { T, S <: 
 add_edge!(subgraph::S, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple, NamedTuple}= NamedTuple()) where {T, U<: Real, W<:Union{ U, Nothing},G<:AbstractGraph{T},S<:AbstractSubGraph{T,U,G}} 
 rem_edge!(subgraph::S, src::T, dst::T) where {T, S<:AbstractSubGraph{T}}
 AbstractLayer
+Layer(descriptor::LayerDescriptor{T}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer}
 ```
 
 ### Traits

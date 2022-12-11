@@ -26,9 +26,8 @@ export
     Node,
     # abstractvertex.jl
     AbstractVertex,
-    # abstractmultilayervertex.jl
-    AbstractMultilayerVertex,
     # multilayervertex.jl 
+    AbstractMultilayerVertex,
     MultilayerVertex,
     MV,
     node,

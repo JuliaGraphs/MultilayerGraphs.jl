@@ -25,16 +25,6 @@ Represents a layer in a `Multilayer(Di)Graph`.
 - `graph::G`: underlying graph of the layer;
 - `forbidden_vertices::Vector{MultilayerVertex}`: nodes of the MultilayerGraph that are not part of this Layer (they will be formally present in the Layer but it will be checked that they aren't adjacent to any other node);
 - `forbidden_edges`::Vector{NTuple{2, MultilayerVertex}}: edges that are required not to exist in this Layer.
-
-# CONSTRUCTORS
-
-    Layer(name::Symbol, graph::G, forbidden_vertices::Tuple{Vararg{T}}, forbidden_edges::Tuple{Vararg{NTuple{2, T}}};  U::Union{Type{ <: Real}, Nothing}  = nothing ) where {T,G <: AbstractGraph{T}}
-         
-Overridden inner constructor. Return an `Layer` whose underlying graph is `graph`. All `Layer`s and `Layer`s of a `Multilayer(Di)Graph` need to formally have the same nodes, but in real applications it may be that some vertices are excluded from some layers. Such vertices should be specified in `forbidden_vertices`. Similarly for `forbidden_edges`. This constructor (to which all the other eventually fall back to) will check that `forbidden_vertices` have no neighbors in `graph`, and that `forbidden_edges` actually correspond to zero entries in the adjacency matrix of `graph`. 
-
-    Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}} <: AbstractLayer{T,U,G}
-
-Incomplete initialization, used to write type-stable functions
 """
 mutable struct Layer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractLayer{T,U,G}
     descriptor::LayerDescriptor{T,U,G}
@@ -64,7 +54,18 @@ end
 """
     Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
 
-...
+Constructor for `Layer`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+- `null_graph::G`: the Layer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown;
+- `weighttype::Type{U}`: The type of the `MultilayerEdge` weights (evem when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+
+# KWARGS
+
 """
 function Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
     descriptor = LayerDescriptor(name, null_graph, weighttype,  default_vertex_metadata = default_vertex_metadata, default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata)
@@ -73,11 +74,17 @@ function Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::V
 end
 
 """
-    Layer(descriptor::LayerDescriptor{T,U,G}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer, U <: Real, G <: AbstractGraph{T}}
+    Layer(descriptor::LayerDescriptor{T}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer}
 
-...
+Constructor for `Layer`.
+
+# ARGUMENTS
+
+- `descriptor::LayerDescriptor{T}`;
+- `vertices::Vector{<: MultilayerVertex}`;
+- `edge_list::Vector{<:MultilayerEdge}`;
 """
-function Layer(descriptor::LayerDescriptor{T,U,G}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer, U <: Real, G <: AbstractGraph{T}}
+function Layer(descriptor::LayerDescriptor{T}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer}
 
     if hasproperty(eltype(vertices), :parameters)
         par = eltype(vertices).parameters[1]
@@ -104,7 +111,7 @@ end
 
 Return a random `Layer`.
 
-# ARGS
+# ARGUMENTS
 
 - `name::Symbol`: The name of the Layer
 - `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer
