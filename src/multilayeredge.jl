@@ -97,25 +97,24 @@ Return and edge between `dst(e)` and `src(e)` with same `weight(e)` and `metadat
 """
 Base.reverse(e::MultilayerEdge) = MultilayerEdge(dst(e), src(e), weight(e), metadata(e))
 
-"""
-    compare_multilayeredges(lhs::MultilayerEdge, rhs::MultilayerEdge;check_weight::Bool = false, check_metadata::Bool = false)
-"""
+# Compare multilayer edges
 function compare_multilayeredges(lhs::MultilayerEdge, rhs::MultilayerEdge;check_weight::Bool = false, check_metadata::Bool = false)
+    # Check source
     _check_src = lhs.src == rhs.src ? true : return false
+    # check destination
     _check_dst = lhs.dst == rhs.dst ? true : return false
-
+    # Check weight
     _check_weight = false
     if check_weight
         _check_weight = lhs.weight == rhs.weight ? true : return false
     end
-
+    # Check metadata
     _check_metadata = false
     if check_metadata
         _check_metadata =  lhs.metadata == rhs.metadata ? true : return false
     else
         _check_metadata = true
     end
-    
     return true
 end
 

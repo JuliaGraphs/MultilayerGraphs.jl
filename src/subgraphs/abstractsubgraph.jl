@@ -33,7 +33,7 @@ Graphs.has_vertex(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}} =  has_ver
 
 Return the number of vertices in `subgraph`.
 """
-Graphs.nv(subgraph::AbstractSubGraph) = nv(subgraph.graph) #length(vertices(subgraph))
+Graphs.nv(subgraph::AbstractSubGraph) = nv(subgraph.graph)
 
 """
     vertices(subgraph::AbstractSubGraph)
@@ -121,9 +121,11 @@ mv_neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex) = mv_outneighbors
 Return `v` associated with `V`. 
 """
 function get_v(subgraph::AbstractSubGraph, V::MultilayerVertex)
+    # Convert V to a bare vertex
     bare_V = get_bare_mv(V)
+    # Check if subgraph has this vertex
     has_vertex(subgraph, bare_V) || return nothing
-
+    # Get the list of edges
     subgraph.v_V_associations(bare_V)
 end
 
@@ -134,10 +136,11 @@ end
 Return the `MultilayerVertex` whose internal representation is `v`.
 """
 function get_V(subgraph::S, v::T; perform_checks::Bool = false) where {T,U, S <: AbstractSubGraph{T,U}}
+    # Check if v is a vertex label in subgraph
     if perform_checks
         haskey(subgraph.v_V_associations,v) || throw(ErrorException("$v is not an integer label of any vertex in the subgraph"))
     end
-
+    # Return the vertex object
     return subgraph.v_V_associations[v]
 end
 
@@ -150,11 +153,13 @@ end
 Return `V` together with its metadata.
 """
 function get_rich_mv(subgraph::S, i::T; perform_checks::Bool = false) where {T,U, S <: AbstractSubGraph{T,U}}
+    # Make sure that i is a valid vertex in the subgraph
     if perform_checks
         haskey(subgraph.v_V_associations,i) || throw(ErrorException("$i is not an integer label of any vertex in the subgraph"))
     end
-
+    # Get the bare vertex corresponding to i
     bare_V = subgraph.v_V_associations[i]
+    # Return the vertex as a multilayer vertex
     return MV(bare_V.node, bare_V.layer,  get_metadata(subgraph, bare_V))
 end
 
@@ -171,7 +176,7 @@ end
 """
     get_metadata(subgraph::AbstractSubGraph, bare_mv::MultilayerVertex)
 
-Return the metadata of the vertex `bare_mv` in `subgraph` (metadata assigend to `bare_mv` will be discarded). 
+Return the metadata of the vertex `bare_mv` in `subgraph` (metadata assigned to `bare_mv` will be discarded). 
 """
 get_metadata(subgraph::AbstractSubGraph, bare_mv::MultilayerVertex)  =_get_vertex_metadata(subgraph.graph, get_v(subgraph, bare_mv))
 
@@ -211,14 +216,12 @@ Return the number of edges in `subgraph`.
 """
 Graphs.ne(subgraph::AbstractSubGraph) = ne(subgraph.graph)
 
-
-
 """
     edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} 
 
 Return an iterator over all the edges of `subgraph`.
 """
-function Graphs.edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} # = subgraph.edge_list
+function Graphs.edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} 
     (
         MultilayerEdge(
             get_rich_mv(subgraph, src),
@@ -344,11 +347,14 @@ SimpleWeightedGraphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} =
 Overload equality for `AbstractSubGraph`s.
 """
 function Base.:(==)(x::AbstractSubGraph, y::AbstractSubGraph)
+    # Check that each field in AbstractSubGraph is equal in x and y
     for field in fieldnames(AbstractSubGraph)
+        # If the field is not equal in x and y, return false
         if @eval $x.$field != $y.$field
             return false
         end
     end
+    # If all fields are equal in x and y, return true
     return true
 end
 

@@ -40,12 +40,13 @@ end
 # Outer constructor that does not require name, edge_metadata_function and transfer_vertex_metadata
 InterlayerDescriptor(layer_1::Symbol, layer_2::Symbol, null_graph::G, weighttype::Type{U}; default_edge_weight::Function = (src, dst) -> nothing, default_edge_metadata::Function = (src, dst) -> NamedTuple(),  transfer_vertex_metadata::Bool = false, name::Symbol = Symbol("interlayer_$(layer_1)_$(layer_2)") ) where {T,U, G <: AbstractGraph{T}}= InterlayerDescriptor(name, layer_1, layer_2, null_graph, default_edge_weight, default_edge_metadata, transfer_vertex_metadata, weighttype) # edge_weight_function::Function = (src,dst) -> one(U), edge_metadata_function::Function = (src,dst) -> NamedTuple(),
 
+# This function is called whenever one tries to access a field of an object of type InterlayerDescriptor
 function Base.getproperty(descriptor::InterlayerDescriptor, f::Symbol)
-    
+    # If the field is one of the ones listed below, return its value
     if f ∈ (:name, :layer_1, :layer_2, :null_graph, :transfer_vertex_metadata, :default_edge_metadata,:default_edge_weight )
         Base.getfield(descriptor, f)
+    # Otherwise, if the field is layers_names, return the names of the two layers
     elseif f == :layers_names
         [descriptor.layer_1, descriptor.layer_2]
     end
-
 end

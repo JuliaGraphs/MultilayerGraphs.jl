@@ -3,7 +3,7 @@
 
 An abstract type representing an abstract MultilayerGraph vertex.
 """
-abstract type AbstractMultilayerVertex{S} <: AbstractVertex end #<: AbstractVertex{S} end
+abstract type AbstractMultilayerVertex{S} <: AbstractVertex end 
 
 """
     MultilayerVertex{N <: Integer} <: AbstractMultilayerVertex{N}
@@ -97,14 +97,17 @@ Return the metadata associated to `mv`.
 """
 metadata(mv::MultilayerVertex) = mv.metadata
 
+# Compare multilayer vertices 
 function compare_multilayervertices(V1::MultilayerVertex, V2::MultilayerVertex; check_metadata = false)
+    # Check if the two nodes are the same
     V1.node == V2.node || return false
+    # Check if the two layers are the same
     V1.layer == V2.layer || return false
-
+    # Check if the two metadata are the same
     if check_metadata
         V1.metadata == V2.metadata || return false
     end
-    
+    # Return true if all tests passed
     return true
 end
 

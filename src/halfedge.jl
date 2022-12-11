@@ -35,7 +35,7 @@ weight(he::HalfEdge)   = he.weight
 """
     metadata(he::HalfEdge) 
 
-Return the metadata associated to the edge
+Return the metadata associated to the edge.
 """
 metadata(he::HalfEdge) = he.metadata 
 
