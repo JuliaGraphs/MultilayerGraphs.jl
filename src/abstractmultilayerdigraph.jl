@@ -107,11 +107,11 @@ end
 
 # Edges
 """
-    has_edge(mg::M, src::T, dst::T) where { T,U, M <: AbstractMultilayerDiGraph{T,U}}
+    has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerDiGraph{T}}
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
-function Graphs.has_edge(mg::M, src::T, dst::T) where { T,U, M <: AbstractMultilayerDiGraph{T,U}}
+function Graphs.has_edge(mg::M, src::T, dst::T) where { T,M <: AbstractMultilayerDiGraph{T}}
 
     has_vertex(mg,src) || return false
     has_vertex(mg,dst) || return false
@@ -358,11 +358,11 @@ Return the degree of MultilayerVertex `v` within `mg`.
 Graphs.degree(mg::M, mv::V ) where {T,M<:AbstractMultilayerDiGraph{T,<:Real},V<:MultilayerVertex} = indegree(mg, mv) + outdegree(mg, mv)
 
 """
-    is_directed(m::M) where { M <: AbstractMultilayerDiGraph}
+    is_directed(mg::AbstractMultilayerDiGraph)
 
 Return `true` if `mg` is directed, `false` otherwise. 
 """
-Graphs.is_directed(mg::M) where {M<:AbstractMultilayerDiGraph} = true
+Graphs.is_directed(mg::AbstractMultilayerDiGraph) = true
 
 """
     is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}

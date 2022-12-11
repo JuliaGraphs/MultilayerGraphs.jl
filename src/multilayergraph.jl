@@ -103,11 +103,11 @@ function Graphs.add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGrap
 end
 
 """
-    rem_edge!(mg::M, src::T, dst::T) where {T,U, M <: MultilayerGraph{T,U}}
+    rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_edge!(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where  {T,U,M <: AbstractMultilayerUGraph{T,U}}
+function Graphs.rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex)
     # Perform routine checks
     has_vertex(mg, src) || throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
     has_vertex(mg, dst) || throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))

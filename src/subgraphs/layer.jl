@@ -162,7 +162,7 @@ has_node(layer::L, n::Node) where {L<:Layer} = MV(n, layer.name) ∈ image(layer
 
 
 """
-    has_vertex(layer::Layer, v::MultilayerVertex)
+    has_vertex(layer::Layer, mv::MultilayerVertex)
 
 Return `true` if `v` is a vertex of `layer`.
 """

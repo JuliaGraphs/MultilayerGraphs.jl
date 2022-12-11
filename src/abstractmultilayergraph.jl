@@ -33,7 +33,7 @@ abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} en
 
 # Nodes
 """
-    nodes(mg::M) where {M <: AbstractMultilayerGraph}
+    nodes(mg::AbstractMultilayerGraph
 
 Return the nodes of the AbstractMultilayerGraph `mg`, in order of addition.
 """
@@ -110,11 +110,11 @@ Return true if `v` is in mg, else false.
 Graphs.has_vertex(mg::M, v::T ) where {T, M <: AbstractMultilayerGraph{T}} = v in domain(mg.v_V_associations) # && !(mg.v_V_associations[v] isa MissingVertex)
 
 """
-    has_vertex(mg::M, mv::MultilayerVertex) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+    has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex) 
 
 Return true if `mv` is in `mg`, else false.
 """
-Graphs.has_vertex(mg::M, mv::MultilayerVertex) where {T,U, M <: AbstractMultilayerGraph{T,U}} = get_bare_mv(mv) in image(mg.v_V_associations)
+Graphs.has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = get_bare_mv(mv) in image(mg.v_V_associations)
     
 """
     mv_vertices(mg::AbstractMultilayerGraph)
@@ -138,11 +138,11 @@ Return the collection of the vertices of `mg`.
 Graphs.vertices(mg::M) where {M<:AbstractMultilayerGraph} = sort(collect(domain(mg.v_V_associations)))
 
 """
-    get_metadata(mg::M, mv::MultilayerVertex) where M <: AbstractMultilayerGraph
+    get_metadata(mg::AbstractMultilayerGraph, bare_mv::MultilayerVertex)
 
-Return the metadata associated to `MultilayerVertex` mv.
+Return the metadata associated to `MultilayerVertex` mv (regardless of metadata assigned to `bare_mv`).
 """
-get_metadata(mg::M, mv::MultilayerVertex) where M <: AbstractMultilayerGraph = mg.v_metadata_dict[get_v(mg, mv)]
+get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = mg.v_metadata_dict[get_v(mg, mv)]
 
 """
     set_metadata!(mg::M, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) where M <: AbstractMultilayerGraph
@@ -162,25 +162,25 @@ end
 
 # Edges
 """
-    edgetype(mg::M) where {M <: AbstractMultilayerGraph}
+    edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 
 Return the edge type for `mg`.
 """
 Graphs.edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} = MultilayerEdge{U}
 
 """
-    ne(mg::M) where {M <: AbstractMultilayerGraph }
+    ne(mg::AbstractMultilayerGraph)
 
 Return the number of edges in `mg`.
 """
-Graphs.ne(mg::M) where {M<:AbstractMultilayerGraph} = length(edges(mg))
+Graphs.ne(mg::AbstractMultilayerGraph) = length(edges(mg))
 
 """
     has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) 
 
 Return true if `mg` has an edge between the source and the destination of `edge` (does not check edge or vertex metadata).
 """
-Graphs.has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge)  = has_edge(mg,get_v(mg,src(edge)), get_v(mg,dst(edge)) )
+Graphs.has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge)  = has_edge(mg, get_v(mg,src(edge)), get_v(mg,dst(edge)) )
 
 """
     has_edge(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
@@ -204,18 +204,18 @@ Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `
 Graphs.add_edge!(mg::M, src::V, dst::V; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}, V <: MultilayerVertex} = add_edge!(mg, ME(src, dst, weight, metadata))
 
 """
-    rem_edge!(mg::M, src::T, dst::T) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+    rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}}
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,U, M <: AbstractMultilayerGraph{T,U}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
+Graphs.rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
 
 """
-    rem_edge!(mg::M, src::T, dst::T) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+    rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge} = rem_edge!(mg, src(me), dst(me))
+Graphs.rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge) = rem_edge!(mg, src(me), dst(me))
 
 
 """
@@ -231,18 +231,18 @@ end
 
 
 """
-    get_metadata(mg::M, mv::MultilayerVertex) where M <: AbstractMultilayerGraph
+    get_metadata(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
 Return the metadata associated to the `MultilayerEdge` from `src` to `dst`.
 """
-get_metadata(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where M <: AbstractMultilayerGraph  = get_halfegde(mg, src, dst).metadata
+get_metadata(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = get_halfegde(mg, src, dst).metadata
 
 """
-    get_weight(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where M <: AbstractMultilayerGraph
+    get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertexph
 
 Return the weight associated to the `MultilayerEdge` from `src` to `dst`.
 """
-SimpleWeightedGraphs.get_weight(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where M <: AbstractMultilayerGraph = get_halfegde(mg, src, dst).weight
+SimpleWeightedGraphs.get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)  = get_halfegde(mg, src, dst).weight
 
 
 # Layers and Interlayers
@@ -513,18 +513,18 @@ Get the degree of vertices `vs` in `mg`.
 Graphs.degree(mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = [degree(mg, x) for x in vs]
 
 """
-    inneighbors( mg::M, mv::V ) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex}
+    inneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex ) 
 
 Return the list of inneighbors of `mv` within `mg`.
 """
-Graphs.inneighbors( mg::M, mv::V ) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = inneighbors(mg, get_v(mg, mv))
+Graphs.inneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex ) = inneighbors(mg, get_v(mg, mv))
 
 """
-    outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
+    outneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 
 Return the list of outneighbors of `v` within `mg`.
 """
-Graphs.outneighbors( mg::M, mv::V ) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = outneighbors(mg, get_v(mg, mv))
+Graphs.outneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex) = outneighbors(mg, get_v(mg, mv))
 
 
 """
@@ -546,11 +546,11 @@ function Graphs.outneighbors(
 end
 
 """
-    neighbors(mg::M, v::V) where {T, M <: AbstractMultilayerGraph{T, <: Real}, V <: MultilayerVertex}
+    neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex) 
 
-Get the neighbors of vertices `vs` in `mg`. Reduces to `outneighbors` for both directed and undirected multilayer graphs.
+Get the neighbors of vertex `mv` in `mg`. Reduces to `outneighbors` for both directed and undirected multilayer graphs.
 """
-Graphs.neighbors(mg::M, v::V) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = outneighbors(mg, v)
+Graphs.neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = outneighbors(mg, mv)
 
 """
     weighttype(mg::M) where {M <: AbstractMultilayerGraph}
@@ -561,18 +561,26 @@ weighttype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} = U
 
 # Multilayer-specific methods
 """
-    mv_inneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
+    mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
     
-Return the list of `MultilayerVertex` inneighbors of `v` within `mg`.
+Return the list of `MultilayerVertex` inneighbors of `mv` within `mg`.
 """
-mv_inneighbors(mg::M, mv::V) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = getindex.(Ref(mg.v_V_associations), inneighbors(mg, mv))
+mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = getindex.(Ref(mg.v_V_associations), inneighbors(mg, mv))
 
 """
-    mv_outneighbors( mg::M, mv::V) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex}
+    mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 
-Return the list of `MultilayerVertex` outneighbors of `v` within `mg`.
+Return the list of `MultilayerVertex` outneighbors of `mv` within `mg`.
 """
-mv_outneighbors( mg::M, mv::V) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = getindex.(Ref(mg.v_V_associations), outneighbors(mg, mv))
+mv_outneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex) = getindex.(Ref(mg.v_V_associations), outneighbors(mg, mv))
+
+
+"""
+    mv_neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+
+Return the list of `MultilayerVertex` neighbors of `mv` within `mg`.
+"""
+mv_neighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex) = getindex.(Ref(mg.v_V_associations), neighbors(mg, mv))
 
 """
     get_supra_weight_matrix_from_weight_tensor(weight_tensor::Array{U, 4}) where { U <: Real}

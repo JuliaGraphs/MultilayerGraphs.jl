@@ -413,19 +413,19 @@ function is_multiplex_interlayer(interlayer::In) where {In<:Interlayer}
 end
 
 """
-    has_vertex(interlayer::Interlayer, v::MultilayerVertex)
+    has_node( interlayer::Interlayer, n::Node )
 
-Return `true` if `v` is a vertex of `interlayer`.
+Return `true` if `n` is a `Node` of `interlayer`.
 """
 has_node( interlayer::Interlayer, n::Node ) =  n in nodes(interlayer.layer_1) || n in nodes(interlayer.layer_2) 
 
 
 """
-    has_vertex(interlayer::In, v::MultilayerVertex) where { T,U,G, In <: Interlayer{T,U,G}}
+    has_vertex(interlayer::Interlayer, v::MultilayerVertex)
 
 Return `true` if `v` is a vertex of `interlayer`.
 """
-Graphs.has_vertex(interlayer::In, mv::MultilayerVertex) where {T,U,G,In<:Interlayer{T,U,G}} = get_bare_mv(mv) ∈ collect(image(interlayer.v_V_associations))
+Graphs.has_vertex(interlayer::Interlayer, mv::MultilayerVertex) = get_bare_mv(mv) ∈ collect(image(interlayer.v_V_associations))
 
 
 """

@@ -1,4 +1,5 @@
 using Revise
+using Graphs
 using MultilayerGraphs
 using Documenter
 
@@ -7,17 +8,17 @@ DocMeta.setdocmeta!(
 )
 
 makedocs(;
-    modules=[MultilayerGraphs],
-    authors="Pietro Monticone, Claudio Moroni",
-    repo="https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/{commit}{path}#{line}",
-    sitename="MultilayerGraphs.jl",
-    format=Documenter.HTML(;
+    modules  = [MultilayerGraphs],
+    authors  = "Pietro Monticone, Claudio Moroni",
+    repo     = "https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/{commit}{path}#{line}",
+    sitename = "MultilayerGraphs.jl",
+    format   = Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://juliagraphs.org/MultilayerGraphs.jl",
-        assets=String[],
+        canonical ="https://juliagraphs.org/MultilayerGraphs.jl",
+        assets =String[],
     ),
-    pages=["Home" => "index.md", "API" => "API.md"],
-    clean = false
+    pages    = ["Home" => "index.md", "API" => "API.md"],
+    clean    = false
 )
 
 deploydocs(;
