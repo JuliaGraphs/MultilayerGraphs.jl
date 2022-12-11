@@ -282,11 +282,11 @@ function Graphs.rem_vertex!(layer::Layer, n::Node)
 end
 
 """
-    rem_vertex!(layer::L, v::T) where {T,U,G, L <: Layer{T,U,G}}    
+    rem_vertex!(layer::L, v::T) where {T, L <: Layer{T}}    
 
 Remove vertex `v` from layer `layer`.
 """
-Graphs.rem_vertex!(layer::L, v::T) where {T,U,G, L <: Layer{T,U,G}} = rem_vertex!(layer.graph, v)
+Graphs.rem_vertex!(layer::L, v::T) where {T, L <: Layer{T}} = rem_vertex!(layer.graph, v)
 
 """
     add_edge!(layer::L, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...) where {L <: Layer} 
