@@ -35,7 +35,7 @@ function check_unique(vec::Union{Missing,<:Vector,<:Tuple})
 end
 
 """
-    multilayer_kronecker_delta(dims...)
+    multilayer_kronecker_delta(dims::NTuple{4,Int64})
 
 Return a 4-dimensional Kronecker delta with size equal to `dims`.
 """
@@ -97,7 +97,7 @@ The Kronecker delta.
 - `representation::Matrix{Int64}`: the matrix representing the Kronecker delta;
 - `T`: the return type when called `δk[i,j]`.
 
-# CONSTRUCTORS
+### CONSTRUCTORS
 
     δk{T}(N::Int64) where {T <: Number}
 
@@ -108,6 +108,7 @@ mutable struct δk{T} <: AbstractVector{T}
     representation::Matrix{Int64}
 
     # Inner constructor that only requires N and the eltype.
+    
     function δk{T}(N::Int64) where {T<:Number}
         out = new{T}(N)
         representation = [out[h, k] for h in 1:N, k in 1:N]
@@ -357,11 +358,6 @@ Check whether `A` is symmetric (within `zero(T)`).
 """
 isapproxsymmetric(A::Matrix{T}) where {T<:Integer} = all(abs.(A .- A') .<= zero(T))
 
-#= """
-"""
-function Graphs.isgraphical(degree_sequence::Vector{<:Integer}; allow_self_loops::Bool)
-end =#
-
 """
     isdigraphical(indegree_sequence::Vector{<:Integer}, outdegree_sequence::Vector{<:Integer} )
 
@@ -419,7 +415,6 @@ function isdigraphical(indegree_sequence::Vector{<:Integer}, outdegree_sequence:
 
     return true
 end
-
 
 """
     _random_undirected_configuration(empty_mg::M, degree_sequence::Vector{ <: Integer}) where {T,U,M <: MultilayerGraph{T,U}}   
@@ -542,10 +537,7 @@ function _random_directed_configuration(empty_mg::M, indegree_sequence::Vector{ 
             end
             success = length(mvs_indegree_dict) == 0 && length(mvs_outdegree_dict) == 0 
         end
-    
-
     return edge_list
-    
 end
 
 

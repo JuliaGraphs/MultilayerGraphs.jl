@@ -9,14 +9,17 @@ abstract type AbstractNode end
     struct Node <: AbstractNode
 
 A custom concrete type representing a node of a multilayer graph.
-
-# FIELDS
-
--`id::String`: the node's id i.e. a String stating its name.
 """
 struct Node <: AbstractNode
     id::String
 end
+
+"""
+    id(n::Node)
+
+Return the id of `n`.
+"""
+id(n::Node) = n.id
 
 # Base overrides
 Base.:(==)(lhs::Node, rhs::Node) = (lhs.id == rhs.id)

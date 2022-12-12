@@ -8,7 +8,7 @@ This page provides a list of exported methods organized by topic and audience. M
 
 ```@docs
 Node
-
+id
 ```
 
 ### Vertices
@@ -74,6 +74,8 @@ Layer(
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 has_node(layer::Layer, n::Node)
+add_vertex!(layer::Layer, mv::MultilayerVertex)
+add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, L <: Layer{T}} 
 rem_vertex!(layer::Layer, mv::MultilayerVertex)
 rem_vertex!(layer::Layer, n::Node)
 
@@ -129,8 +131,6 @@ get_symmetric_interlayer(
     interlayer::In;
     symmetric_interlayer_name::String = String(interlayer.name) * "_rev"
 ) where {T,U,G,In<:Interlayer{T,U,G}}
-
-
 ```
 
 ### Multilayer-Specific Methods
@@ -200,6 +200,10 @@ mv_vertices(mg::AbstractMultilayerGraph)
 mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_neighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
+add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
+rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
+rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) 
 has_edge( subgraph::AbstractMultilayerGraph, s::MultilayerVertex, d::MultilayerVertex)
 ne(mg::AbstractMultilayerGraph)
@@ -220,8 +224,6 @@ is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
 is_directed(mg::AbstractMultilayerDiGraph)
 is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
 has_node(mg::AbstractMultilayerGraph, n::Node)
-rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
-rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
 set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
 set_metadata!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
@@ -286,8 +288,6 @@ modularity(
 
 
 von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-
-
 ```
 
 ### Representations
@@ -300,7 +300,6 @@ metadata_tensor(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 array(amr::AbstractMatrixRepresentation)
 SupraWeightMatrix{T,U}
 supra_weight_matrix(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
-
 ```
 
 ### Traits
@@ -312,11 +311,16 @@ is_meta(g::G) where {G <: AbstractGraph}
 is_meta(g::G) where {G<:Type{<:AbstractGraph}}
 ```
 
-
-
-----------------------------------------------------
-####################################################
-----------------------------------------------------
+### Utilities
+```@docs
+multilayer_kronecker_delta(dims::NTuple{4,Int64})
+δk{T}
+δk(N::Int64)
+δ_1{T<: Number}
+δ_2{T<:Number}
+δ_3{T<:Number}
+δ_Ω{T}
+```
 
 
 ## Developer
@@ -346,7 +350,7 @@ metadata(he::MultilayerGraphs.HalfEdge)
 weight(he::MultilayerGraphs.HalfEdge)
 ```
 
-# Subgraphs
+### Subgraphs
 
 ```@docs
 has_vertex(subgraph::S, v::T ) where {T,S<:AbstractSubGraph{T}}
@@ -358,7 +362,7 @@ outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 neighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
 neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 edgetype(::S) where {T,U,S<:AbstractSubGraph{T,U}}
-has_edge(subgraph::S, s::MultilayerVertex, d::MultilayerVertex) where { T, S <: AbstractSubGraph{T}}
+has_edge( subgraph::S, s::T, d::T) where {T,S<:AbstractSubGraph{T}}
 add_edge!(subgraph::S, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple, NamedTuple}= NamedTuple()) where {T, U<: Real, W<:Union{ U, Nothing},G<:AbstractGraph{T},S<:AbstractSubGraph{T,U,G}} 
 rem_edge!(subgraph::S, src::T, dst::T) where {T, S<:AbstractSubGraph{T}}
 AbstractLayer
@@ -374,12 +378,10 @@ AbstractInterlayer
 AbstractMultilayerGraph{T <: Integer, U <: Real}
 has_vertex(mg::M, v::T) where {T, M <: AbstractMultilayerGraph{T}}
 vertices(mg::AbstractMultilayerGraph)
-inneighbors(mg::AbstractMultilayerUGraph, v::T) where {T <: Integer, M <: AbstractMultilayerUGraph{T}}
-inneighbors(mg::M, v::T) where {T <: Integer, M <: AbstractMultilayerDiGraph{T}}
+inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
+inneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T,<:Real}}
 inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
-outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
-outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
-outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
+outneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T}}
 neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerUGraph{T}}
@@ -399,8 +401,4 @@ AbstractMatrixRepresentation{T,U}
 ```@docs
 IsWeighted{X}
 IsMeta{X}
-```
-
-
-```@docs
 ```

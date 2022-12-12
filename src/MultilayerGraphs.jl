@@ -24,6 +24,7 @@ export
     # Node.jl 
     AbstractNode,
     Node,
+    id,
     # abstractvertex.jl
     AbstractVertex,
     # multilayervertex.jl 
@@ -74,6 +75,7 @@ export
     AbstractLayer,
     Layer,
     has_node,
+    add_vertex!
     rem_vertex!,
     # interlayer.jl
     AbstractInterlayer,

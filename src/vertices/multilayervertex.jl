@@ -13,7 +13,7 @@ A struct representing a vertex of a MultilayerGraph.
 # FIELDS
 - `node::Node`: the `Node` that the `MultilayerVertex` represents;
 - `layer::Union{Nothing, Symbol}`: the name of the `Layer` the `MultilayerVertex` lies in;
-- `layer::Symbol`: the layer the `MultilayerVertex` belongs to.
+- `metadata::Union{<: NamedTuple, <: Tuple}`: the metadata associated to this `MultilayerVertex`.
 
 # CONSTRUCTORS
 

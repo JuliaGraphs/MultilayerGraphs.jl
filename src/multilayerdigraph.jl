@@ -2,24 +2,15 @@
     MultilayerDiGraph{T, U, G <: AbstractGraph{T}} <: AbstractMultilayerGraph{T,U}
 
 A concrete type that can represent a general multilayer graph. Its internal fields aren't meant to be modified by the user. Please prefer the provided API.
-
-# FIELDS
-
-- `layers::Vector{LayerDescriptor{T,U}}`: vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
-- `interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}} `: the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all undirected.
-- `v_V_associations::Bijection{ T, <: MultilayerVertex}`: A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
-- `idx_N_associations::Bijection{ Int64 , Node}`: A Bijection from Bijections.jl that associates Int64 to `Node`s.
-- `fadjlist::Vector{Vector{HalfEdge{ <: MultilayerVertex, <: Union{Nothing, U}}}}`: the forward adjacency list of the MultilayerDiGraph. It is a vector of vectors of [`HalfEdge`](@ref)s. Its i-th element are the[`HalfEdge`](@ref)s that originate from `v_V_associations[i]`.
-- `v_metadata_dict::Dict{T, <: Union{ <: Tuple, <: NamedTuple}}`: A Dictionary that associates numeric vertices to their metadata
 """
 mutable struct MultilayerDiGraph{T,U} <: AbstractMultilayerDiGraph{T,U}
-    layers::Vector{LayerDescriptor{T,U}}
-    interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}} 
-    v_V_associations::Bijection{ T, <: MultilayerVertex}
-    idx_N_associations::Bijection{ Int64 , Node}
-    fadjlist::Vector{Vector{HalfEdge{ <: MultilayerVertex, <: Union{Nothing, U}}}}
-    badjlist::Vector{Vector{HalfEdge{ <: MultilayerVertex, <: Union{Nothing, U}}}}
-    v_metadata_dict::Dict{T, <: Union{ <: Tuple, <: NamedTuple}}
+    layers::Vector{LayerDescriptor{T,U}} # vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
+    interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}} #  the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all undirected.
+    v_V_associations::Bijection{ T, <: MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
+    idx_N_associations::Bijection{ Int64 , Node} # A Bijection from Bijections.jl that associates Int64 to `Node`s.
+    fadjlist::Vector{Vector{HalfEdge{ <: MultilayerVertex, <: Union{Nothing, U}}}} # the forward adjacency list of the MultilayerDiGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that originate from `v_V_associations[i]`.
+    badjlist::Vector{Vector{HalfEdge{ <: MultilayerVertex, <: Union{Nothing, U}}}} # the bacward adjacency list of the MultilayerDiGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that insost on `v_V_associations[i]`.
+    v_metadata_dict::Dict{T, <: Union{ <: Tuple, <: NamedTuple}} # A Dictionary that associates numeric vertices to their metadata
 end
 
 # Traits
