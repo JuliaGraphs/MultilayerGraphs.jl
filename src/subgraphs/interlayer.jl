@@ -292,7 +292,13 @@ return _Interlayer(
 end
 
 """
-    multiplex_interlayer(nv::Int64, name::Symbol,layer_1::Symbol, layer_2::Symbol, graph_type::Type{G}; forbidden_vertices::Vector{MultilayerVertex}, forbidden_edges::Vector{NTuple{2, MultilayerVertex}}) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}; !IsDirected{G}}
+    multiplex_interlayer(nv::Int64,
+        name::Symbol,
+        layer_1::Symbol, 
+        layer_2::Symbol, 
+        graph_type::Type{G}; 
+        forbidden_vertices::Vector{MultilayerVertex}, forbidden_edges::Vector{NTuple{2, MultilayerVertex}}
+    ) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}; !IsDirected{G}}
 
 Return an `Interlayer{T,U,G}` that has edges only between vertices that represent the same node.
 
