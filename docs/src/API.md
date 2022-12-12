@@ -8,7 +8,6 @@ This page provides a list of exported methods organized by topic and audience. M
 
 ```@docs
 Node
-
 ```
 
 ### Vertices
@@ -74,6 +73,8 @@ Layer(
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 has_node(layer::Layer, n::Node)
+add_vertex!(layer::Layer, mv::MultilayerVertex)
+add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, L <: Layer{T}} 
 rem_vertex!(layer::Layer, mv::MultilayerVertex)
 rem_vertex!(layer::Layer, n::Node)
 
@@ -198,6 +199,10 @@ mv_vertices(mg::AbstractMultilayerGraph)
 mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_neighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
+add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
+rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
+rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) 
 has_edge( subgraph::AbstractMultilayerGraph, s::MultilayerVertex, d::MultilayerVertex)
 ne(mg::AbstractMultilayerGraph)
@@ -218,8 +223,6 @@ is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
 is_directed(mg::AbstractMultilayerDiGraph)
 is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
 has_node(mg::AbstractMultilayerGraph, n::Node)
-rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
-rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
 set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
 set_metadata!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
@@ -317,11 +320,6 @@ multilayer_kronecker_delta(dims::NTuple{4,Int64})
 δ_3{T<:Number}
 δ_Ω{T}
 ```
-
-
-----------------------------------------------------
-####################################################
-----------------------------------------------------
 
 
 ## Developer

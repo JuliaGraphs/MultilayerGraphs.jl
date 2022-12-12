@@ -191,21 +191,22 @@ Graphs.has_vertex(layer::Layer, mv::MultilayerVertex) = MV(node(mv), name(layer)
 # TODO:
 # Implement a MultilayerVertex constructor that leaves the .layer field unspecified, for ease of use of the following function
 """
-    add_vertex!(layer::L, mv::MultilayerVertex) where { L <: Layer} 
+    add_vertex!(layer::Layer, mv::MultilayerVertex) 
 
 Add vertex to layer `layer`. 
 """
-function Graphs.add_vertex!(layer::L, mv::MultilayerVertex) where { L <: Layer}  
+function Graphs.add_vertex!(layer::Layer, mv::MultilayerVertex)
+
     (isnothing(mv.layer) || mv.layer == layer.name) || throw(ErrorException("The multilayer vertex $mv cannot belong to layer $(layer.name)."))
     add_vertex!(layer, mv.node; metadata = mv.metadata )
 end
 
 """
-    add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, U, G,  L <: Layer{T,U,G}}      
+    add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, L <: Layer{T}}      
 
 Add vertex associated with node `n` to layer `layer`. This method supports the uniform and transparent interfaces. See the [Vertices](@ref) section of the Tutorial.
 """
-function Graphs.add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, U, G,  L <: Layer{T,U,G}} 
+function Graphs.add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, L <: Layer{T}} 
     # Check if the vertex is already in the layer
     has_node(layer, n) && return false
 

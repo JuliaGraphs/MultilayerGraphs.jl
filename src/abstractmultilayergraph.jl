@@ -121,7 +121,7 @@ Graphs.has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = get_bare_
 
 Return a list of the `MultilayerVertex`s contained in `mg`.
 """
-mv_vertices(mg::AbstractMultilayerGraph)  =  [get_rich_mv(mg, v) for v in vertices(mg)]
+mv_vertices(mg::AbstractMultilayerGraph) =  [get_rich_mv(mg, v) for v in vertices(mg)]
 
 """
     nv(mg::M) where {M <: AbstractMultilayerGraph }

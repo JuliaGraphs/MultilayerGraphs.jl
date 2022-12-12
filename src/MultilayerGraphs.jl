@@ -74,6 +74,7 @@ export
     AbstractLayer,
     Layer,
     has_node,
+    add_vertex!
     rem_vertex!,
     # interlayer.jl
     AbstractInterlayer,
