@@ -82,7 +82,6 @@ rem_vertex!(layer::Layer, mv::MultilayerVertex)
 rem_vertex!(layer::Layer, n::Node)
 
 Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}}
-
 Interlayer(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
@@ -91,7 +90,7 @@ Interlayer(
     default_edge_weight::Function = (x,y) -> nothing,
     default_edge_metadata::Function = (x,y) -> NamedTuple(),
     transfer_vertex_metadata::Bool = false,
-    name::Symbol
+    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 

@@ -116,7 +116,7 @@ Constructor for Interlayer.
 
 - `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
 - `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
-- `ne::Int64`: The number of edges of the Interlayer;
+- `edge_list::Vector{ <: MultilayerEdge{<: Union{U, Nothing}}}`: The `MultilayerEdge` list of the Interlayer;
 - `null_graph::G`: the Interlayer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
 
 # KWARGS
