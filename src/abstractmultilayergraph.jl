@@ -415,13 +415,16 @@ end
 
 
 """
-    get_interlayer(mg::M, layer_1::Symbol, layer_2::Symbol) where {M <: AbstractMultilayerGraph}
+    get_interlayer(
+        mg::AbstractMultilayerGraph, layer_1_name::Symbol, 
+        layer_2_name::Symbol
+    )
 
 Return the `Interlayer` between `layer_1` and `layer_2`.
 """
 function get_interlayer(
-    mg::M, layer_1_name::Symbol, layer_2_name::Symbol
-) where {M<:AbstractMultilayerGraph}
+    mg::AbstractMultilayerGraph, layer_1_name::Symbol, layer_2_name::Symbol
+)
 
     layer_1_name ∈ mg.layers_names || throw(ErrorException("$layer_1_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names)."))
     layer_2_name ∈ mg.layers_names || throw(ErrorException("$layer_2_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names)."))
@@ -479,39 +482,39 @@ end
 
 # Graphs.jl's internals and ecosystem extra overrides
 """
-    indegree( mg::M, v::V) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex}       
+    indegree( mg::AbstractMultilayerGraph, v::MultilayerVertex)      
 
 Get the indegree of vertex `v` in `mg`.
 """
-Graphs.indegree( mg::M, v::V) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = length(inneighbors(mg, v))
+Graphs.indegree( mg::AbstractMultilayerGraph, v::MultilayerVertex) = length(inneighbors(mg, v))
 
 """
     indegree( mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex}
 
 Get the vector of indegrees of vertices `vs` in `mg`.
 """
-Graphs.indegree( mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = [indegree(mg, x) for x in vs]
+Graphs.indegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) = [indegree(mg, x) for x in vs]
 
 """
-    outdegree(mg::M, v::V) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex}
+    outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 
 Get the outdegree of vertex `v` in `mg`.
 """
-Graphs.outdegree(mg::M, v::V) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = length(outneighbors(mg, v))
+Graphs.outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = length(outneighbors(mg, v))
      
 """
     outdegree(mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} 
 
 Get the vector of outdegrees of vertices `vs` in `mg`.
 """
-Graphs.outdegree(mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = [outdegree(mg, x) for x in vs]
+Graphs.outdegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) = [outdegree(mg, x) for x in vs]
 
 """
-    degree(mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex}
+    degree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) 
 
 Get the degree of vertices `vs` in `mg`.
 """
-Graphs.degree(mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} = [degree(mg, x) for x in vs]
+Graphs.degree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) = [degree(mg, x) for x in vs]
 
 """
     inneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex ) 
@@ -554,7 +557,7 @@ Get the neighbors of vertex `mv` in `mg`. Reduces to `outneighbors` for both dir
 Graphs.neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = outneighbors(mg, mv)
 
 """
-    weighttype(mg::M) where {M <: AbstractMultilayerGraph}
+    weighttype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} 
 
 Return the weight type of `mg` (i.e. the eltype of the weight tensor or the supra-adjacency matrix).
 """
@@ -759,34 +762,37 @@ function metadata_tensor(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 end
 
 """
-    mean_degree(mg::M) where { M <: AbstractMultilayerGraph}
+    mean_degree(mg::AbstractMultilayerGraph)
 
 Return the mean of the degree sequence of `mg`.
 """
-mean_degree(mg::M) where {M<:AbstractMultilayerGraph} = mean(degree(mg))
+mean_degree(mg::AbstractMultilayerGraph) = mean(degree(mg))
 
 """
-    degree_second_moment(mg::M) where { M <: AbstractMultilayerGraph}
+    degree_second_moment(mg::AbstractMultilayerGraph) 
 
 Calculate the second moment of the degree sequence of `mg`.
 """
-degree_second_moment(mg::M) where {M<:AbstractMultilayerGraph} = mean(degree(mg) .^ 2)
+degree_second_moment(mg::AbstractMultilayerGraph) = mean(degree(mg) .^ 2)
 
 """
-    degree_variance(mg::M) where { M <: AbstractMultilayerGraph}
+    degree_variance(mg::AbstractMultilayerGraph)
 
 Return the variance of the degree sequence of `mg`.
 """
-degree_variance(mg::M) where {M<:AbstractMultilayerGraph} = var(degree(mg))
+degree_variance(mg::AbstractMultilayerGraph) = var(degree(mg))
 
 """
-    multilayer_clustering_coefficient(mg::M, norm_factor::Union{Float64, Symbol} = :max) where {M <: AbstractMultilayerGraph}
+    multilayer_global_clustering_coefficient(
+        mg::AbstractMultilayerGraph, 
+        norm_factor::Union{Float64,Symbol}=:max
+    )
 
 Return the complete multilayer global clustering coefficient, equal to the ratio of realized triplets over all possible triplets, including those whose every or some edges belong to interlayers, normalized by `norm_factor`. If `norm_factor == :max`, then the ratio is normalized by `maximum(mg.array)`. This function does not override Graphs.jl's `global_clustering_coefficient`, since the latter does not consider cliques where two nodes are the same node but in different layers/interlayers. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
 function multilayer_global_clustering_coefficient(
-    mg::M, norm_factor::Union{Float64,Symbol}=:max
-) where {M<:AbstractMultilayerGraph}
+    mg::AbstractMultilayerGraph, norm_factor::Union{Float64,Symbol}=:max
+)
     wgt = weight_tensor(mg).array
 
     _normalization_inverse = 1.0
@@ -848,13 +854,16 @@ function multilayer_weighted_global_clustering_coefficient(
 end
 
 """
-    overlay_clustering_coefficient(mg::M, norm_factor::Union{Float64, Symbol} = :max) where {M <: AbstractMultilayerGraph}
+    overlay_clustering_coefficient(
+        mg::AbstractMultilayerGraph, 
+        norm_factor::Union{Float64,Symbol}=:max
+    )
 
 Return the overlay clustering coefficient as calculated in [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
 function overlay_clustering_coefficient(
-    mg::M, norm_factor::Union{Float64,Symbol}=:max
-) where {M<:AbstractMultilayerGraph}
+    mg::AbstractMultilayerGraph, norm_factor::Union{Float64,Symbol}=:max
+)
 
     wgt = weight_tensor(mg).array
 
@@ -886,7 +895,12 @@ function overlay_clustering_coefficient(
 end
 
 """
-    eigenvector_centrality(mg::M; norm::String = "1", tol::Float64 = 1e-6, maxiter::Int64 = 2000) where {T, U, M <: AbstractMultilayerGraph{T, U}}
+    eigenvector_centrality(
+        mg::M;
+        norm::String = "1",
+        tol::Float64 = 1e-6,
+        maxiter::Int64 = 2000
+        ) where {T, U, M <: AbstractMultilayerGraph{T, U}}
 
 Calculate the eigenvector centrality of `mg` via an iterative algorithm. The `norm` parameter may be `"1"` or `"n"`,  and respectively the eigenvector centrality will be normalized to 1 or further divided by the number of nodes of `mg`. The `tol` parameter terminates the approximation when two consecutive iteration differ by no more than  `tol`. The `maxiters` parameter terminates the algorithm when it goes beyond `maxiters` iterations.
 
@@ -944,7 +958,11 @@ function Graphs.eigenvector_centrality(
 end
 
 """
-    modularity(mg::M, c::Matrix{Int64}; null_model::Union{String,Array{U,4}} = "degree") where {T, U, M <: AbstractMultilayerGraph{T,U}}
+    modularity(
+        mg::M, 
+        c::Matrix{Int64}; 
+        null_model::Union{String,Array{U,4}} = "degree"
+    ) where {T, U, M <: AbstractMultilayerGraph{T,U}}
 
 Calculate the modularity of `mg`, as shown in [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """

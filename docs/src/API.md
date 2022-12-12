@@ -1,6 +1,6 @@
 # API
 
-This page lists all exported methods, organizing them by topic (whether it is a method that acts on vertices, edges, layers, etc) and by audience: due to how it was possible to integrate multilayer graphs within the `Graphs.jl` ecosystem, some methods are intended for developers who wish to use this library just as any other `Graphs.jl` package in their code, while others are meant to be employed by the end-user.
+This page provides a list of exported methods organized by topic and audience. Methods that act on vertices, edges, and layers are grouped together. Some methods are intended for developers who want to use the `Graphs.jl` library as part of their code, while others are meant for end-users.
 
 ## End-User
 
@@ -191,15 +191,60 @@ specify_interlayer!(
     mg::M,
     new_interlayer::In
 ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},In<:Interlayer{T,U,G}}
+
+get_interlayer(
+    mg::AbstractMultilayerGraph, layer_1_name::Symbol, layer_2_name::Symbol
+)
+
+
+indegree( mg::AbstractMultilayerGraph, v::MultilayerVertex) 
+indegree(mg::AbstractMultilayerGraph, vs::AbstractVector{V}=vertices(mg))
+
+outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+outdegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg))
+
+degree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) 
+
+mean_degree(mg::AbstractMultilayerGraph)
+
+degree_second_moment(mg::AbstractMultilayerGraph) 
+
+degree_variance(mg::AbstractMultilayerGraph)
+
+MultilayerGraphs.weighttype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
+
+multilayer_global_clustering_coefficient(
+    mg::AbstractMultilayerGraph, norm_factor::Union{Float64,Symbol}=:max
+)
+
+overlay_clustering_coefficient(
+    mg::AbstractMultilayerGraph,
+    norm_factor::Union{Float64,Symbol}=:max
+)
+
+eigenvector_centrality(
+    mg::M; weighted::Bool = true,  norm::String="1", tol::Float64=1e-6, maxiter::Int64=2000
+) where {T,U,M<:AbstractMultilayerGraph{T,U}}
+
+modularity(
+    mg::M, c::Matrix{Int64}; null_model::Union{String,Array{U,4}}="degree"
+) where {T,U,M<:AbstractMultilayerGraph{T,U}}
+
+
+von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
 ```
 
 ### Representations
 ```@docs
 array(atr::AbstractTensorRepresentation)
 WeightTensor{U}
+weight_tensor(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 MetadataTensor{U}
+metadata_tensor(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 array(amr::AbstractMatrixRepresentation)
 SupraWeightMatrix{T,U}
+supra_weight_matrix(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+
 ```
 
 ### Traits
@@ -285,6 +330,8 @@ edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerUGraph{T}}
 has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerDiGraph{T}}
 rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}
+AbstractMultilayerUGraph{T,U}
+
 ```
 
 ### Representations
