@@ -108,7 +108,6 @@ end
         default_edge_metadata::Function = (x,y) -> NamedTuple(),
         transfer_vertex_metadata::Bool = false,
         name::Symbol
-        
     ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Constructor for Interlayer.
@@ -158,7 +157,6 @@ end
         default_edge_metadata::Function = (x,y) -> NamedTuple(),
         transfer_vertex_metadata::Bool = false,
         name::Symbol
-
     ) where {L1, L2, T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Internal constructor for `Interlayer`.
@@ -184,7 +182,6 @@ function _Interlayer(
     )
 end
 
-
 """
     Interlayer(
         layer_1::Layer{T,U},
@@ -195,8 +192,7 @@ end
         default_edge_metadata::Function = (x,y) -> NamedTuple(),
         name::Symbol,
         transfer_vertex_metadata::Bool = false
-        
-    ) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+    ) where {T<:Integer, U <: Union{Nothing, <: Real}, G<:AbstractGraph{T}}
 
 Return a random `Interlayer`.
 
