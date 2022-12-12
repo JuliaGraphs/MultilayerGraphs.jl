@@ -1,7 +1,3 @@
-# ne
-# has_edge
-# edges
-
 """
     AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} 
 
@@ -48,7 +44,6 @@ function Graphs.rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 
     # Get the v corresponding to V, delete the association and replace it with a MissingVertex. Also substitute the metadata with an empty NamedTuple
     v = get_v(mg, V)
-
     forward_halfedges_to_be_deleted = mg.fadjlist[v]
     
     # Loop over the halfedges to be removed in  `forward_halfedges_to_be_deleted`, get their v and remove halfedges to `V` in their corresponding arrays
@@ -100,7 +95,6 @@ function Graphs.rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
         delete!(mg.v_V_associations, v)
         delete!(mg.v_metadata_dict, v)
     end
-
     return true
 
 end
@@ -112,10 +106,10 @@ end
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
 function Graphs.has_edge(mg::M, src::T, dst::T) where { T,M <: AbstractMultilayerDiGraph{T}}
-
+    # Returns true if src is a vertex of mg
     has_vertex(mg,src) || return false
+    # Returns true if dst is a vertex of mg
     has_vertex(mg,dst) || return false
-
 
     halfedges_from_src = mg.fadjlist[src]
     halfedges_to_dst   = mg.badjlist[dst]
@@ -127,9 +121,7 @@ function Graphs.has_edge(mg::M, src::T, dst::T) where { T,M <: AbstractMultilaye
         srcs_v = get_v.(Ref(mg), vertex.(halfedges_to_dst))
         return src in srcs_v
     end
-    
 end
-
 
 """
     set_weight!(mg::M, src::MultilayerVertex{L1}, dst::MultilayerVertex{L2}, weight::U) where {L1 <: Symbol, L2 <: Symbol, T,U, M <: AbstractMultilayerGraph{T,U}}
@@ -137,23 +129,24 @@ end
 Set the weight of the edge between `src` and `dst` to `weight`. Return true if succeeds (i.e. if the edge exists and the underlying graph chosen for the Layer/Interlayer where the edge lies is weighted under the `IsWeighted` trait).
 """
 function set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where { T,U, M <: AbstractMultilayerDiGraph{T,U}}
+    # Get the subgraph descriptor for the layer containing both src and dst
     descriptor = get_subgraph_descriptor(mg, layer(src), layer(dst))
+    # Check if the subgraph is weighted
     is_weighted(descriptor.null_graph) || return false
+    # Check if an edge exists between src and dst
     has_edge(mg, src, dst) ||  return false
-
+    # Get the halfedge from src to dst
     halfedges_from_src = mg.fadjlist[get_v(mg, src)]
     halfedge_from_src = halfedges_from_src[findfirst(he -> vertex(he) == dst, halfedges_from_src)]
+    # Set the weight of the halfedge from src to dst
     halfedge_from_src.weight = weight
-
+    # Get the halfedge from dst to src
     halfedges_to_dst = mg.badjlist[get_v(mg, dst)]
     halfedge_to_dst = halfedges_to_dst[findfirst(he -> vertex(he) == src, halfedges_to_dst)]
+    # Set the weight of the halfedge from dst to src
     halfedge_to_dst.weight = weight
-
     return true
-
 end
-
-
 
 """
     set_metadata!(mg::M, src::MultilayerVertex{L1}, dst::MultilayerVertex{L2}, metadata::U) where {L1 <: Symbol, L2 <: Symbol, T,U, M <: AbstractMultilayerGraph{T,U}}
@@ -161,22 +154,22 @@ end
 Set the metadata of the edge between `src` and `dst` to `metadata`. Return true if succeeds (i.e. if the edge exists and the underlying graph chosen for the Layer/Interlayer where the edge lies supports metadata at the edge level  under the `IsMeta` trait).
 """
 function set_metadata!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) where M <: AbstractMultilayerDiGraph
+    # Get the subgraph descriptor that corresponds to the layer of src and dst
     descriptor = get_subgraph_descriptor(mg, layer(src), layer(dst))
+    # If the subgraph descriptor's null graph is true, then the edge does not exist
     is_meta(descriptor.null_graph) || return false
+    # If the edge does not exist, return false
     has_edge(mg, src, dst) ||  return false
-
+    # Set the halfedge from src to dst
     halfedges_from_src = mg.fadjlist[get_v(mg, src)]
     halfedge_from_src = halfedges_from_src[findfirst(he -> vertex(he) == dst, halfedges_from_src)]
     halfedge_from_src.metadata = metadata
-
+    # Set the halfedge from dst to src
     halfedges_to_dst = mg.badjlist[get_v(mg, dst)]
     halfedge_to_dst = halfedges_to_dst[findfirst(he -> vertex(he) == src, halfedges_to_dst)]
     halfedge_to_dst.metadata = metadata
-
     return true
-
 end
-
 
 # Overloads that make AbstractMultilayerDiGraph an extension of Graphs.jl. These are all well-inferred .
 """
@@ -389,18 +382,19 @@ end
 return _inneighbors
 end
 
-
-# function get_overlay_monoplex_graph end #approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
 """
     get_overlay_monoplex_graph(mg::M) where {M<: AbstractMultilayerDiGraph}
 Get overlay monoplex graph (i.e. the graph that has the same nodes as `mg` but the link between node `i` and `j` has weight equal to the sum of all edges weights between the various vertices representing `i` and `j` in `mg`, accounting for both layers and interlayers). See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
 function get_overlay_monoplex_graph(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
+    # Convert the multilayer graph to a weight tensor
     wgt = weight_tensor(mg).array
+    # Sum the weights for each edge in the multilayer graph
     projected_overlay_adjacency_matrix = sum([
         wgt[:, :, i, i] for i in 1:size(wgt, 3)
     ])
     return SimpleWeightedDiGraph{T,U}(
         projected_overlay_adjacency_matrix
     )
+    # Approach taken from https://github.com/JuliaGraphs/Graphs.jl/blob/7152d540631219fd51c43ab761ec96f12c27680e/src/core.jl#L124
 end

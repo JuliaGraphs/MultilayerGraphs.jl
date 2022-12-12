@@ -112,5 +112,5 @@ function compare_multilayervertices(V1::MultilayerVertex, V2::MultilayerVertex; 
 end
 
 # Console print utilities
-to_string( x::M) where {S  , M <: MultilayerVertex{S}} = "MV($(x.node), :$(x.layer), $(x.metadata))" #{:$S}
+to_string( x::M) where {S  , M <: MultilayerVertex{S}} = "MV($(x.node), :$(x.layer), $(x.metadata))" 
 Base.show(io::IO, x::MultilayerVertex) = print(io, to_string(x))

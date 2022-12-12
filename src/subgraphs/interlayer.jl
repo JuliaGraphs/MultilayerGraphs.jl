@@ -81,7 +81,7 @@ end
         
     ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
-Internal constructor used with InterlayerDescriptor
+Internal constructor used with InterlayerDescriptor.
 """
 function _Interlayer(
     layer_1_multilayervertices::Vector{<: MultilayerVertex},
@@ -336,7 +336,7 @@ multiplex_interlayer(
         forbidden_edges::Vector{NTuple{2, MultilayerVertex}}
     ) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}
 
-Internal method for multiplex_interlayer
+Internal method for multiplex_interlayer.
 """
 function _multiplex_interlayer(
     layer_1_multilayervertices::Vector{MultilayerVertex{L1}},
@@ -433,9 +433,7 @@ function _empty_interlayer(
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
 ) where {L1, L2, T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
-
     edge_list = MultilayerEdge{U}[]
-
     descriptor =  InterlayerDescriptor(L1, L2, null_graph, weighttype; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata,  transfer_vertex_metadata = transfer_vertex_metadata, name = name)
 
     return _Interlayer(
@@ -452,13 +450,15 @@ end
 Check if `graph`, whose vertices are interpreted via `v_V_associations` can be the underlying bipartite graph of an Interlayer graph.
 """
 function is_interlayer_bipartite(graph::G, v_V_associations::Bijection{T, MultilayerVertex}) where {T, G <: AbstractGraph{T}}
-    
     layers = unique([mv.layer for mv in image(v_V_associations)])
     # If it is an empty interlayer, we assume it is bipartite
     length(layers) == 0 && return true
     length(layers) == 2 || throw(ErrorException("The interlayer cannot be bipartite since more than two layers are involved. Found $layers in v_V_associations."))
+    # This loop iterates through all edges of the graph
     for edge in edges(graph)
+        # This if statement checks if the source and destination of the edge are on the same layer
         if !(v_V_associations[src(edge)].layer != v_V_associations[dst(edge)].layer)
+            # If they are, the graph is not a valid layering
             return false  
         end
     end
@@ -478,7 +478,9 @@ function is_multiplex_interlayer(interlayer::Interlayer)
         end
         return true
     else
+        # Loop through all nodes in both layers.
         for node in intersect(interlayer.layer_1_nodes, interlayer.layer_2_nodes)
+            # Check if there is an edge between the nodes in both layers.
             has_edge(interlayer, MV(node, interlayer.layer_1), MV(node, interlayer.layer_2)) || return false
         end
         return true
@@ -490,7 +492,7 @@ end
 
 Return `true` if `n` is a `Node` of `interlayer`.
 """
-has_node( interlayer::Interlayer, n::Node ) =  n in nodes(interlayer.layer_1) || n in nodes(interlayer.layer_2) 
+has_node(interlayer::Interlayer, n::Node ) = n in nodes(interlayer.layer_1) || n in nodes(interlayer.layer_2) 
 
 
 """
@@ -504,7 +506,6 @@ Graphs.has_vertex(interlayer::Interlayer, mv::MultilayerVertex) = get_bare_mv(mv
 """
 """
 function Graphs.add_edge!(interlayer::In, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...) where { In <: Interlayer} 
-
     src_bare = get_bare_mv(src)
     dst_bare = get_bare_mv(dst)
     !has_vertex(interlayer, src)  && throw( ErrorException( "Vertex $(src) does not belong to the interlayer."))
@@ -545,10 +546,9 @@ end
     Base.getproperty(interlayer::In, f::Symbol) where { In <: Interlayer}
 """
 function Base.getproperty(interlayer::In, f::Symbol) where {In<:Interlayer}
-
     if f ∈(:descriptor, :graph, :v_V_associations)
-            Base.getfield(interlayer, f)
-    elseif f ∈ (:name, :layer_1, :layer_2, :null_graph, :default_edge_weight, :default_edge_metadata,  :transfer_vertex_metadata) # edge_weight_function:, :edge_metadata_function,
+        Base.getfield(interlayer, f)
+    elseif f ∈ (:name, :layer_1, :layer_2, :null_graph, :default_edge_weight, :default_edge_metadata,  :transfer_vertex_metadata) 
         Base.getfield(interlayer.descriptor, f)
     elseif f == :edge_list
         edges(interlayer)
@@ -578,19 +578,19 @@ end
 """
     get_symmetric_interlayer(interlayer::In; symmetric_interlayer_name::String) where{T,U,G, In <: Interlayer{T,U,G}}
 
-Return the `Interlayer` corresponding to `interlayer` where `layer_1` and `layer_2` are swapped. Its name will be `symmetric_interlayer_name` (defaults to `interlayer_(interlayer.layer_2)_(interlayer.layer_1)` ).
+Return the `Interlayer` corresponding to `interlayer` where `layer_1` and `layer_2` are swapped. Its name will be `symmetric_interlayer_name` (defaults to `interlayer_(interlayer.layer_2)_(interlayer.layer_1)`).
 """
 function get_symmetric_interlayer(
     interlayer::In;
     symmetric_interlayer_name::String = String(interlayer.name) * "_rev"
 ) where {T,U,G,In<:Interlayer{T,U,G}}
-
+    # Create a symmetric interlayer descriptor
     symmetric_descriptor = InterlayerDescriptor(Symbol(symmetric_interlayer_name), interlayer.layer_2, interlayer.layer_1, interlayer.null_graph, interlayer.default_edge_weight, interlayer.default_edge_metadata, interlayer.transfer_vertex_metadata, U)
-
+    # Create a symmetrized interlayer with the symmetric descriptor
     symmetrized_interlayer = Interlayer(symmetric_descriptor, interlayer.graph, interlayer.v_V_associations)
-
+    # Recompute the interlayer, using the layer 1 and layer 2 vertices from the original interlayer
     recompute_interlayer!(symmetrized_interlayer, symmetrized_interlayer.layer_1_bare_multilayer_vertices, symmetrized_interlayer.layer_2_bare_multilayer_vertices)
-
+    # Return the symmetrized interlayer
     return symmetrized_interlayer
 end
 
