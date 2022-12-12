@@ -361,15 +361,15 @@ function _multiplex_interlayer(
 end
 
 """
-empty_interlayer(
-    layer_1::Layer{T,U},
-    layer_2::Layer{T,U},
-    null_graph::G;
-    default_edge_weight::Function = (x,y) -> nothing,
-    default_edge_metadata::Function = (x,y) -> NamedTuple(),
-    name::Symbol),
-    transfer_vertex_metadata::Bool = false
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+    empty_interlayer(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        null_graph::G;
+        default_edge_weight::Function = (x,y) -> nothing,
+        default_edge_metadata::Function = (x,y) -> NamedTuple(),
+        name::Symbol),
+        transfer_vertex_metadata::Bool = false
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Construct an empty interlayer (i.e. an interlayer with no edges).
 
@@ -397,7 +397,7 @@ empty_interlayer(
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} =  _empty_interlayer(collect(mv_vertices(layer_1)), collect(mv_vertices(layer_2)),  null_graph, U; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata,  transfer_vertex_metadata = transfer_vertex_metadata, name = name )
 
 """
-    empty_interlayer(
+    _empty_interlayer(
         layer_1_multilayervertices::Vector{MultilayerVertex{L1}},
         layer_2_multilayervertices::Vector{MultilayerVertex{L2}},
         null_graph::G,
