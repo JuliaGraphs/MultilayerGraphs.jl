@@ -203,7 +203,7 @@ Return `true` if there is an edge between `s` and `d`, `false` otherwise.
 Graphs.has_edge( subgraph::AbstractSubGraph, s::MultilayerVertex, d::MultilayerVertex) =  has_edge(subgraph, get_v(subgraph, s), get_v(subgraph, d))
 
 """
-    has_edge(subgraph::S, s::MultilayerVertex, d::MultilayerVertex) where { T, S <: AbstractSubGraph{T}}
+    has_edge( subgraph::S, s::T, d::T) where {T,S<:AbstractSubGraph{T}}
 
 Return `true` if there is an edge between `s` and `d`, `false` otherwise.
 """

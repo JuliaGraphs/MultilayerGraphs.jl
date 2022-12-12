@@ -358,7 +358,7 @@ outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 neighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
 neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 edgetype(::S) where {T,U,S<:AbstractSubGraph{T,U}}
-has_edge(subgraph::S, s::MultilayerVertex, d::MultilayerVertex) where { T, S <: AbstractSubGraph{T}}
+has_edge( subgraph::S, s::T, d::T) where {T,S<:AbstractSubGraph{T}}
 add_edge!(subgraph::S, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple, NamedTuple}= NamedTuple()) where {T, U<: Real, W<:Union{ U, Nothing},G<:AbstractGraph{T},S<:AbstractSubGraph{T,U,G}} 
 rem_edge!(subgraph::S, src::T, dst::T) where {T, S<:AbstractSubGraph{T}}
 AbstractLayer

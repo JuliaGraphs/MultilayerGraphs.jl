@@ -780,7 +780,7 @@ degree_variance(mg::AbstractMultilayerGraph) = var(degree(mg))
         norm_factor::Union{Float64,Symbol}=:max
     )
 
-Return the complete multilayer global clustering coefficient, equal to the ratio of realized triplets over all possible triplets, including those whose every or some edges belong to interlayers, normalized by `norm_factor`. If `norm_factor == :max`, then the ratio is normalized by `maximum(mg.array)`. This function does not override Graphs.jl's `global_clustering_coefficient`, since the latter does not consider cliques where two nodes are the same node but in different layers/interlayers. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
+Return the complete multilayer global clustering coefficient, equal to the ratio of realized triplets over all possible triplets, including those whose every or some edges belong to interlayers, normalized by `norm_factor`. If `norm_factor == :max`, then the ratio is normalized by `maximum(array(weight_tensor(mg)))`, else it is not normalized. This function does not override Graphs.jl's `global_clustering_coefficient`, since the latter does not consider cliques where two nodes are the same node but in different layers/interlayers. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
 function multilayer_global_clustering_coefficient(
     mg::AbstractMultilayerGraph, norm_factor::Union{Float64,Symbol}=:max
@@ -816,7 +816,7 @@ end
 """
     multilayer_weighted_global_clustering_coefficient(mg::M, norm_factor::Union{Float64, Symbol} = :max) where {M <: AbstractMultilayerGraph}
 
-Return the complete multilayer global clustering coefficient, equal to the ratio of realized triplets over all possible triplets, including those whose every or some edges belong to interlayers, normalized by `norm_factor`. Each triplets contributes for `w[1]` if all of its vertices are in one layer, `w[2]` if its vertices span two layers, and `w[3]` if they span 3 layers. If `norm_factor == :max`, then the ratio is normalized by `maximum(mg.array)`. This function does not override Graphs.jl's `global_clustering_coefficient`, since the latter does not consider cliques where two nodes are the same node but in different layers/interlayers. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
+Return the complete multilayer global clustering coefficient, equal to the ratio of realized triplets over all possible triplets, including those whose every or some edges belong to interlayers, normalized by `norm_factor`. Each triplets contributes for `w[1]` if all of its vertices are in one layer, `w[2]` if its vertices span two layers, and `w[3]` if they span 3 layers. If `norm_factor == :max`, then the ratio is normalized by `maximum(array(weight_tensor(mg)))`, else it is not normalized. This function does not override Graphs.jl's `global_clustering_coefficient`, since the latter does not consider cliques where two nodes are the same node but in different layers/interlayers. See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
 function multilayer_weighted_global_clustering_coefficient(
     mg::M, w::Vector{Float64}, norm_factor::Union{Float64,Symbol}=:max
@@ -851,7 +851,7 @@ end
         norm_factor::Union{Float64,Symbol}=:max
     )
 
-Return the overlay clustering coefficient as calculated in [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
+Return the overlay clustering coefficient as calculated in [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). If `norm_factor == :max`, then the ratio is normalized by `maximum(array(weight_tensor(mg)))`, else it is not normalized. 
 """
 function overlay_clustering_coefficient(
     mg::AbstractMultilayerGraph, norm_factor::Union{Float64,Symbol}=:max
