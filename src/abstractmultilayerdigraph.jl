@@ -373,12 +373,13 @@ Return `true` if `mg` is directed, `false` otherwise.
 Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerDiGraph}} = true
 
 """
-    inneighbors(mg::M, v::T) where {M <: AbstractMultilayerDiGraph{T} } where { T <: Integer}
+    inneighbors(mg::M, v::T
+) where {T, M<:AbstractMultilayerGraph{T,<:Real}}
+
 
 Return the list of inneighbors of `v` within `mg`.
 """
-function Graphs.inneighbors(mg::M, v::T
-    ) where {M<:AbstractMultilayerGraph{T,<:Real}} where {T}
+function Graphs.inneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T,<:Real}}
 
     _inneighbors = T[]
 

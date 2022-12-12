@@ -129,8 +129,6 @@ get_symmetric_interlayer(
     interlayer::In;
     symmetric_interlayer_name::String = String(interlayer.name) * "_rev"
 ) where {T,U,G,In<:Interlayer{T,U,G}}
-
-
 ```
 
 ### Multilayer-Specific Methods
@@ -286,8 +284,6 @@ modularity(
 
 
 von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-
-
 ```
 
 ### Representations
@@ -300,7 +296,6 @@ metadata_tensor(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 array(amr::AbstractMatrixRepresentation)
 SupraWeightMatrix{T,U}
 supra_weight_matrix(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
-
 ```
 
 ### Traits
@@ -312,6 +307,16 @@ is_meta(g::G) where {G <: AbstractGraph}
 is_meta(g::G) where {G<:Type{<:AbstractGraph}}
 ```
 
+### Utilities
+```@docs
+multilayer_kronecker_delta(dims::NTuple{4,Int64})
+δk{T}
+δk(N::Int64)
+δ_1{T<: Number}
+δ_2{T<:Number}
+δ_3{T<:Number}
+δ_Ω{T}
+```
 
 
 ----------------------------------------------------
@@ -374,12 +379,10 @@ AbstractInterlayer
 AbstractMultilayerGraph{T <: Integer, U <: Real}
 has_vertex(mg::M, v::T) where {T, M <: AbstractMultilayerGraph{T}}
 vertices(mg::AbstractMultilayerGraph)
-inneighbors(mg::AbstractMultilayerUGraph, v::T) where {T <: Integer, M <: AbstractMultilayerUGraph{T}}
-inneighbors(mg::M, v::T) where {T <: Integer, M <: AbstractMultilayerDiGraph{T}}
+inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
+inneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T,<:Real}}
 inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
-outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
-outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
-outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
+outneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T}}
 neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerUGraph{T}}
@@ -399,8 +402,4 @@ AbstractMatrixRepresentation{T,U}
 ```@docs
 IsWeighted{X}
 IsMeta{X}
-```
-
-
-```@docs
 ```

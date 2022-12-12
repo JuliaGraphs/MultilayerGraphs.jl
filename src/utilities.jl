@@ -35,7 +35,7 @@ function check_unique(vec::Union{Missing,<:Vector,<:Tuple})
 end
 
 """
-    multilayer_kronecker_delta(dims...)
+    multilayer_kronecker_delta(dims::NTuple{4,Int64})
 
 Return a 4-dimensional Kronecker delta with size equal to `dims`.
 """
@@ -97,7 +97,8 @@ The Kronecker delta.
 - `representation::Matrix{Int64}`: the matrix representing the Kronecker delta;
 - `T`: the return type when called `δk[i,j]`.
 
-# CONSTRUCTORS
+### CONSTRUCTORS
+
 
     δk{T}(N::Int64) where {T <: Number}
 
@@ -108,6 +109,7 @@ mutable struct δk{T} <: AbstractVector{T}
     representation::Matrix{Int64}
 
     # Inner constructor that only requires N and the eltype.
+    
     function δk{T}(N::Int64) where {T<:Number}
         out = new{T}(N)
         representation = [out[h, k] for h in 1:N, k in 1:N]

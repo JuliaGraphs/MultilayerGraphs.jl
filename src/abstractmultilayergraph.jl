@@ -524,13 +524,13 @@ Graphs.outneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex) = outnei
 
 
 """
-    outneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
+    outneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T}}
 
 Return the list of outneighbors of `v` within `mg`.
 """
 function Graphs.outneighbors(
     mg::M, v::T
-) where {M<:AbstractMultilayerGraph{T,<:Real}} where {T}
+) where {T, M<:AbstractMultilayerGraph{T}}
 
     _outneighbors = T[]
 
