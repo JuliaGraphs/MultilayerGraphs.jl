@@ -91,7 +91,7 @@ Interlayer(
     default_edge_weight::Function = (x,y) -> nothing,
     default_edge_metadata::Function = (x,y) -> NamedTuple(),
     transfer_vertex_metadata::Bool = false,
-    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    name::Symbol
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 

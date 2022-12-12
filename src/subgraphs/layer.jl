@@ -116,7 +116,6 @@ end
         default_edge_weight::Function = (src, dst) -> nothing,
         default_edge_metadata::Function = (src, dst) -> NamedTuple(),
         allow_self_loops::Bool = false
-
     ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Return a random `Layer`.
