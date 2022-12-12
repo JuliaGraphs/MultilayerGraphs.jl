@@ -2,8 +2,7 @@
 
 This page lists all exported methods, organizing them by topic (whether it is a method that acts on vertices, edges, layers, etc) and by audience: due to how it was possible to integrate multilayer graphs within the `Graphs.jl` ecosystem, some methods are intended for developers who wish to use this library just as any other `Graphs.jl` package in their code, while others are meant to be employed by the end-user.
 
-
-## End-user
+## End-User
 
 ### Nodes
 
@@ -13,7 +12,6 @@ Node
 ```
 
 ### Vertices
-
 
 ```@docs
 eltype
@@ -27,7 +25,6 @@ MissingVertex
 
 ### Edges
 
-
 ```@docs
 MultilayerEdge
 ME
@@ -36,7 +33,6 @@ metadata(e::AbstractMultilayerEdge)
 ```
 
 ### Subgraphs
-
 
 ```@docs
 nodes(subgraph::AbstractSubGraph)
@@ -139,7 +135,6 @@ get_symmetric_interlayer(
 
 ### Multilayer-specific methods
 
-
 ```@docs
 nodes(mg::MultilayerGraph)
 has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
@@ -230,7 +225,7 @@ AbstractInterlayer
 ```@docs
 ```
 
-### Multilayer-specific methods
+### Multilayer-Specific Methods
 
 ```@docs
 has_vertex(mg::M, v::T) where {T, M <: AbstractMultilayerGraph{T}}
