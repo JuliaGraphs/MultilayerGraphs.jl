@@ -160,7 +160,7 @@ rem_edge!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
 get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 get_metadata(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
-get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex
+get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 is_directed(mg::AbstractMultilayerUGraph)
 is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
 is_directed(mg::AbstractMultilayerDiGraph)
@@ -198,7 +198,7 @@ get_interlayer(
 
 
 indegree( mg::AbstractMultilayerGraph, v::MultilayerVertex) 
-indegree(mg::AbstractMultilayerGraph, vs::AbstractVector{V}=vertices(mg))
+indegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg))
 
 outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 outdegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg))
@@ -297,7 +297,6 @@ has_vertex(subgraph::S, v::T ) where {T,S<:AbstractSubGraph{T}}
 vertices(subgraph::AbstractSubGraph)
 inneighbors(subgraph::S, v::T) where {T, S <: AbstractSubGraph{T}}
 inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
-mv_inneighbors(mg::M, v::T) where {M <: AbstractMultilayerGraph{T} } where { T <: Integer}
 outneighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
 outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 neighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
@@ -331,7 +330,7 @@ has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerUGraph{T}}
 has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerDiGraph{T}}
 rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}
 AbstractMultilayerUGraph{T,U}
-
+AbstractMultilayerDiGraph{T,U}
 ```
 
 ### Representations
