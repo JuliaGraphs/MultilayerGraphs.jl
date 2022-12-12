@@ -106,7 +106,17 @@ function Layer(descriptor::LayerDescriptor{T}, vertices::Vector{<: MultilayerVer
 end
 
 """
-    Layer(nv::Int64, name::Symbol, graph_type::Type{G}, ne::Int64; U::Union{Type{ <: Real},Nothing} = nothing)  where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}} 
+    Layer(
+        name::Symbol,
+        vertices::Vector{ <: MultilayerVertex},
+        ne::Int64,
+        null_graph::G,
+        weighttype::Type{U};
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_weight::Function = (src, dst) -> nothing,
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        allow_self_loops::Bool = false
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Return a random `Layer`.
 
@@ -164,11 +174,11 @@ function Layer(
 end
 
 """
-    has_node(layer::L, n::Node) where { L <: Layer} 
+    has_node(layer::Layer, n::Node)
 
 Return `true` if `n` is a node of `layer`.
 """
-has_node(layer::L, n::Node) where {L<:Layer} = MV(n, layer.name) ∈ image(layer.v_V_associations)
+has_node(layer::Layer, n::Node) = MV(n, layer.name) ∈ image(layer.v_V_associations)
 
 
 """
@@ -303,19 +313,19 @@ function Graphs.add_edge!(layer::L, src::MultilayerVertex, dst::MultilayerVertex
         # If the edge doesn't exist, add it
         # If the user does not specify any arguments, we use the default values
         if isempty(args) && length(kwargs) == 2 && issetequal(Set([:weight, :metadata]), Set(keys(kwargs)) )
-            success = add_edge_standard!(layer, bare_src, bare_dst, weight = values(kwargs).weight, metadata = values(kwargs).metadata)
+            success = add_edge_standard!(layer, src, dst, weight = values(kwargs).weight, metadata = values(kwargs).metadata)
         # If the user only specifies the weight, we use the default metadata
         elseif isempty(args) && length(kwargs) == 1 && issetequal(Set([:weight]), Set(keys(kwargs)) )
-            success = add_edge_standard!(layer, bare_src, bare_dst, weight = values(kwargs).weight, metadata = layer.default_edge_metadata(bare_src, bare_dst))
+            success = add_edge_standard!(layer, src, dst, weight = values(kwargs).weight, metadata = layer.default_edge_metadata(src, dst))
         # If the user only specifies the metadata, we use the default weight
         elseif isempty(args) && length(kwargs) == 1 && issetequal(Set([:metadata]), Set(keys(kwargs)) )
-            success = add_edge_standard!(layer, bare_src, bare_dst, weight = layer.default_edge_weight(bare_src, bare_dst), metadata =  values(kwargs).metadata)
+            success = add_edge_standard!(layer, src, dst, weight = layer.default_edge_weight(src, dst), metadata =  values(kwargs).metadata)
         # If the user does not specify any arguments, we use the default values
         elseif length(args) == length(kwargs) == 0
-            success = add_edge_standard!(layer, bare_src, bare_dst, weight = layer.default_edge_weight(bare_src, bare_dst), metadata = layer.default_edge_metadata(bare_src, bare_dst))
+            success = add_edge_standard!(layer, src, dst, weight = layer.default_edge_weight(src, dst), metadata = layer.default_edge_metadata(src, dst))
         else
             # If the user specifies arguments, we use those instead of the defaults
-            success = add_edge!(layer.graph, get_v(layer,bare_src), get_v(layer,bare_dst), args...; kwargs... )
+            success = add_edge!(layer.graph, get_v(layer,src), get_v(layer,dst), args...; kwargs... )
         end
         return success
     else

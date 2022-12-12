@@ -15,7 +15,7 @@ An abstract type representing a generic Interlayer.
 abstract type AbstractInterlayer{T,U,G} <: AbstractSubGraph{T,U,G} end
 
 """
-    mutable struct Interlayer{G <: AbstractGraph}
+    Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractInterlayer{T,U,G}
 
 Represents an interlayer in a `Multilayer(Di)Graph`. 
 """
@@ -30,18 +30,18 @@ end
 # Outer constructor that performs checks. Should be the last constructor called before instantiation.
 
 """
-Interlayer(
+    _Interlayer(
 
-    layer_1_multilayervertices::Vector{MultilayerVertex},
-    layer_2_multilayervertices::Vector{MultilayerVertex},
+        layer_1_multilayervertices::Vector{MultilayerVertex},
+        layer_2_multilayervertices::Vector{MultilayerVertex},
 
-    edge_list::Vector{ <: MultilayerEdge{<: Union{Nothing, U}}}, 
-    graph::G,
-    v_V_associations::Bijection{T, <: MultilayerVertex},
-    descriptor::InterlayerDescriptor{T,U,G}
-    ;
-    check_consistency = true
- ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+        edge_list::Vector{ <: MultilayerEdge{<: Union{Nothing, U}}}, 
+        graph::G,
+        v_V_associations::Bijection{T, <: MultilayerVertex},
+        descriptor::InterlayerDescriptor{T,U,G}
+        ;
+        check_consistency = true
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Internal constructor.
 """
@@ -73,15 +73,15 @@ end
 
 # Old inner constructor that has been removed in favor of the current inner constructor since not all graph packages implement == for the concrete graphs they define
 """
-_Interlayer(
-    layer_1_multilayervertices::Vector{<: MultilayerVertex},
-    layer_2_multilayervertices::Vector{<: MultilayerVertex},
-    edge_list::Vector{ <: MultilayerEdge}, # MultilayerVertex, {<: Union{U, Nothing}} 
-    descriptor::InterlayerDescriptor{T,U,G}
-    
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+    _Interlayer(
+        layer_1_multilayervertices::Vector{<: MultilayerVertex},
+        layer_2_multilayervertices::Vector{<: MultilayerVertex},
+        edge_list::Vector{ <: MultilayerEdge}, # MultilayerVertex, {<: Union{U, Nothing}} 
+        descriptor::InterlayerDescriptor{T,U,G}
+        
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
-Internal constructor used with InterlayerDescriptor
+Internal constructor used with InterlayerDescriptor.
 """
 function _Interlayer(
     layer_1_multilayervertices::Vector{<: MultilayerVertex},
@@ -98,6 +98,35 @@ function _Interlayer(
     )
 end
 
+"""
+    Interlayer(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        null_graph::G,
+        edge_list::Vector{ <: MultilayerEdge{<: Union{U, Nothing}}};
+        default_edge_weight::Function = (x,y) -> nothing,
+        default_edge_metadata::Function = (x,y) -> NamedTuple(),
+        transfer_vertex_metadata::Bool = false,
+        name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Constructor for Interlayer.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `edge_list::Vector{ <: MultilayerEdge{<: Union{U, Nothing}}}`: The `MultilayerEdge` list of the Interlayer;
+- `null_graph::G`: the Interlayer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
+
+# KWARGS
+
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+- `transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.
+
+"""
 function Interlayer(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
@@ -118,7 +147,7 @@ function Interlayer(
 end
 
 """
-    Interlayer(
+    _Interlayer(
         layer_1_multilayervertices::Vector{MultilayerVertex{L1}},
         layer_2_multilayervertices::Vector{MultilayerVertex{L2}},
         null_graph::G,
@@ -127,7 +156,7 @@ end
         default_edge_weight::Function = (x,y) -> nothing,
         default_edge_metadata::Function = (x,y) -> NamedTuple(),
         transfer_vertex_metadata::Bool = false,
-        name::Symbol,
+        name::Symbol
     ) where {L1, L2, T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Internal constructor for `Interlayer`.
@@ -153,34 +182,32 @@ function _Interlayer(
     )
 end
 
-
 """
-Interlayer(
-    layer_1::Layer{T,U},
-    layer_2::Layer{T,U},
-    ne::Int64,
-    null_graph::G;
-    default_edge_weight::Function = (x,y) -> nothing,
-    default_edge_metadata::Function = (x,y) -> NamedTuple(),
-    name::Symbol,
-    transfer_vertex_metadata::Bool = false
-    ) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+    Interlayer(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64,
+        null_graph::G;
+        default_edge_weight::Function = (x,y) -> nothing,
+        default_edge_metadata::Function = (x,y) -> NamedTuple(),
+        name::Symbol,
+        transfer_vertex_metadata::Bool = false
+    ) where {T<:Integer, U <: Union{Nothing, <: Real}, G<:AbstractGraph{T}}
 
 Return a random `Interlayer`.
 
-# ARGS
--`layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
--`layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
--`ne::Int64`: The number of edges of the Interlayer
+# ARGUMENTS
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
 `null_graph::G`: the Interlayer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
 
 # KWARGS
 
--`default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
--`default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
--`name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
--`transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.;
-
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+- `transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.
 """
 function Interlayer(
 layer_1::Layer{T,U},
@@ -220,7 +247,7 @@ end
         default_edge_metadata::Function = (x,y) -> NamedTuple(),
         
         transfer_vertex_metadata::Bool = false,
-        name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
+        name::Symbol),
         
     ) where {L1, L2, T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
 
@@ -265,22 +292,28 @@ return _Interlayer(
 end
 
 """
-    multiplex_interlayer(nv::Int64, name::Symbol,layer_1::Symbol, layer_2::Symbol, graph_type::Type{G}; forbidden_vertices::Vector{MultilayerVertex}, forbidden_edges::Vector{NTuple{2, MultilayerVertex}}) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}; !IsDirected{G}}
+    multiplex_interlayer(nv::Int64,
+        name::Symbol,
+        layer_1::Symbol, 
+        layer_2::Symbol, 
+        graph_type::Type{G}; 
+        forbidden_vertices::Vector{MultilayerVertex}, forbidden_edges::Vector{NTuple{2, MultilayerVertex}}
+    ) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}}
 
 Return an `Interlayer{T,U,G}` that has edges only between vertices that represent the same node.
 
 # ARGUMENTS
 
--`layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
--`layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
-`null_graph::G`: the Interlayer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `null_graph::G`: the Interlayer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
 
 # KWARGS
 
--`default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
--`default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
--`name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
--`transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.;
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+- `transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.;
 """
 multiplex_interlayer(
     layer_1::Layer{T,U},
@@ -293,9 +326,17 @@ multiplex_interlayer(
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} =  _multiplex_interlayer(collect(mv_vertices(layer_1)), collect(mv_vertices(layer_2)),  null_graph, U; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata, transfer_vertex_metadata = transfer_vertex_metadata , name = name)
 
 """
-    multiplex_interlayer(nv::Int64, name::Symbol,layer_1::Symbol, layer_2::Symbol, graph_type::Type{G}; forbidden_vertices::Vector{MultilayerVertex}, forbidden_edges::Vector{NTuple{2, MultilayerVertex}}) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}; !IsDirected{G}}
+    _multiplex_interlayer(
+        nv::Int64,
+        name::Symbol,
+        layer_1::Symbol,
+        layer_2::Symbol, 
+        graph_type::Type{G};
+        forbidden_vertices::Vector{MultilayerVertex},
+        forbidden_edges::Vector{NTuple{2, MultilayerVertex}}
+    ) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}
 
-Internal method for multiplex_interlayer
+Internal method for multiplex_interlayer.
 """
 function _multiplex_interlayer(
     layer_1_multilayervertices::Vector{MultilayerVertex{L1}},
@@ -334,30 +375,30 @@ function _multiplex_interlayer(
 end
 
 """
-empty_interlayer(
-    layer_1::Layer{T,U},
-    layer_2::Layer{T,U},
-    null_graph::G;
-    default_edge_weight::Function = (x,y) -> nothing,
-    default_edge_metadata::Function = (x,y) -> NamedTuple(),
-    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
-    transfer_vertex_metadata::Bool = false
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+    empty_interlayer(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        null_graph::G;
+        default_edge_weight::Function = (x,y) -> nothing,
+        default_edge_metadata::Function = (x,y) -> NamedTuple(),
+        name::Symbol),
+        transfer_vertex_metadata::Bool = false
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Construct an empty interlayer (i.e. an interlayer with no edges).
 
 # ARGUMENTS
 
--`layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
--`layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
-`null_graph::G`: the Interlayer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `null_graph::G`: the Interlayer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
 
 # KWARGS
 
--`default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
--`default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
--`name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
--`transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.;
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+- `transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.;
 """
 empty_interlayer(
     layer_1::Layer{T,U},
@@ -370,7 +411,7 @@ empty_interlayer(
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} =  _empty_interlayer(collect(mv_vertices(layer_1)), collect(mv_vertices(layer_2)),  null_graph, U; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata,  transfer_vertex_metadata = transfer_vertex_metadata, name = name )
 
 """
-    empty_interlayer(
+    _empty_interlayer(
         layer_1_multilayervertices::Vector{MultilayerVertex{L1}},
         layer_2_multilayervertices::Vector{MultilayerVertex{L2}},
         null_graph::G,
@@ -392,9 +433,7 @@ function _empty_interlayer(
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
 ) where {L1, L2, T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
-
     edge_list = MultilayerEdge{U}[]
-
     descriptor =  InterlayerDescriptor(L1, L2, null_graph, weighttype; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata,  transfer_vertex_metadata = transfer_vertex_metadata, name = name)
 
     return _Interlayer(
@@ -411,13 +450,15 @@ end
 Check if `graph`, whose vertices are interpreted via `v_V_associations` can be the underlying bipartite graph of an Interlayer graph.
 """
 function is_interlayer_bipartite(graph::G, v_V_associations::Bijection{T, MultilayerVertex}) where {T, G <: AbstractGraph{T}}
-    
     layers = unique([mv.layer for mv in image(v_V_associations)])
     # If it is an empty interlayer, we assume it is bipartite
     length(layers) == 0 && return true
     length(layers) == 2 || throw(ErrorException("The interlayer cannot be bipartite since more than two layers are involved. Found $layers in v_V_associations."))
+    # This loop iterates through all edges of the graph
     for edge in edges(graph)
+        # This if statement checks if the source and destination of the edge are on the same layer
         if !(v_V_associations[src(edge)].layer != v_V_associations[dst(edge)].layer)
+            # If they are, the graph is not a valid layering
             return false  
         end
     end
@@ -429,7 +470,7 @@ end
 
 Check that Interlayer `interlayer` is a multiplex-type Interlayer.
 """
-function is_multiplex_interlayer(interlayer::In) where {In<:Interlayer}
+function is_multiplex_interlayer(interlayer::Interlayer)
 
     if is_directed(interlayer)
         for node in intersect(interlayer.layer_1_nodes, interlayer.layer_2_nodes)
@@ -437,7 +478,9 @@ function is_multiplex_interlayer(interlayer::In) where {In<:Interlayer}
         end
         return true
     else
+        # Loop through all nodes in both layers.
         for node in intersect(interlayer.layer_1_nodes, interlayer.layer_2_nodes)
+            # Check if there is an edge between the nodes in both layers.
             has_edge(interlayer, MV(node, interlayer.layer_1), MV(node, interlayer.layer_2)) || return false
         end
         return true
@@ -449,7 +492,7 @@ end
 
 Return `true` if `n` is a `Node` of `interlayer`.
 """
-has_node( interlayer::Interlayer, n::Node ) =  n in nodes(interlayer.layer_1) || n in nodes(interlayer.layer_2) 
+has_node(interlayer::Interlayer, n::Node ) = n in nodes(interlayer.layer_1) || n in nodes(interlayer.layer_2) 
 
 
 """
@@ -463,7 +506,6 @@ Graphs.has_vertex(interlayer::Interlayer, mv::MultilayerVertex) = get_bare_mv(mv
 """
 """
 function Graphs.add_edge!(interlayer::In, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...) where { In <: Interlayer} 
-
     src_bare = get_bare_mv(src)
     dst_bare = get_bare_mv(dst)
     !has_vertex(interlayer, src)  && throw( ErrorException( "Vertex $(src) does not belong to the interlayer."))
@@ -504,10 +546,9 @@ end
     Base.getproperty(interlayer::In, f::Symbol) where { In <: Interlayer}
 """
 function Base.getproperty(interlayer::In, f::Symbol) where {In<:Interlayer}
-
     if f ∈(:descriptor, :graph, :v_V_associations)
-            Base.getfield(interlayer, f)
-    elseif f ∈ (:name, :layer_1, :layer_2, :null_graph, :default_edge_weight, :default_edge_metadata,  :transfer_vertex_metadata) # edge_weight_function:, :edge_metadata_function,
+        Base.getfield(interlayer, f)
+    elseif f ∈ (:name, :layer_1, :layer_2, :null_graph, :default_edge_weight, :default_edge_metadata,  :transfer_vertex_metadata) 
         Base.getfield(interlayer.descriptor, f)
     elseif f == :edge_list
         edges(interlayer)
@@ -537,19 +578,19 @@ end
 """
     get_symmetric_interlayer(interlayer::In; symmetric_interlayer_name::String) where{T,U,G, In <: Interlayer{T,U,G}}
 
-Return the `Interlayer` corresponding to `interlayer` where `layer_1` and `layer_2` are swapped. Its name will be `symmetric_interlayer_name` (defaults to `interlayer_(interlayer.layer_2)_(interlayer.layer_1)` ).
+Return the `Interlayer` corresponding to `interlayer` where `layer_1` and `layer_2` are swapped. Its name will be `symmetric_interlayer_name` (defaults to `interlayer_(interlayer.layer_2)_(interlayer.layer_1)`).
 """
 function get_symmetric_interlayer(
     interlayer::In;
     symmetric_interlayer_name::String = String(interlayer.name) * "_rev"
 ) where {T,U,G,In<:Interlayer{T,U,G}}
-
+    # Create a symmetric interlayer descriptor
     symmetric_descriptor = InterlayerDescriptor(Symbol(symmetric_interlayer_name), interlayer.layer_2, interlayer.layer_1, interlayer.null_graph, interlayer.default_edge_weight, interlayer.default_edge_metadata, interlayer.transfer_vertex_metadata, U)
-
+    # Create a symmetrized interlayer with the symmetric descriptor
     symmetrized_interlayer = Interlayer(symmetric_descriptor, interlayer.graph, interlayer.v_V_associations)
-
+    # Recompute the interlayer, using the layer 1 and layer 2 vertices from the original interlayer
     recompute_interlayer!(symmetrized_interlayer, symmetrized_interlayer.layer_1_bare_multilayer_vertices, symmetrized_interlayer.layer_2_bare_multilayer_vertices)
-
+    # Return the symmetrized interlayer
     return symmetrized_interlayer
 end
 

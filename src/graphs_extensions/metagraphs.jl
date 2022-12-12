@@ -99,4 +99,4 @@ _get_edge_metadata(g::AbstractMetaGraph{T}, src::T, dst::T ) where T = NamedTupl
 
 _set_metadata!(g::AbstractMetaGraph{T}, src::T, dst::T, metadata::NamedTuple) where T = set_props!(g, src, dst, Dict(key => value for (key,value) in pairs(metadata)))
 
-weights(g::AbstractMetaGraph{T}) where T = adjacency_matrix(g)
+Graphs.weights(g::AbstractMetaGraph{T}) where T = adjacency_matrix(g)

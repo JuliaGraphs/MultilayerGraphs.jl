@@ -313,7 +313,7 @@ function get_subgraph(mg::M, descriptor::InD) where {T,U, G<: AbstractGraph{T}, 
         end
     end
 
-    return Interlayer(layer_1_multilayervertices, layer_2_multilayervertices, unique(edge_list), descriptor)
+    return _Interlayer(layer_1_multilayervertices, layer_2_multilayervertices, unique(edge_list), descriptor)
 end
 
 # Graphs.jl's internals extra overrides

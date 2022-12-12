@@ -60,15 +60,51 @@ get_weight(subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVer
 is_directed(subgraph::AbstractSubGraph)
 is_directed(::Type{S}) where {T,U,G,S <: AbstractSubGraph{T,U,G}}
 adjacency_matrix(subgraph::AbstractSubGraph)
-weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
+MultilayerGraphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
 name(subgraph::AbstractSubGraph)
 Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}}
 Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
-Layer(nv::Int64, name::Symbol, graph_type::Type{G}, ne::Int64; U::Union{Type{ <: Real},Nothing} = nothing)  where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}}
+
+Layer(
+    name::Symbol,
+    vertices::Vector{ <: MultilayerVertex},
+    ne::Int64,
+    null_graph::G,
+    weighttype::Type{U};
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_weight::Function = (src, dst) -> nothing,
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    allow_self_loops::Bool = false
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
 has_node(layer::Layer, n::Node)
 rem_vertex!(layer::Layer, mv::MultilayerVertex)
 rem_vertex!(layer::Layer, n::Node)
-Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}}Interlayer(layer_1::Layer{T,U}, layer_2::Layer{T,U}, ne::Int64, null_graph::G; default_edge_weight::Function = (x,y) -> nothing, default_edge_metadata::Function = (x,y) -> NamedTuple(), name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"), transfer_vertex_metadata::Bool = false) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+
+Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}}
+Interlayer(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    null_graph::G,
+    edge_list::Vector{ <: MultilayerEdge{<: Union{U, Nothing}}};
+    default_edge_weight::Function = (x,y) -> nothing,
+    default_edge_metadata::Function = (x,y) -> NamedTuple(),
+    transfer_vertex_metadata::Bool = false,
+    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+
+Interlayer(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64,
+    null_graph::G;
+    default_edge_weight::Function = (x,y) -> nothing,
+    default_edge_metadata::Function = (x,y) -> NamedTuple(),
+    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
+    transfer_vertex_metadata::Bool = false
+) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+
 
 multiplex_interlayer(
     layer_1::Layer{T,U},
@@ -78,7 +114,27 @@ multiplex_interlayer(
     default_edge_metadata::Function = (x,y) -> NamedTuple(),
     transfer_vertex_metadata::Bool = false,
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} =  _multiplex_interlayer(collect(mv_vertices(layer_1)), collect(mv_vertices(layer_2)),  null_graph, U; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata, transfer_vertex_metadata = transfer_vertex_metadata , name = name)
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+
+empty_interlayer(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    null_graph::G;
+    default_edge_weight::Function = (x,y) -> nothing,
+    default_edge_metadata::Function = (x,y) -> NamedTuple(),
+    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
+    transfer_vertex_metadata::Bool = false
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} 
+
+is_multiplex_interlayer(interlayer::Interlayer)
+
+get_symmetric_interlayer(
+    interlayer::In;
+    symmetric_interlayer_name::String = String(interlayer.name) * "_rev"
+) where {T,U,G,In<:Interlayer{T,U,G}}
+
+
 ```
 
 ### Multilayer-specific methods

@@ -91,7 +91,7 @@ _nv =  nv(layer_mg) + nv(layer_vg)
 _ne = rand(_nv:(_nv*(_nv-1))÷ 2)
 interlayer_mg_vg = Interlayer(layer_mg, layer_vg, _ne, MetaGraph{vertextype, _weighttype}(); default_edge_metadata = (x,y) -> (mymetadata = rand(),), transfer_vertex_metadata = true )  #SimpleWeightedGraph{Int64, Float64}()
 
-interlayer_multiplex_sg_mg = multiplex_interlayer(layer_sg, layer_mg, ValGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)")); default_edge_metadata = (x,y) -> (from_to = "from_$(src)_to_$(dst)",)) 
+interlayer_multiplex_sg_mg = multiplex_interlayer(layer_sg, layer_mg, ValGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)")); default_edge_metadata = (x,y) -> (from_to = "from_$(x)_to_$(y)",)) 
 
 interlayer_empty_sg_vg = empty_interlayer(layer_sg, layer_vg, SimpleGraph{vertextype}()) 
 
@@ -112,11 +112,11 @@ interlayer_mdg_vodg = Interlayer(layer_mdg, layer_vodg, _ne , MetaDiGraph{vertex
 
 _nv = nv(layer_vodg) + nv(layer_vdg)
 _ne = rand(_nv:(_nv*(_nv-1))÷ 2)
-interlayer_vodg_vdg = Interlayer(layer_vodg, layer_vdg, _ne, ValOutDiGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)",)); default_edge_metadata = (x,y) -> (from_to = "from_$(src)_to_$(dst)",));
+interlayer_vodg_vdg = Interlayer(layer_vodg, layer_vdg, _ne, ValOutDiGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)",)); default_edge_metadata = (x,y) -> (from_to = "from_$(x)_to_$(y)",));
 
 _nv = nv(layer_sdg) + nv(layer_mdg)
 _ne = rand(_nv:(_nv*(_nv-1))÷ 2)
-interlayer_sdg_mdg = Interlayer(layer_sdg, layer_mdg, _ne, ValDiGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)",)); default_edge_metadata = (x,y) -> (from_to = "from_$(src)_to_$(dst)",));
+interlayer_sdg_mdg = Interlayer(layer_sdg, layer_mdg, _ne, ValDiGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)",)); default_edge_metadata = (x,y) -> (from_to = "from_$(x)_to_$(y)",));
 
 interlayer_multiplex_sdg_vodg = multiplex_interlayer(layer_sdg, layer_vodg, SimpleDiGraph{vertextype}());
 

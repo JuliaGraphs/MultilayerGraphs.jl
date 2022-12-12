@@ -16,4 +16,4 @@ _get_edge_weight(g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}, src::T, dst::T, 
 # `_get_edge_metadata` must return NamedTuple() (or maybe `nothing` would be better?) instead of throwing an exception in order for `edges` to consistently work on layers and interlayers 
 _get_edge_metadata(g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}, src::T, dst::T ) where T = NamedTuple()
 
-weights(g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}) where T = adjacency_matrix(g)
+Graphs.weights(g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}) where T = adjacency_matrix(g)
