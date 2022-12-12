@@ -248,6 +248,13 @@ has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerDiGraph{T}}
 rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}
 ```
 
+### Representations
+```@docs
+AbstractTensorRepresentation{U}
+array(atr::AbstractTensorRepresentation)
+array(amr::AbstractMatrixRepresentation)
+```
+
 
 
 
