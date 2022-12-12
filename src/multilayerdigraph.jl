@@ -28,7 +28,12 @@ end
 
 # Constructors
 """
-    MultilayerDiGraph(layers::Vector{ <: Layer{T,U }}, specified_interlayers::Vector{ <: Interlayer{T,U}};  default_interlayer::String  = "multiplex") where {T, U}      
+    MultilayerDiGraph(
+        layers::Vector{<:Layer{T,U}},
+        specified_interlayers::Vector{<:Interlayer{T,U}};
+        default_interlayers_null_graph::H = SimpleGraph{T}(),
+        default_interlayers_structure::String="multiplex",
+    ) where {T,U, H <: AbstractGraph{T}}    
 
 Construct a MultilayerDiGraph with layers given by `layers`. The interlayers will be constructed by default according to `default_interlayer` where only `"multiplex"` and `"empty"` are allowed, except for those specified in `specified_interlayers`. `default_interlayer = "multiplex"` will imply that unspecified interlayers will have only diagonal couplings, while  `default_interlayer = "multiplex"` will produced interlayers that have no couplings.
 """
@@ -131,7 +136,14 @@ end
 # Multilayer-specific methods
 # "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
 """
-    MultilayerDiGraph(empty_layers::Vector{<:Layer{T,U}}, empty_interlayers::Vector{<:Interlayer{T,U}}, degree_distribution::UnivariateDistribution; allow_self_loops::Bool = false, default_interlayers_null_graph::H = SimpleGraph{T}() ) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
+    MultilayerDiGraph(
+        empty_layers::Vector{<:Layer{T,U}},
+        empty_interlayers::Vector{<:Interlayer{T,U}},
+        indegree_distribution::UnivariateDistribution,
+        outdegree_distribution::UnivariateDistribution;
+        allow_self_loops::Bool = false,
+        default_interlayers_null_graph::H = SimpleGraph{T}(),
+    ) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
 
 Return a random MultilayerDiGraph that has `empty_layers` as layers and `empty_interlayers` as specified interlayers. `empty_layers` and `empty_interlayers` must respectively be `Layer`s and `Interlayer`s with whatever number of vertices but no edges (if any edge is found, an error is thrown). The  degree distribution of the returned random `MultilayerDiGraph` is given by `degree_distribution`, which must have a support that only contains positive numbers for obvious reasons. `allow_self_loops = true` allows for self loops t be present in the final random MultilayerDiGraph. `default_interlayers_null_graph` controls the `null_graph` argument passed to automatically-generated interlayers. 
 """
@@ -173,11 +185,23 @@ function MultilayerDiGraph(
 end
 
 """
-    MultilayerDiGraph(empty_multilayerdigraph::MultilayerDiGraph{T,U}, degree_sequence::Vector{<:Integer}; allow_self_loops::Bool = false, perform_checks::Bool = false) where {T,U}
+    MultilayerDiGraph(
+        empty_multilayerdigraph::MultilayerDiGraph{T,U}, 
+        indegree_sequence::Vector{<:Integer},
+        outdegree_sequence::Vector{<:Integer};
+        allow_self_loops::Bool = false,
+        perform_checks::Bool = false
+    ) where {T,U}
 
 Return a random `MultilayerDiGraph` with degree sequence `degree_sequence`. `allow_self_loops` controls the presence of self-loops, while if `perform_checks` is true, the `degree_sequence` os checked to be graphical.
 """
-function MultilayerDiGraph(empty_multilayerdigraph::MultilayerDiGraph{T,U}, indegree_sequence::Vector{<:Integer},outdegree_sequence::Vector{<:Integer} ; allow_self_loops::Bool = false, perform_checks::Bool = false) where {T,U}
+function MultilayerDiGraph(
+    empty_multilayerdigraph::MultilayerDiGraph{T,U}, 
+    indegree_sequence::Vector{<:Integer},
+    outdegree_sequence::Vector{<:Integer};
+    allow_self_loops::Bool = false,
+     perform_checks::Bool = false
+    ) where {T,U}
 
     (allow_self_loops && perform_checks) && @warn "Checks for graphicality and coherence with the provided `empty_multilayerdigraph` are currently performed without taking into account self-loops. Thus said checks may fail event though the provided `indegree_sequence` and `outdegree_sequence` may be graphical when one allows for self-loops within the directed multilayer graph to be present. If you are sure that the provided `indegree_sequence` and `outdegree_sequence` are indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient."
     

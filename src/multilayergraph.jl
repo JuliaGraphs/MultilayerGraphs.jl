@@ -26,7 +26,12 @@ end
 
 # Constructors
 """
-    MultilayerGraph(layers::Vector{ <: Layer{T,U }}, specified_interlayers::Vector{ <: Interlayer{T,U}};  default_interlayer::String  = "multiplex") where {T, U}      
+    MultilayerGraph(
+        layers::Vector{<:Layer{T,U}},
+        specified_interlayers::Vector{<:Interlayer{T,U}};
+        default_interlayers_null_graph::H = SimpleGraph{T}(),
+        default_interlayers_structure::String="multiplex",
+    ) where {T,U, H <: AbstractGraph{T}}   
 
 Construct a MultilayerGraph with layers given by `layers`. The interlayers will be constructed by default according to `default_interlayer` where only `"multiplex"` and `"empty"` are allowed, except for those specified in `specified_interlayers`. `default_interlayer = "multiplex"` will imply that unspecified interlayers will have only diagonal couplings, while  `default_interlayer = "multiplex"` will produced interlayers that have no couplings.
 
@@ -141,7 +146,13 @@ end
 # Multilayer-specific methods
 # "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
 """
-    MultilayerGraph(empty_layers::Vector{<:Layer{T,U}}, empty_interlayers::Vector{<:Interlayer{T,U}}, degree_distribution::UnivariateDistribution; allow_self_loops::Bool = false, default_interlayers_null_graph::H = SimpleGraph{T}() ) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
+    MultilayerGraph(
+        empty_layers::Vector{<:Layer{T,U}},
+        empty_interlayers::Vector{<:Interlayer{T,U}},
+        degree_distribution::UnivariateDistribution;
+        allow_self_loops::Bool = false,
+        default_interlayers_null_graph::H = SimpleGraph{T}(),
+    ) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
 
 Return a random MultilayerGraph that has `empty_layers` as layers and `empty_interlayers` as specified interlayers. `empty_layers` and `empty_interlayers` must respectively be `Layer`s and `Interlayer`s with whatever number of vertices but no edges (if any edge is found, an error is thrown). The  degree distribution of the returned random `MultilayerGraph` is given by `degree_distribution`, which must have a support that only contains positive numbers for obvious reasons. `allow_self_loops = true` allows for self loops t be present in the final random MultilayerGraph. `default_interlayers_null_graph` controls the `null_graph` argument passed to automatically-generated interlayers. 
 """
@@ -178,13 +189,16 @@ function MultilayerGraph(
 end
 
 """
-    MultilayerGraph(empty_multilayergraph::MultilayerGraph{T,U}, degree_sequence::Vector{<:Integer}; allow_self_loops::Bool = false, perform_checks::Bool = false) where {T,U}
+    MultilayerGraph(empty_multilayergraph::MultilayerGraph{T,U},
+    degree_sequence::Vector{<:Integer}; 
+    allow_self_loops::Bool = false,
+    perform_checks::Bool = false) where {T,U}
 
 Return a random `MultilayerGraph` with degree sequence `degree_sequence`. `allow_self_loops` controls the presence of self-loops, while if `perform_checks` is true, the `degree_sequence` os checked to be graphical.
 """
 function MultilayerGraph(empty_multilayergraph::MultilayerGraph{T,U}, degree_sequence::Vector{<:Integer}; allow_self_loops::Bool = false, perform_checks::Bool = true) where {T,U}
 
-    (allow_self_loops && perform_checks) && @warn "Checks for graphicality and coherence with the provided `empty_multilayergraph` are currently performed without taking into account self-loops. Thus said checks may fail event though the provided `degree_sequence` may be graphical when one allows for self-loops within the multilayer graph to be present. If you are sure that the provided `degree_sequence` is indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient."
+    (allow_self_loops && perform_checks) && @warn "Checks for graphicality and coherence with the provided `empty_multilayergraph` are currently performed without taking into account self-loops. Thus said checks may fail even though the provided `degree_sequence` may be graphical when one allows for self-loops within the multilayer graph to be present. If you are sure that the provided `degree_sequence` is indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient."
     
     _multilayergraph = deepcopy(empty_multilayergraph)
 
@@ -207,7 +221,7 @@ function MultilayerGraph(empty_multilayergraph::MultilayerGraph{T,U}, degree_seq
 end
 
 """
-    MultilayerGraph(n_nodes::Int64, T::Type{ <: Number}, U::Type{ <: Number} )
+    MultilayerGraph(T::Type{<:Number}, U::Type{<:Number})
 
 Return a null MultilayerGraph with with vertex type `T` weighttype `U`. Use this constructor and then add Layers and Interlayers via the `add_layer!` and `specify_interlayer!` methods.
 """

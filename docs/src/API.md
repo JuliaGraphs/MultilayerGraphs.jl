@@ -133,9 +133,63 @@ get_symmetric_interlayer(
 
 ```
 
-### Multilayer-specific methods
+### Multilayer-Specific Methods
 
 ```@docs
+MultilayerGraph{T,U}
+
+MultilayerDiGraph{T,U}
+
+MultilayerGraph(T::Type{<:Number}, U::Type{<:Number})
+
+MultilayerDiGraph(T::Type{<:Number}, U::Type{<:Number})
+
+MultilayerGraph(
+    layers::Vector{<:Layer{T,U}},
+    specified_interlayers::Vector{<:Interlayer{T,U}};
+    default_interlayers_null_graph::H = SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {T,U, H <: AbstractGraph{T}}
+
+MultilayerDiGraph(
+    layers::Vector{<:Layer{T,U}},
+    specified_interlayers::Vector{<:Interlayer{T,U}};
+    default_interlayers_null_graph::H = SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {T,U, H <: AbstractGraph{T}}
+
+MultilayerGraph(
+    empty_layers::Vector{<:Layer{T,U}},
+    empty_interlayers::Vector{<:Interlayer{T,U}},
+    degree_distribution::UnivariateDistribution;
+    allow_self_loops::Bool = false,
+    default_interlayers_null_graph::H = SimpleGraph{T}(),
+) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
+
+MultilayerDiGraph(
+    empty_layers::Vector{<:Layer{T,U}},
+    empty_interlayers::Vector{<:Interlayer{T,U}},
+    indegree_distribution::UnivariateDistribution,
+    outdegree_distribution::UnivariateDistribution;
+    allow_self_loops::Bool = false,
+    default_interlayers_null_graph::H = SimpleGraph{T}(),
+) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
+
+MultilayerGraph(
+    empty_multilayergraph::MultilayerGraph{T,U}, 
+    degree_sequence::Vector{<:Integer}; 
+    allow_self_loops::Bool = false, 
+    perform_checks::Bool = true
+) where {T,U}
+
+MultilayerDiGraph(
+    empty_multilayerdigraph::MultilayerDiGraph{T,U}, 
+    indegree_sequence::Vector{<:Integer},
+    outdegree_sequence::Vector{<:Integer};
+    allow_self_loops::Bool = false,
+     perform_checks::Bool = false
+) where {T,U}
+
 nodes(mg::AbstractMultilayerGraph)
 nn(mg::AbstractMultilayerGraph) 
 add_node!(mg::AbstractMultilayerGraph, n::Node)
@@ -232,6 +286,8 @@ modularity(
 
 
 von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
+
+
 ```
 
 ### Representations

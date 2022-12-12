@@ -135,10 +135,8 @@ export
     AbstractMultilayerDiGraph,
     # multilayergraph.jl
     MultilayerGraph,
-    fadjlist,
     # multilayerdigraph.jl
     MultilayerDiGraph,
-    badjlist,
     # utilities
     multilayer_kronecker_delta,
     δk,
