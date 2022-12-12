@@ -30,18 +30,18 @@ end
 # Outer constructor that performs checks. Should be the last constructor called before instantiation.
 
 """
-Interlayer(
+    _Interlayer(
 
-    layer_1_multilayervertices::Vector{MultilayerVertex},
-    layer_2_multilayervertices::Vector{MultilayerVertex},
+        layer_1_multilayervertices::Vector{MultilayerVertex},
+        layer_2_multilayervertices::Vector{MultilayerVertex},
 
-    edge_list::Vector{ <: MultilayerEdge{<: Union{Nothing, U}}}, 
-    graph::G,
-    v_V_associations::Bijection{T, <: MultilayerVertex},
-    descriptor::InterlayerDescriptor{T,U,G}
-    ;
-    check_consistency = true
- ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+        edge_list::Vector{ <: MultilayerEdge{<: Union{Nothing, U}}}, 
+        graph::G,
+        v_V_associations::Bijection{T, <: MultilayerVertex},
+        descriptor::InterlayerDescriptor{T,U,G}
+        ;
+        check_consistency = true
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Internal constructor.
 """
@@ -73,13 +73,13 @@ end
 
 # Old inner constructor that has been removed in favor of the current inner constructor since not all graph packages implement == for the concrete graphs they define
 """
-_Interlayer(
-    layer_1_multilayervertices::Vector{<: MultilayerVertex},
-    layer_2_multilayervertices::Vector{<: MultilayerVertex},
-    edge_list::Vector{ <: MultilayerEdge}, # MultilayerVertex, {<: Union{U, Nothing}} 
-    descriptor::InterlayerDescriptor{T,U,G}
-    
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+    _Interlayer(
+        layer_1_multilayervertices::Vector{<: MultilayerVertex},
+        layer_2_multilayervertices::Vector{<: MultilayerVertex},
+        edge_list::Vector{ <: MultilayerEdge}, # MultilayerVertex, {<: Union{U, Nothing}} 
+        descriptor::InterlayerDescriptor{T,U,G}
+        
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Internal constructor used with InterlayerDescriptor
 """
