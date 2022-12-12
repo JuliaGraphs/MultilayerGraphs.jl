@@ -34,10 +34,6 @@ function check_unique(vec::Union{Missing,<:Vector,<:Tuple})
     return ismissing(vec) ? true : length(setdiff(unique(vec), vec)) == 0
 end
 
-
-
-
-
 """
     multilayer_kronecker_delta(dims...)
 

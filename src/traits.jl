@@ -22,8 +22,6 @@ Check whether `g` is weighted.
 """
 is_weighted(g::G) where {G<:Type{<:AbstractGraph}} = istrait(IsWeighted{g})
 
-
-
 """
     IsMeta{X}
 

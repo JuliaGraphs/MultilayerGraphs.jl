@@ -13,7 +13,10 @@ mt[mv1, mv2]
 ```
 """
 struct MetadataTensor <: AbstractTensorRepresentation
-    array::Array{ <: Union{Nothing,Tuple, NamedTuple},4}
+    # Create a new Array of the appropriate size
+    array::Array{<: Union{Nothing,Tuple, NamedTuple},4}
+    # Create an array of Symbol names for each layer
     layers_names::Vector{Symbol}
+    # Create a bijection between the integer index and the node index
     idx_N_associations::Bijection{Int64, Node}
 end
