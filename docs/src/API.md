@@ -114,7 +114,7 @@ multiplex_interlayer(
     default_edge_metadata::Function = (x,y) -> NamedTuple(),
     transfer_vertex_metadata::Bool = false,
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} =  _multiplex_interlayer(collect(mv_vertices(layer_1)), collect(mv_vertices(layer_2)),  null_graph, U; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata, transfer_vertex_metadata = transfer_vertex_metadata , name = name)
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 
 empty_interlayer(
