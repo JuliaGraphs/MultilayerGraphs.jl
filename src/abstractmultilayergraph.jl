@@ -44,7 +44,7 @@ nodes(mg::AbstractMultilayerGraph) = [couple[2] for couple in sort(collect(mg.id
 
 Return the number of nodes in `mg`.
 """
-nn(mg::M) where {M<:AbstractMultilayerGraph} = length(nodes(mg))
+nn(mg::AbstractMultilayerGraph) = length(nodes(mg))
 
 """
     has_node(mg::AbstractMultilayerGraph, n::Node)
@@ -54,11 +54,11 @@ Return true if `n` is a node of `mg`.
 has_node(mg::AbstractMultilayerGraph, n::Node) = n in image(mg.idx_N_associations)
 
 """
-    add_node!(mg::M, n::Node)  where {T,U, M <: AbstractMultilayerGraph{T,U}}
+    add_node!(mg::AbstractMultilayerGraph, n::Node)
 
 Add node `n` to `mg`. Return true if succeeds.
 """
-function add_node!(mg::M, n::Node)  where {T,U, M <: AbstractMultilayerGraph{T,U}}
+function add_node!(mg::AbstractMultilayerGraph, n::Node)
     !has_node(mg, n) || return false
 
     maximum_idx = isempty(domain(mg.idx_N_associations)) ?  0 : maximum(domain(mg.idx_N_associations))
@@ -70,11 +70,11 @@ function add_node!(mg::M, n::Node)  where {T,U, M <: AbstractMultilayerGraph{T,U
 end
 
 """
-    rem_node!(mg::M, n::Node)  where {T,U, M <: AbstractMultilayerGraph{T,U}}
+    rem_node!(mg::AbstractMultilayerGraph, n::Node)
 
 Remove node `n` to `mg`. Return true if succeeds.
 """
-function rem_node!(mg::M, n::Node)  where {T,U, M <: AbstractMultilayerGraph{T,U}}
+function rem_node!(mg::AbstractMultilayerGraph, n::Node)
     has_node(mg, n) || return false
     
     idx_tbr = mg.idx_N_associations(n)
@@ -145,11 +145,12 @@ Return the metadata associated to `MultilayerVertex` mv (regardless of metadata 
 get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = mg.v_metadata_dict[get_v(mg, mv)]
 
 """
-    set_metadata!(mg::M, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) where M <: AbstractMultilayerGraph
+    set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
 
 Set the metadata of vertex `mv` to `metadata`. Return true if succeeds
 """
-function set_metadata!(mg::M, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) where M <: AbstractMultilayerGraph
+function set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
+
     descriptor = mg.layers[get_layer_idx(mg, layer(mv))]#get_subgraph_descriptor(mg, layer(mv))
     is_meta(descriptor.null_graph) || return false
     has_vertex(mg, mv) || return false
@@ -248,18 +249,18 @@ SimpleWeightedGraphs.get_weight(mg::AbstractMultilayerGraph, src::MultilayerVert
 # Layers and Interlayers
 
 """
-    nl(mg::M) where {M <: AbstractMultilayerGraph }
+    nl(mg::AbstractMultilayerGraph)
 
 Return the number of layers in `mg`.
 """
-nl(mg::M) where {M<:AbstractMultilayerGraph} = length(mg.layers)
+nl(mg::AbstractMultilayerGraph) = length(mg.layers)
 
 """
-    nIn(mg::M) where {M <: AbstractMultilayerGraph }
+    nIn(mg::AbstractMultilayerGraph)
 
 Return the number of interlayers in `mg`.
 """
-nIn(mg::M) where {M<:AbstractMultilayerGraph} = length(mg.interlayers)
+nIn(mg::AbstractMultilayerGraph) = length(mg.interlayers)
 
 """
     has_layer(mg::AbstractMultilayerGraph, layer_name::Symbol)

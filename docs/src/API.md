@@ -136,7 +136,10 @@ get_symmetric_interlayer(
 ### Multilayer-specific methods
 
 ```@docs
-nodes(mg::MultilayerGraph)
+nodes(mg::AbstractMultilayerGraph)
+nn(mg::AbstractMultilayerGraph) 
+add_node!(mg::AbstractMultilayerGraph, n::Node)
+rem_node!(mg::AbstractMultilayerGraph, n::Node)
 has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 nv(mg::M) where {M <: AbstractMultilayerGraph }
 mv_vertices(mg::AbstractMultilayerGraph)
@@ -165,7 +168,50 @@ is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
 has_node(mg::AbstractMultilayerGraph, n::Node)
 rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
 rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
+set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
+set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
+set_metadata!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
+nl(mg::AbstractMultilayerGraph)
+nIn(mg::AbstractMultilayerGraph)
+has_layer(mg::AbstractMultilayerGraph, layer_name::Symbol)
+
+add_layer!(mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+
+add_layer!(
+    mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+
+specify_interlayer!(
+    mg::M,
+    new_interlayer::In
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}}
+
+specify_interlayer!(
+    mg::M,
+    new_interlayer::In
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},In<:Interlayer{T,U,G}}
 ```
+
+### Representations
+```@docs
+array(atr::AbstractTensorRepresentation)
+WeightTensor{U}
+MetadataTensor{U}
+array(amr::AbstractMatrixRepresentation)
+SupraWeightMatrix{T,U}
+```
+
+### Traits
+```@docs
+is_weighted(g::G) where { G <: AbstractGraph}
+is_weighted(g::G) where {G<:Type{<:AbstractGraph}}
+
+is_meta(g::G) where {G <: AbstractGraph}
+is_meta(g::G) where {G<:Type{<:AbstractGraph}}
+```
+
+
 
 ----------------------------------------------------
 ####################################################
@@ -221,13 +267,11 @@ rem_vertex!(layer::L, v::T) where {T, L <: Layer{T}}
 AbstractInterlayer
 ```
 
-### Traits
-```@docs
-```
 
 ### Multilayer-Specific Methods
 
 ```@docs
+AbstractMultilayerGraph{T <: Integer, U <: Real}
 has_vertex(mg::M, v::T) where {T, M <: AbstractMultilayerGraph{T}}
 vertices(mg::AbstractMultilayerGraph)
 inneighbors(mg::AbstractMultilayerUGraph, v::T) where {T <: Integer, M <: AbstractMultilayerUGraph{T}}
@@ -246,11 +290,14 @@ rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}
 ### Representations
 ```@docs
 AbstractTensorRepresentation{U}
-array(atr::AbstractTensorRepresentation)
-array(amr::AbstractMatrixRepresentation)
+AbstractMatrixRepresentation{T,U}
 ```
 
-
+### Traits
+```@docs
+IsWeighted{X}
+IsMeta{X}
+```
 
 
 ```@docs

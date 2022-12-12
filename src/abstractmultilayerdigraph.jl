@@ -149,11 +149,11 @@ function set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight
 end
 
 """
-    set_metadata!(mg::M, src::MultilayerVertex{L1}, dst::MultilayerVertex{L2}, metadata::U) where {L1 <: Symbol, L2 <: Symbol, T,U, M <: AbstractMultilayerGraph{T,U}}
+    set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
 
 Set the metadata of the edge between `src` and `dst` to `metadata`. Return true if succeeds (i.e. if the edge exists and the underlying graph chosen for the Layer/Interlayer where the edge lies supports metadata at the edge level  under the `IsMeta` trait).
 """
-function set_metadata!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) where M <: AbstractMultilayerDiGraph
+function set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
     # Get the subgraph descriptor that corresponds to the layer of src and dst
     descriptor = get_subgraph_descriptor(mg, layer(src), layer(dst))
     # If the subgraph descriptor's null graph is true, then the edge does not exist
@@ -198,8 +198,14 @@ end
 
 # Layers and Interlayers
 """
-    add_layer!(mg::M,layer::L; interlayers_type = "multiplex") where { T, U, G<: AbstractGraph{T}, M <: AbstractMultilayerDiGraph{T, U}, L <: Layer{T,U,G}}
-    Add layer `layer` to `mg`.
+    add_layer!(
+        mg::M, 
+        new_layer::L; 
+        default_interlayers_null_graph::H = SimpleGraph{T}(), 
+        default_interlayers_structure::String ="multiplex"
+    ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+    
+Add layer `layer` to `mg`.
 
 # ARGUMENTS
     
@@ -222,7 +228,10 @@ function add_layer!(
 end
 
 """
-    specify_interlayer!(mg::M, new_interlayer::In; symmetric_interlayer_name::String) where { T, U, G<: AbstractGraph{T}, M <: AbstractMultilayerDiGraph{T, U}, In <: Interlayer{T,U,G}}
+    specify_interlayer!(
+        mg::M,
+        new_interlayer::In
+    ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}}
 
 Specify the interlayer `new_interlayer` as part of `mg`.
 """
