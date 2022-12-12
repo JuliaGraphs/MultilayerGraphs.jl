@@ -298,7 +298,7 @@ end
         layer_2::Symbol, 
         graph_type::Type{G}; 
         forbidden_vertices::Vector{MultilayerVertex}, forbidden_edges::Vector{NTuple{2, MultilayerVertex}}
-    ) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}; !IsDirected{G}}
+    ) where {T <: Union{ <: Integer, AbstractVertex}, G <: AbstractGraph{T}}
 
 Return an `Interlayer{T,U,G}` that has edges only between vertices that represent the same node.
 
@@ -326,7 +326,7 @@ multiplex_interlayer(
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} =  _multiplex_interlayer(collect(mv_vertices(layer_1)), collect(mv_vertices(layer_2)),  null_graph, U; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata, transfer_vertex_metadata = transfer_vertex_metadata , name = name)
 
 """
-    multiplex_interlayer(
+    _multiplex_interlayer(
         nv::Int64,
         name::Symbol,
         layer_1::Symbol,
