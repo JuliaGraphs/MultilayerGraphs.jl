@@ -86,13 +86,26 @@ Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}}
 Interlayer(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
+    null_graph::G,
+    edge_list::Vector{ <: MultilayerEdge{<: Union{U, Nothing}}};
+    default_edge_weight::Function = (x,y) -> nothing,
+    default_edge_metadata::Function = (x,y) -> NamedTuple(),
+    transfer_vertex_metadata::Bool = false,
+    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+
+Interlayer(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
     ne::Int64,
     null_graph::G;
     default_edge_weight::Function = (x,y) -> nothing,
     default_edge_metadata::Function = (x,y) -> NamedTuple(),
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
     transfer_vertex_metadata::Bool = false
-    ) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+
 
 multiplex_interlayer(
     layer_1::Layer{T,U},
@@ -103,6 +116,26 @@ multiplex_interlayer(
     transfer_vertex_metadata::Bool = false,
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} =  _multiplex_interlayer(collect(mv_vertices(layer_1)), collect(mv_vertices(layer_2)),  null_graph, U; default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata, transfer_vertex_metadata = transfer_vertex_metadata , name = name)
+
+
+empty_interlayer(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    null_graph::G;
+    default_edge_weight::Function = (x,y) -> nothing,
+    default_edge_metadata::Function = (x,y) -> NamedTuple(),
+    name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
+    transfer_vertex_metadata::Bool = false
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} 
+
+is_multiplex_interlayer(interlayer::Interlayer)
+
+get_symmetric_interlayer(
+    interlayer::In;
+    symmetric_interlayer_name::String = String(interlayer.name) * "_rev"
+) where {T,U,G,In<:Interlayer{T,U,G}}
+
+
 ```
 
 ### Multilayer-specific methods

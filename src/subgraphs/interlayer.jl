@@ -15,7 +15,8 @@ An abstract type representing a generic Interlayer.
 abstract type AbstractInterlayer{T,U,G} <: AbstractSubGraph{T,U,G} end
 
 """
-    mutable struct Interlayer{G <: AbstractGraph}
+    Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <:
+AbstractInterlayer{T,U,G}
 
 Represents an interlayer in a `Multilayer(Di)Graph`. 
 """
@@ -99,16 +100,17 @@ function _Interlayer(
 end
 
 """
-Interlayer(
-    layer_1::Layer{T,U},
-    layer_2::Layer{T,U},
-    null_graph::G,
-    edge_list::Vector{ <: MultilayerEdge{<: Union{U, Nothing}}};
-    default_edge_weight::Function = (x,y) -> nothing,
-    default_edge_metadata::Function = (x,y) -> NamedTuple(),
-    transfer_vertex_metadata::Bool = false,
-    name::Symbol
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+    Interlayer(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        null_graph::G,
+        edge_list::Vector{ <: MultilayerEdge{<: Union{U, Nothing}}};
+        default_edge_weight::Function = (x,y) -> nothing,
+        default_edge_metadata::Function = (x,y) -> NamedTuple(),
+        transfer_vertex_metadata::Bool = false,
+        name::Symbol
+        
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Constructor for Interlayer.
 
@@ -146,7 +148,7 @@ function Interlayer(
 end
 
 """
-    Interlayer(
+    _Interlayer(
         layer_1_multilayervertices::Vector{MultilayerVertex{L1}},
         layer_2_multilayervertices::Vector{MultilayerVertex{L2}},
         null_graph::G,
@@ -155,7 +157,8 @@ end
         default_edge_weight::Function = (x,y) -> nothing,
         default_edge_metadata::Function = (x,y) -> NamedTuple(),
         transfer_vertex_metadata::Bool = false,
-        name::Symbol,
+        name::Symbol
+
     ) where {L1, L2, T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
 Internal constructor for `Interlayer`.
@@ -183,15 +186,16 @@ end
 
 
 """
-Interlayer(
-    layer_1::Layer{T,U},
-    layer_2::Layer{T,U},
-    ne::Int64,
-    null_graph::G;
-    default_edge_weight::Function = (x,y) -> nothing,
-    default_edge_metadata::Function = (x,y) -> NamedTuple(),
-    name::Symbol,
-    transfer_vertex_metadata::Bool = false
+    Interlayer(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64,
+        null_graph::G;
+        default_edge_weight::Function = (x,y) -> nothing,
+        default_edge_metadata::Function = (x,y) -> NamedTuple(),
+        name::Symbol,
+        transfer_vertex_metadata::Bool = false
+        
     ) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
 
 Return a random `Interlayer`.
@@ -457,7 +461,7 @@ end
 
 Check that Interlayer `interlayer` is a multiplex-type Interlayer.
 """
-function is_multiplex_interlayer(interlayer::In) where {In<:Interlayer}
+function is_multiplex_interlayer(interlayer::Interlayer)
 
     if is_directed(interlayer)
         for node in intersect(interlayer.layer_1_nodes, interlayer.layer_2_nodes)
