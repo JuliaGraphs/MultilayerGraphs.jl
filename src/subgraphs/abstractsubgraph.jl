@@ -338,7 +338,7 @@ Graphs.adjacency_matrix(subgraph::AbstractSubGraph) = adjacency_matrix(subgraph.
 
 Return the weights of `subgraph.graph`, with the eltype converted to `U`.
 """
-SimpleWeightedGraphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} = U.(weights(subgraph.graph))
+Graphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} = U.(weights(subgraph.graph))
 
 # Utilities
 """

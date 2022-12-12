@@ -14,7 +14,7 @@ for interlayer in all_interlayers
     mv_inneighbors(interlayer, mv)
     mv_outneighbors(interlayer, mv)
     adjacency_matrix(interlayer)
-    MultilayerGraphs.weights(interlayer)
+    # MultilayerGraphs.weights(interlayer)
 end
 
 ne.(all_interlayers)

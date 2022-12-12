@@ -124,7 +124,7 @@ function SimpleWeightedGraphs.SimpleWeightedDiGraph{T,U}(
     return SimpleWeightedDiGraph{T,U}(adjm)
 end
 
-weights(g::G) where {T, G <: AbstractSimpleWeightedGraph{T}} = SimpleWeightedGraphs.weights(g)
+Graphs.weights(g::G) where {T, G <: AbstractSimpleWeightedGraph{T}} = Graphs.weights(g)
 
 #= function _vertices(g::AbstractSimpleWeightedGraph{T}) where T 
 

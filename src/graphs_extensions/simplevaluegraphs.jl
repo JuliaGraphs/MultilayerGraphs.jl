@@ -98,4 +98,4 @@ function _set_metadata!(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T
     end
 end
 
-weights(g::SimpleValueGraphs.AbstractValGraph{T}) where T = adjacency_matrix(g)
+Graphs.weights(g::SimpleValueGraphs.AbstractValGraph{T}) where T = adjacency_matrix(g)
