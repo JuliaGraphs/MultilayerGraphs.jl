@@ -169,7 +169,7 @@ function set_metadata!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, meta
     halfedge_to_dst = halfedges_to_dst[findfirst(he -> vertex(he) == src, halfedges_to_dst)]
     halfedge_to_dst.metadata = metadata
     return true
-ends
+end
 
 # Overloads that make AbstractMultilayerDiGraph an extension of Graphs.jl. These are all well-inferred .
 """
