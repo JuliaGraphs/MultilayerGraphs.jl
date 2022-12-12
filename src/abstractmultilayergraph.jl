@@ -107,7 +107,7 @@ Base.eltype(::M) where {T,M<:AbstractMultilayerGraph{T}} = T
 
 Return true if `v` is in mg, else false.
 """
-Graphs.has_vertex(mg::M, v::T ) where {T, M <: AbstractMultilayerGraph{T}} = v in domain(mg.v_V_associations) # && !(mg.v_V_associations[v] isa MissingVertex)
+Graphs.has_vertex(mg::M, v::T ) where {T, M <: AbstractMultilayerGraph{T}} = v in domain(mg.v_V_associations) 
 
 """
     has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex) 
@@ -151,7 +151,7 @@ Set the metadata of vertex `mv` to `metadata`. Return true if succeeds
 """
 function set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
 
-    descriptor = mg.layers[get_layer_idx(mg, layer(mv))]#get_subgraph_descriptor(mg, layer(mv))
+    descriptor = mg.layers[get_layer_idx(mg, layer(mv))]
     is_meta(descriptor.null_graph) || return false
     has_vertex(mg, mv) || return false
     mg.v_metadata_dict[get_v(mg, mv)] = metadata
@@ -159,7 +159,6 @@ function set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metada
     return true
 
 end
-
 
 # Edges
 """
@@ -379,40 +378,38 @@ end
 Internal function. It is called by the `specify_interlayer!` API functions.
 """
 function _specify_interlayer!(
- mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerGraph{T,U},In<:Interlayer{T,U,G}}
+    mg::M, new_interlayer::In
+    ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerGraph{T,U},In<:Interlayer{T,U,G}}
 
- all(in.([new_interlayer.layer_1, new_interlayer.layer_2], Ref(mg.layers_names))) ||
-#  throw(
-#      ErrorException(
-         throw(ErrorException("The new interlayer connects two layers that are not (one or both) part of the multilayer graph. Make sure you spelled the `layer_1` and `layer_2` arguments of the `Interlayer` correctly. Available layers are $(mg.layers_names), found $(new_interlayer.layer_1) and $(new_interlayer.layer_2)."))
-#      ),
-#  )
+    all(in.([new_interlayer.layer_1, new_interlayer.layer_2], Ref(mg.layers_names))) ||
+    #  throw(
+    #      ErrorException(
+            throw(ErrorException("The new interlayer connects two layers that are not (one or both) part of the multilayer graph. Make sure you spelled the `layer_1` and `layer_2` arguments of the `Interlayer` correctly. Available layers are $(mg.layers_names), found $(new_interlayer.layer_1) and $(new_interlayer.layer_2)."))
+    #      ),
+    #  )
 
- # Check that it has the correct number of nodes on both layers
- (isempty(setdiff(Set(new_interlayer.layer_1_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_1)))) ) &&  isempty(setdiff(Set(new_interlayer.layer_2_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_2)))) )) || throw(ErrorException("The nodes in the interlayer $(new_interlayer.name) do not correspond to the nodes in the respective layers $(new_interlayer.layer_1) and $(new_interlayer.layer_2). Found $( setdiff(Set(new_interlayer.layer_1_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_1)))) ) and $(setdiff(Set(new_interlayer.layer_2_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_2)))))"))
+    # Check that it has the correct number of nodes on both layers
+    (isempty(setdiff(Set(new_interlayer.layer_1_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_1)))) ) &&  isempty(setdiff(Set(new_interlayer.layer_2_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_2)))) )) || throw(ErrorException("The nodes in the interlayer $(new_interlayer.name) do not correspond to the nodes in the respective layers $(new_interlayer.layer_1) and $(new_interlayer.layer_2). Found $( setdiff(Set(new_interlayer.layer_1_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_1)))) ) and $(setdiff(Set(new_interlayer.layer_2_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_2)))))"))
 
-# A rem_interlayer! function may not exist since there always must be all interlayers. We then proceed to effectively remove the interlayer here
-key = Set([new_interlayer.layer_1, new_interlayer.layer_2])
-if haskey(mg.interlayers, key)
-    existing_interlayer = getproperty(mg, mg.interlayers[key].name)
+    # A rem_interlayer! function may not exist since there always must be all interlayers. We then proceed to effectively remove the interlayer here
+    key = Set([new_interlayer.layer_1, new_interlayer.layer_2])
+    if haskey(mg.interlayers, key)
+        existing_interlayer = getproperty(mg, mg.interlayers[key].name)
 
-    for edge in edges(existing_interlayer)
-        rem_edge!(mg, edge)
+        for edge in edges(existing_interlayer)
+            rem_edge!(mg, edge)
+        end
     end
+
+    mg.interlayers[Set([new_interlayer.layer_1, new_interlayer.layer_2])] = new_interlayer.descriptor
+
+    for edge in edges(new_interlayer)
+        success = add_edge!(mg, edge)
+        @assert success
+    end
+
+    return true
 end
-
-mg.interlayers[Set([new_interlayer.layer_1, new_interlayer.layer_2])] = new_interlayer.descriptor
-
-for edge in edges(new_interlayer)
-    success = add_edge!(mg, edge)
-    @assert success
-end
-
- return true
-end
-
-
 
 """
     get_interlayer(
@@ -425,7 +422,6 @@ Return the `Interlayer` between `layer_1` and `layer_2`.
 function get_interlayer(
     mg::AbstractMultilayerGraph, layer_1_name::Symbol, layer_2_name::Symbol
 )
-
     layer_1_name ∈ mg.layers_names || throw(ErrorException("$layer_1_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names)."))
     layer_2_name ∈ mg.layers_names || throw(ErrorException("$layer_2_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names)."))
     layer_1_name != layer_2_name || throw(ErrorException("`layer_1` argument is the same as `layer_2`. There is no interlayer between a layer and itself."))
@@ -447,14 +443,12 @@ end
 Return the index of the `Layer` whose name is `layer_name` within `mg.layers`.
 """
 function get_layer_idx(mg::M, layer_name::Symbol) where {T,U,M<:AbstractMultilayerGraph{T,U}}
-
     idx = findfirst(descriptor -> descriptor.name == layer_name, mg.layers)
     if !isnothing(idx)
         return idx
     else
         return nothing
     end 
-
 end
 
 """
@@ -463,7 +457,6 @@ end
 Return the descriptor associated to the interlayer connecting `layer_1` to `layer_2` (or to the Layer named `layer_1` if `layer_1` == `layer_2`)
 """
 function get_subgraph_descriptor(mg::M, layer_1_name::Symbol, layer_2_name::Symbol) where {T,U,M<:AbstractMultilayerGraph{T,U}}
-
     if layer_1_name == layer_2_name
         idx = get_layer_idx(mg, layer_1_name)
         if !isnothing(idx)
@@ -471,7 +464,6 @@ function get_subgraph_descriptor(mg::M, layer_1_name::Symbol, layer_2_name::Symb
         else
             throw(ErrorException("The multilayer graph does not contain any Layer named $(layer_1_name). Available layers are $(mg.layers_names)."))
         end
-
     else
         layer_1_name ∈ mg.layers_names || throw(ErrorException("$layer_1_name does nto belong to the multilayer graph. Available layers are $(mg.layers_names)."))
         layer_2_name ∈ mg.layers_names ||throw(ErrorException("$layer_2_name does nto belong to the multilayer graph. Available layers are $(mg.layers_names)."))

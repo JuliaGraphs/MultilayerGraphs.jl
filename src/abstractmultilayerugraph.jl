@@ -1,7 +1,3 @@
-# ne
-# has_edge
-# edges
-
 """
     AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} 
 
@@ -201,7 +197,7 @@ Add layer `layer` to `mg`.
 - `mg::M`: the `MultilayerGraph` which the new layer will be added to;
 - `new_layer::L`: the new `Layer` to add to `mg`;
 - `default_interlayers_null_graph::H = SimpleGraph{T}()`: upon addition of a new `Layer`, all the `Interlayer`s between the new and the existing `Layer`s are immediately created. This keyword argument specifies their `null_graph` See the `Layer` constructor for more information. Defaults to `SimpleGraph{T}()`;
-- `default_interlayers_structure::String = "multiplex"`: The structure of the `Interlayer`s created by deafault. May either be "multiplex" to have diagonally-coupled only interlayers, or "empty" for empty interlayers. Defaults to "multiplex".
+- `default_interlayers_structure::String = "multiplex"`: The structure of the `Interlayer`s created by default. May either be "multiplex" to have diagonally-coupled only interlayers, or "empty" for empty interlayers. Defaults to "multiplex".
 """
 function add_layer!(
     mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"

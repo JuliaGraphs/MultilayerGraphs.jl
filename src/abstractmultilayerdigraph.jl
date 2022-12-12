@@ -6,7 +6,6 @@ Abstract type representing an undirected multilayer graph.
 abstract type AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 
 # Nodes
-
 # Vertices
 """
     add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
@@ -171,7 +170,7 @@ function set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst
     return true
 end
 
-# Overloads that make AbstractMultilayerDiGraph an extension of Graphs.jl. These are all well-inferred .
+# Overloads that make AbstractMultilayerDiGraph an extension of Graphs.jl. These are all well-inferred.
 """
     edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
 
@@ -378,17 +377,16 @@ Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerDiGraph}} = true
 
 Return the list of inneighbors of `v` within `mg`.
 """
-function Graphs.inneighbors(
-    mg::M, v::T
-) where {M<:AbstractMultilayerGraph{T,<:Real}} where {T}
+function Graphs.inneighbors(mg::M, v::T
+    ) where {M<:AbstractMultilayerGraph{T,<:Real}} where {T}
 
-_inneighbors = T[]
+    _inneighbors = T[]
 
-for helfedge in mg.badjlist[v]
-    push!(_inneighbors, get_v(mg, vertex(helfedge)))
-end
+    for helfedge in mg.badjlist[v]
+        push!(_inneighbors, get_v(mg, vertex(helfedge)))
+    end
 
-return _inneighbors
+    return _inneighbors
 end
 
 """
