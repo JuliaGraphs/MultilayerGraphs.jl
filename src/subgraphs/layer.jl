@@ -295,9 +295,9 @@ Graphs.rem_vertex!(layer::L, v::T) where {T, L <: Layer{T}} = rem_vertex!(layer.
 """
     add_edge!(layer::L, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...) where {L <: Layer} 
 
-Add edge from vertex `src` to vertex `dst` to layer `layer`. This method supports the uniform and transparent interfaces. See the [Edges](@ref) section of the Tutorial.
+Add edge from vertex `src` to vertex `dst` to layer `layer`. Returns true if succeeds. This method supports the uniform and transparent interfaces. See the [Edges](@ref edges_tut_subg) section of the Tutorial.
 """
-function Graphs.add_edge!(layer::L, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...) where {L <: Layer} 
+function Graphs.add_edge!(layer::Layer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...)
     # Check if the vertices exist
     !has_vertex(layer, src)  && throw( ErrorException( "Vertex $(src) does not belong to the layer."))
     !has_vertex(layer, dst) && throw( ErrorException( "Vertex $(dst) does not belong to the layer."))

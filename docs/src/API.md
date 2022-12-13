@@ -115,6 +115,8 @@ has_edge( subgraph::AbstractSubGraph, s::MultilayerVertex, d::MultilayerVertex)
 ne(subgraph::AbstractSubGraph)
 edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} 
 add_edge!( subgraph::S, me::E) where {T,U<:Real,S<:AbstractSubGraph{T,U},E<:MultilayerEdge{ <: Union{U, Nothing}}}
+add_edge!(layer::Layer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...)
+add_edge!(interlayer::Interlayer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...)
 rem_edge!(subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVertex)
 rem_edge!(subgraph::AbstractSubGraph, me::MultilayerEdge)
 get_metadata(subgraph::AbstractSubGraph, bare_mv::MultilayerVertex)

@@ -401,11 +401,9 @@ interlayer_sg_swg_vertices = mv_vertices(interlayer_sg_swg)
  MV(Node("node_3"), :layer_swg, NamedTuple())
 ```
 
-The `vertices` command would return an internal representation of the `MultilayerVertex`s. This method, together with others, serves to make `MultilayerGraphs.jl` compatible with the Graphs.jl ecosystem, but it is not meant to be called by the end user. It is, anyway, thought to be used by developers who wish to interface their packages with `MultilayerGraphs.jl` just as with other packages of the `Graphs.jl` ecosystem: a developer-oriented guide will be compiled if there is the need. 
+The [`vertices(subgraph::AbstractSubGraph)`](@ref) command would return an internal representation of the `MultilayerVertex`s. This method, together with others, serves to make `MultilayerGraphs.jl` compatible with the Graphs.jl ecosystem, but it is not meant to be called by the end user. It is, anyway, thought to be used by developers who wish to interface their packages with `MultilayerGraphs.jl` just as with other packages of the `Graphs.jl` ecosystem: as said above, a developer-oriented guide will be compiled if there is the need, although docstrings are already completed.
 
-In the [API](@ref) page the intended usage of all methods ([End-User](@ref) or [Developer](@ref)) is highlighted.
-
-To add a vertex, simply use [`add_vertex!(layer::Layer, mv::MultilayerVertex)`](@ref). Let us define a vertex with metadata to add. Since nodes may not be represented more than once in layers, we have to define a new node to:
+To add a vertex, simply use [`add_vertex!(layer::Layer, mv::MultilayerVertex)`](@ref). Let us define a vertex with metadata to add. Since nodes may not be represented more than once in layers, we have to define a new node too:
 
 ```julia
 new_node     = Node("missing_node")
