@@ -1,4 +1,4 @@
-# This script has been copy-pasted from https://github.com/mhauru/TensorFactorizations.jl
+#= # This script has been copy-pasted from https://github.com/mhauru/TensorFactorizations.jl
 
 """
     tensorsplit(A, a, b; kwargs...)
@@ -42,7 +42,7 @@ function tensorsplit(args...; kwargs...)
     A1 = tensorcontract(U, (1:(ndims(U) - 1)..., :a), S_sqrt, (:a, :b))
     A2 = tensorcontract(S_sqrt, (:b, :a), Vt, (:a, 1:(ndims(Vt) - 1)...))
     return A1, A2, auxdata...
-end
+end =#
 
 """
     tensoreig(A, a, b; chis=nothing, eps=0,
@@ -120,7 +120,7 @@ function tensoreig(
     return retval
 end
 
-"""
+#= """
     tensorsvd(A, a, b;
               chis=nothing, eps=0,
               return_error=false, print_error=false,
@@ -203,7 +203,7 @@ function tensorsvd(
     end
     return retval
 end
-
+ =#
 """
 Format the bond dimensions listed in chis to a standard format.
 """

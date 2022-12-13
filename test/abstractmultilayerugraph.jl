@@ -145,13 +145,13 @@ overlaygraph = MultilayerGraphs.get_overlay_monoplex_graph(multilayergraph)
 @test multilayer_weighted_global_clustering_coefficient(multilayergraph, [1 / 3, 1 / 3, 1 / 3]) .≈ multilayer_global_clustering_coefficient(multilayergraph)
 eig_centr_u, errs_u = eigenvector_centrality(multilayergraph; norm="n", tol=1e-3)
 modularity(multilayergraph, rand([1, 2, 3, 4], length(nodes(multilayergraph)), length(multilayergraph.layers)), )
+von_neumann_entropy(multilayergraph)
 
 # get_graph_of_layers(multilayergraph)
 
 wgt = weight_tensor(multilayergraph)
 sam = supra_weight_matrix(multilayergraph)
 for edge in collect(edges(multilayergraph.layer_swg))
-    @debug "" src(edge) dst(edge) edge
     @test wgt[src(edge), dst(edge)] == wgt[ dst(edge), src(edge)] == MultilayerGraphs.weight(edge)
     @test sam[src(edge), dst(edge)] ==  sam[ dst(edge), src(edge)] ==  MultilayerGraphs.weight(edge)
 end
