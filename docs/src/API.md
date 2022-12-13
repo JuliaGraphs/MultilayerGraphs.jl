@@ -4,14 +4,14 @@ This page provides a list of exported methods organized by topic and audience. M
 
 ## End-User
 
-### Nodes
+### [Nodes](@id nodes_eu)
 
 ```@docs
 Node
 id
 ```
 
-### Vertices
+### [Vertices](@id vertices_eu)
 
 ```@docs
 eltype
@@ -23,7 +23,7 @@ metadata(mv::MultilayerVertex)
 MissingVertex
 ```
 
-### Edges
+### [Edges](@id edges_eu)
 
 ```@docs
 MultilayerEdge
@@ -32,32 +32,9 @@ weight(e::AbstractMultilayerEdge)
 metadata(e::AbstractMultilayerEdge)
 ```
 
-### Subgraphs
+### [Subgraphs](@id subgraphs_eu)
 
 ```@docs
-nodes(subgraph::AbstractSubGraph)
-has_vertex(layer::Layer, mv::MultilayerVertex)
-has_vertex(interlayer::Interlayer, mv::MultilayerVertex)
-nv(subgraph::AbstractSubGraph)
-mv_vertices(subgraph::AbstractSubGraph)
-mv_inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
-mv_outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
-mv_neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
-has_edge(subgraph::AbstractSubGraph,me::MultilayerEdge)
-has_edge( subgraph::AbstractSubGraph, s::MultilayerVertex, d::MultilayerVertex)
-ne(subgraph::AbstractSubGraph)
-edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} 
-add_edge!( subgraph::S, me::E) where {T,U<:Real,S<:AbstractSubGraph{T,U},E<:MultilayerEdge{ <: Union{U, Nothing}}}
-rem_edge!(subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVertex)
-rem_edge!(subgraph::AbstractSubGraph, me::MultilayerEdge)
-get_metadata(subgraph::AbstractSubGraph, bare_mv::MultilayerVertex)
-get_metadata(subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVertex)
-get_weight(subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVertex) 
-is_directed(subgraph::AbstractSubGraph)
-is_directed(::Type{S}) where {T,U,G,S <: AbstractSubGraph{T,U,G}}
-adjacency_matrix(subgraph::AbstractSubGraph)
-MultilayerGraphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
-name(subgraph::AbstractSubGraph)
 Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}}
 Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
 
@@ -123,8 +100,34 @@ empty_interlayer(
     default_edge_metadata::Function = (x,y) -> NamedTuple(),
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
     transfer_vertex_metadata::Bool = false
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}} 
+) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
+nodes(subgraph::AbstractSubGraph)
+has_vertex(layer::Layer, mv::MultilayerVertex)
+has_vertex(interlayer::Interlayer, mv::MultilayerVertex)
+nv(subgraph::AbstractSubGraph)
+mv_vertices(subgraph::AbstractSubGraph)
+mv_inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
+mv_outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
+mv_neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
+has_edge(subgraph::AbstractSubGraph,me::MultilayerEdge)
+has_edge( subgraph::AbstractSubGraph, s::MultilayerVertex, d::MultilayerVertex)
+ne(subgraph::AbstractSubGraph)
+edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} 
+add_edge!( subgraph::S, me::E) where {T,U<:Real,S<:AbstractSubGraph{T,U},E<:MultilayerEdge{ <: Union{U, Nothing}}}
+add_edge!(layer::Layer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...)
+add_edge!(interlayer::Interlayer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...)
+rem_edge!(subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVertex)
+rem_edge!(subgraph::AbstractSubGraph, me::MultilayerEdge)
+get_metadata(subgraph::AbstractSubGraph, bare_mv::MultilayerVertex)
+get_metadata(subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVertex)
+get_weight(subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVertex) 
+is_directed(subgraph::AbstractSubGraph)
+is_directed(::Type{S}) where {T,U,G,S <: AbstractSubGraph{T,U,G}}
+adjacency_matrix(subgraph::AbstractSubGraph)
+MultilayerGraphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
+name(subgraph::AbstractSubGraph)
+ 
 is_multiplex_interlayer(interlayer::Interlayer)
 
 get_symmetric_interlayer(
@@ -133,7 +136,7 @@ get_symmetric_interlayer(
 ) where {T,U,G,In<:Interlayer{T,U,G}}
 ```
 
-### Multilayer-Specific Methods
+### [Multilayer-Specific Methods](@id msm_eu)
 
 ```@docs
 MultilayerGraph{T,U}
@@ -219,6 +222,8 @@ rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
 get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 get_metadata(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
+set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where { T,U, M <: AbstractMultilayerUGraph{T,U}}
+set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where { T,U, M <: AbstractMultilayerDiGraph{T,U}}
 is_directed(mg::AbstractMultilayerUGraph)
 is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
 is_directed(mg::AbstractMultilayerDiGraph)
@@ -290,7 +295,7 @@ modularity(
 von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
 ```
 
-### Representations
+### [Representations](@id representations_eu)
 ```@docs
 array(atr::AbstractTensorRepresentation)
 WeightTensor{U}
@@ -302,7 +307,7 @@ SupraWeightMatrix{T,U}
 supra_weight_matrix(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 ```
 
-### Traits
+### [Traits](@id traits_eu)
 ```@docs
 is_weighted(g::G) where { G <: AbstractGraph}
 is_weighted(g::G) where {G<:Type{<:AbstractGraph}}
@@ -311,7 +316,7 @@ is_meta(g::G) where {G <: AbstractGraph}
 is_meta(g::G) where {G<:Type{<:AbstractGraph}}
 ```
 
-### Utilities
+### [Utilities](@id utilities_eu)
 ```@docs
 multilayer_kronecker_delta(dims::NTuple{4,Int64})
 δk{T}
@@ -325,7 +330,7 @@ multilayer_kronecker_delta(dims::NTuple{4,Int64})
 
 ## Developer
 
-### Nodes
+### [Nodes](@id nodes_dev)
 
 ```@docs
 AbstractNode
@@ -333,7 +338,7 @@ AbstractNode
 
 
 
-### Vertices
+### [Vertices](@id vertices_dev)
 
 ```@docs
 AbstractVertex
@@ -341,7 +346,7 @@ AbstractMultilayerVertex
 ```
 
 
-### Edges
+### [Edges](@id edges_dev)
 
 
 ```@docs
@@ -350,7 +355,7 @@ metadata(he::MultilayerGraphs.HalfEdge)
 weight(he::MultilayerGraphs.HalfEdge)
 ```
 
-### Subgraphs
+### [Subgraphs](@id subgraphs_dev)
 
 ```@docs
 has_vertex(subgraph::S, v::T ) where {T,S<:AbstractSubGraph{T}}
@@ -372,7 +377,7 @@ AbstractInterlayer
 ```
 
 
-### Multilayer-Specific Methods
+### [Multilayer-Specific Methods](@id msm_dev)
 
 ```@docs
 AbstractMultilayerGraph{T <: Integer, U <: Real}
@@ -391,13 +396,13 @@ AbstractMultilayerUGraph{T,U}
 AbstractMultilayerDiGraph{T,U}
 ```
 
-### Representations
+### [Representations](@id representations_dev)
 ```@docs
 AbstractTensorRepresentation{U}
 AbstractMatrixRepresentation{T,U}
 ```
 
-### Traits
+### [Traits](@id traits_dev)
 ```@docs
 IsWeighted{X}
 IsMeta{X}

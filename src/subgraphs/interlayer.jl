@@ -17,7 +17,7 @@ abstract type AbstractInterlayer{T,U,G} <: AbstractSubGraph{T,U,G} end
 """
     Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractInterlayer{T,U,G}
 
-Represents an interlayer in a `Multilayer(Di)Graph`. 
+Represents an interlayer in a `Multilayer(Di)Graph`. Its type hierarchy is: Interlayer <: AbstractInterlayer <: AbstractSubGraph .
 """
 mutable struct Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <:
                AbstractInterlayer{T,U,G}
@@ -504,8 +504,12 @@ Graphs.has_vertex(interlayer::Interlayer, mv::MultilayerVertex) = get_bare_mv(mv
 
 
 """
+    add_edge!(interlayer::Interlayer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...)
+
+Add edge from vertex `src` to vertex `dst` to Interlayer `interlayer`.Returns true if succeeds, but will fail (return false) if `src` and `dst` belong to the same layer, since interlayers are always bipartite. This method supports the uniform and transparent interfaces. See the [Edges](@ref edges_tut_subg) section of the Tutorial.
 """
-function Graphs.add_edge!(interlayer::In, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...) where { In <: Interlayer} 
+function Graphs.add_edge!(interlayer::Interlayer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...)
+    
     src_bare = get_bare_mv(src)
     dst_bare = get_bare_mv(dst)
     !has_vertex(interlayer, src)  && throw( ErrorException( "Vertex $(src) does not belong to the interlayer."))

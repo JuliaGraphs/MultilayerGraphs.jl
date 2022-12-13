@@ -60,7 +60,7 @@ for node in nodes(multilayerdigraph)
     @test has_node(multilayerdigraph, node)
 end
 
-## Test MultilayerGraphs.add_node! and MultilayerGraphs.rem_node!
+# Test MultilayerGraphs.add_node! and MultilayerGraphs.rem_node!
 new_node = Node("new_node")
 nv_prev = nv(multilayerdigraph)
 ne_prev = ne(multilayerdigraph)
@@ -69,7 +69,7 @@ ne_prev = ne(multilayerdigraph)
 @test has_node(multilayerdigraph, new_node)
 @test MultilayerGraphs.rem_node!(multilayerdigraph, new_node)
 @test !has_node(multilayerdigraph, new_node)
-### Test that nothing changed
+# Test that nothing changed
 @test nv_prev == nv(multilayerdigraph)
 @test ne_prev == ne(multilayerdigraph)
 
@@ -78,19 +78,17 @@ ne_prev = ne(multilayerdigraph)
 nv(multilayerdigraph)
 @test length(multilayerdigraph.fadjlist) == length(vertices(multilayerdigraph)) # nv_withmissing(multilayerdigraph)
 
-## Test that all multilayer vertices are present
+# Test that all multilayer vertices are present
 for mv in vcat(mv_vertices.(all_layers_d)...)
     @test has_vertex(multilayerdigraph, mv)
 end
 
 for mv in mv_vertices(multilayerdigraph)
-    # if !(mv isa MissingVertex)
         mv_inneighbors(multilayerdigraph, mv)
         mv_outneighbors(multilayerdigraph, mv)
-    # end
 end
 
-## Test add_vertex! and rem_vertex!
+# Test add_vertex! and rem_vertex!
 
 # Test edges
 ne(multilayerdigraph)
@@ -116,7 +114,6 @@ wgt = weight_tensor(multilayerdigraph)
 wgt = weight_tensor(multilayerdigraph)
 @test wgt[rand_mv_1_weight, rand_mv_2_weight] == get_weight(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight) == _weight + 1
 
-
 ## Test set_metadata!
 _, rand_mv_1_meta, rand_mv_2_meta = _get_srcmv_dstmv_layer(layer_mdg)
 ### On vertices
@@ -128,14 +125,13 @@ _, rand_mv_1_meta, rand_mv_2_meta = _get_srcmv_dstmv_layer(layer_mdg)
 @test has_edge(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta)
 mt = metadata_tensor(multilayerdigraph)
 @test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "hello"
-_metadata = (meta = "byebye",)
+_metadata = (meta = "bye",)
 @test set_metadata!(multilayerdigraph , rand_mv_1_meta, rand_mv_2_meta, _metadata)
 mt = metadata_tensor(multilayerdigraph)
-@test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "byebye"
+@test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "bye"
 
 # Test Graphs.jl extra overrides
 @test all(indegree(multilayerdigraph) .+ outdegree(multilayerdigraph) .== degree(multilayerdigraph))
-
 @inferred(mean_degree(multilayerdigraph))
 @inferred(degree_second_moment(multilayerdigraph))
 @inferred(degree_variance(multilayerdigraph))
@@ -154,8 +150,6 @@ eig_centr_u, errs_u = eigenvector_centrality(multilayerdigraph; norm="n", tol=1e
 
 modularity(multilayerdigraph, rand([1, 2, 3, 4], length(nodes(multilayerdigraph)), length(multilayerdigraph.layers)), )
 
-# get_graph_of_layers(multilayerdigraph)
-
 wgt = weight_tensor(multilayerdigraph)
 sam = supra_weight_matrix(multilayerdigraph)
 for edge in collect(edges(multilayerdigraph.layer_swdg))
@@ -167,33 +161,19 @@ end
 # Test that, given a 1-dimensional multilayerdigraph, we obtain the same metrics as we would by using Graphs.jl utilities on the one and only layer
 ## unweighted and weighted case
 for layer in all_layers_d
-
     if !(layer.graph isa SimpleValueGraphs.AbstractValGraph)
         monolayergraph = MultilayerDiGraph([layer])
-
         @test length(edges(monolayergraph)) == length(edges(layer.graph))
-
         @test eltype(monolayergraph) == eltype(layer.graph)
-
         @test ne(monolayergraph) == ne(layer.graph)
-
         @test length(nodes(monolayergraph)) == nv(layer.graph)
-
         @test nv(monolayergraph) .== nv(layer.graph)
-
         @test all(inneighbors.(Ref(monolayergraph), vertices(monolayergraph)) .== inneighbors.(Ref(layer.graph), vertices(layer.graph)))
-
-
         @test all(indegree(monolayergraph) .== indegree(layer.graph))
-
         @test all(outdegree(monolayergraph) .== outdegree(layer.graph))
-
         @test all(degree(monolayergraph) .== degree(layer.graph))
-
         @test_broken vec(eigenvector_centrality(monolayergraph; norm="n", tol=1e-3)[1]) ==
             eigenvector_centrality(layer.graph)
-
-
         tests = Bool[]
         for i in 1:5
             clustering = rand(
@@ -205,7 +185,6 @@ for layer in all_layers_d
             )
         end
         @test_broken all(tests)
-
         for edge in edges(layer)
             @test has_edge(monolayergraph, edge)
         end
