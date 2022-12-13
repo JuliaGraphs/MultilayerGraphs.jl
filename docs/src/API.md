@@ -8,6 +8,7 @@ This page provides a list of exported methods organized by topic and audience. M
 
 ```@docs
 Node
+id
 ```
 
 ### Vertices
@@ -349,7 +350,7 @@ metadata(he::MultilayerGraphs.HalfEdge)
 weight(he::MultilayerGraphs.HalfEdge)
 ```
 
-# Subgraphs
+### Subgraphs
 
 ```@docs
 has_vertex(subgraph::S, v::T ) where {T,S<:AbstractSubGraph{T}}

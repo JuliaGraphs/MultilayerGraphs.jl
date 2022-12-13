@@ -22,9 +22,9 @@ CurrentModule = MultilayerGraphs
 
 A multilayer graph is composed of *layers*, i.e. graphs whose vertices represent the same set of nodes (not all nodes need to be represented in every layer), and *interlayers*, i.e. the [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) that connect vertices in two different layers. Vertices in a multilayer graph are represented using the [`MultilayerVertex`](@ref) struct, while nodes are represented using the [`Node`](@ref) struct.
 
-[`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed to allow for layers and interlayers of any type (as long as they are Graphs.jl extensions themselves) and to permit layers and interlayers of different types. However, it is required that all layers and interlayers in [`MultilayerGraph`](@ref) are undirected, and all layers and interlayers in [`MultilayerDiGraph`](@ref) are directed.
+`MultilayerGraph` and `MultilayerDiGraph` are fully-fledged [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) extensions. Both structs are designed to allow for layers and interlayers of any type (as long as they are Graphs.jl extensions themselves) and to permit layers and interlayers of different types. However, it is required that all layers and interlayers in `MultilayerGraph` are undirected, and all layers and interlayers in `MultilayerDiGraph` are directed.
 
-[`MultilayerGraph`](@ref) and [`MultilayerDiGraph`](@ref) support the specification of vertex and edge metadata, provided that the underlying layer or interlayer also supports metadata.
+`MultilayerGraph` and `MultilayerDiGraph` support the specification of vertex and edge metadata, provided that the underlying layer or interlayer also supports metadata.
 
 ## Installation
 
@@ -36,7 +36,7 @@ pkg> add MultilayerGraphs
 
 ## Tutorial
 
-Here we illustrate how to define, handle and analyse a [`MultilayerGraph`](@ref) (the directed version is completely analogous).
+Here we illustrate how to define, handle and analyse a `MultilayerGraph` (the directed version is completely analogous).
 
 ```julia
 using Revise
@@ -56,7 +56,6 @@ const max_vertices = 7
 const min_edges    = 1
 const max_edges    = max_vertices*(max_vertices-1)
 const n_nodes      = max_vertices
-; #hide
 ```
 
 Next we define nodes:
@@ -76,7 +75,7 @@ const all_nodes = [Node("node_$i") for i in 1:n_nodes]
  Node("node_7")
 ```
 
-And construct `MultilayerVertex`s from these nodes:
+You may access (but not modify) the `id` of a `Node` via the [`id`](@ref) function. And construct `MultilayerVertex`s from these nodes:
 
 ```julia
 ## Convert nodes to multilayer vertices without metadata
@@ -106,7 +105,7 @@ multilayervertices_meta[1]
 MV(Node("node_1"), :nothing, ("I'm node node_1",))
 ```
 
-Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented, the second the (name of) the layer the vertex is represented in (here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex (no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples).
+Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in ((accessible via the [`layer`](@ref) function), here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex ((accessible via the [`metadata`](@ref) function), no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples).
 
 ### Layers
 
@@ -155,7 +154,6 @@ function _get_srcmv_dstmv_layer(layer::Layer)
 
     return mvs, src_mv, dst_mv
 end
-; #hide
 ```
 
 We are now are ready to define some `Layer`s. Every type of graph from the Graphs.jl ecosystem may underlie a `Layer` (or an `Interlayer`). We will construct a few of them, each time with a different number of vertices and edges.
@@ -204,14 +202,13 @@ layer_vg = Layer(   :layer_vg,
 
 # Collect all layers in an ordered list. Order will be recorded when instantiating the multilayer graph.
 layers = [layer_sg, layer_swg, layer_mg, layer_vg]
-; #hide
 ```
 
 The API that inspects and modifies `Layer`s will be shown below together with that of `Interlayer`s, since they are usually the same. There are of course other constructors that you may discover by typing `?Layer` in the console.
 
 ### Interlayers
 
-Now we turn to defining `Interlayer`s. Interlayers are the graphs containing all the edges between vertices is two distinct layers. As before, we need an utility to ease randomization:
+Now we turn to defining [`Interlayer`](@ref)s. Interlayers are the graphs containing all the edges between vertices is two distinct layers. As before, we need an utility to ease randomization:
 
 
 ```julia
@@ -240,7 +237,6 @@ function rand_ne_interlayer(layer_1, layer_2)
     _ne = rand(_nv:(_nv*(_nv-1)) ÷ 2 )
     return _ne
 end
-; #hide
 ```
 
 An `Interlayer` is constructed by passing its name, the two `Layer`s it should connect, and the other parameters just like the `Layer`'s constructor. The random constructor reads:
@@ -298,7 +294,6 @@ interlayer_empty_sg_vg = empty_interlayer(  layer_sg,
 
 # Collect all interlayers. Even though the list is ordered, order will not matter when instantiating the multilayer graph.
 interlayers = [interlayer_sg_swg, interlayer_swg_mg, interlayer_mg_vg, interlayer_multiplex_sg_mg, interlayer_empty_sg_vg]
-; #hide
 ```
 
 Next, we explore the API associated to modify and analyze `Layer`s and `Interlayer`s.
@@ -405,9 +400,9 @@ interlayer_sg_swg_vertices = mv_vertices(interlayer_sg_swg)
 
 The `vertices` command would return an internal representation of the `MultilayerVertex`s. This method, together with others, serves to make `MultilayerGraphs.jl` compatible with the Graphs.jl ecosystem, but it is not meant to be called by the end user. It is, anyway, thought to be used by developers who wish to interface their packages with `MultilayerGraphs.jl` just as with other packages of the `Graphs.jl` ecosystem: a developer-oriented guide will be compiled if there is the need. 
 
-In the [API](@ref) page the intended usage of all methods (*end-user* or *developer*) is highlighted.
+In the [API](@ref) page the intended usage of all methods ([End-User](@ref) or [Developer](@ref)) is highlighted.
 
-To add a vertex, simply use [`add_vertex!`](@ref). Let us define a vertex with metadata to add. Since nodes may not be represented more than once in layers, we have to define a new node to:
+To add a vertex, simply use [`add_vertex!(layer::Layer, mv::MultilayerVertex)`](@ref). Let us define a vertex with metadata to add. Since nodes may not be represented more than once in layers, we have to define a new node to:
 
 ```julia
 new_node     = Node("missing_node")

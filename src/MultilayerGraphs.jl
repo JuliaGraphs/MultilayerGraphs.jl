@@ -24,6 +24,7 @@ export
     # Node.jl 
     AbstractNode,
     Node,
+    id,
     # abstractvertex.jl
     AbstractVertex,
     # multilayervertex.jl 

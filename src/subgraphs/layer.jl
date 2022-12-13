@@ -18,13 +18,6 @@ abstract type AbstractLayer{T,U,G}  <: AbstractSubGraph{T,U,G} end
     mutable struct Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}} <: AbstractLayer{T,U,G}
 
 Represents a layer in a `Multilayer(Di)Graph`. 
-
-# FIELDS
-
-- `name::Symbol`: the name of the layer;
-- `graph::G`: underlying graph of the layer;
-- `forbidden_vertices::Vector{MultilayerVertex}`: nodes of the MultilayerGraph that are not part of this Layer (they will be formally present in the Layer but it will be checked that they aren't adjacent to any other node);
-- `forbidden_edges`::Vector{NTuple{2, MultilayerVertex}}: edges that are required not to exist in this Layer.
 """
 mutable struct Layer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractLayer{T,U,G}
     descriptor::LayerDescriptor{T,U,G}
