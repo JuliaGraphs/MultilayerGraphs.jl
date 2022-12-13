@@ -26,6 +26,9 @@ A multilayer graph is composed of *layers*, i.e. graphs whose vertices represent
 
 `MultilayerGraph` and `MultilayerDiGraph` support the specification of vertex and edge metadata, provided that the underlying layer or interlayer also supports metadata.
 
+The documentation is organized as follows: you will find a comprehensive [Tutorial](@ref) below, complemented by an [API](@ref) page. The API page is organized in two sections: the [End-User](@ref) section lists all the methods intended for the user who does not need to write code that is also compatible with other libraries in the Graphs.jl's ecosystem, while the [Developer](@ref) section contains methods that allow MultilayerGraphs.jl to be used as any package that extend Graphs.jl . Bot section are further stratified by topic.
+The tutorial below will be focused on the end-used experience, as developer methods often have very similar signature and will be better addressed in a future developer-oriented guide, should the community manifest the need of it.
+
 ## Installation
 
 Press `]` in the Julia REPL and then
@@ -105,7 +108,7 @@ multilayervertices_meta[1]
 MV(Node("node_1"), :nothing, ("I'm node node_1",))
 ```
 
-Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in ((accessible via the [`layer`](@ref) function), here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex ((accessible via the [`metadata`](@ref) function), no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples).
+Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in ((accessible via the [`layer`](@ref) function), here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex ((accessible via the [`metadata`](@ref) function), no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples). For a complete list of methods applicable to `MultilayerVertices`, plese refer to the [Vertices](@ref vertices_eu) of the API.
 
 ### Layers
 
@@ -125,7 +128,7 @@ Layer(
 )
 ```
 
-A `Layer` is considered "weighted" if its underlying graph (`null_graph` argument) has been given the `IsWeighted` trait (traits throughout this package are implemented via from [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl), just like Graphs.jl does). Since one may at any moment add a new weighted `Layer` to a `MultilayerGraph` (see below for details), the latter is always considered a "weighted graph", so it is given the `IsWeighted` trait. Thus, all `Layer`s and `Interlayer`s (collectively named "subgraphs" hereafter) must specify their `weighttype` as the last argument of their constructor, so the user may debug their weight matrices immediately after construction. As better specified below, all subgraphs that are meant to be part of the same `MultilayerGraph` must have the same `weighttype`.   
+A `Layer` is considered "weighted" if its underlying graph (`null_graph` argument) has been given the `IsWeighted` trait (traits throughout this package are implemented via [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl), just like Graphs.jl does). Since one may at any moment add a new weighted `Layer` to a `MultilayerGraph` (see below for details), the latter is always considered a "weighted graph", so it is given the `IsWeighted` trait. Thus, all `Layer`s and `Interlayer`s (collectively named "subgraphs" hereafter) must specify their `weighttype` as the last argument of their constructor, so the user may debug their weight matrices immediately after construction. As better specified below, all subgraphs that are meant to be part of the same `MultilayerGraph` must have the same `weighttype`.   
 
 Before instantiating `Layer`s, we define an utility function to ease randomization:
 
@@ -204,7 +207,7 @@ layer_vg = Layer(   :layer_vg,
 layers = [layer_sg, layer_swg, layer_mg, layer_vg]
 ```
 
-The API that inspects and modifies `Layer`s will be shown below together with that of `Interlayer`s, since they are usually the same. There are of course other constructors that you may discover by typing `?Layer` in the console.
+The API that inspects and modifies `Layer`s will be shown below together with that of `Interlayer`s, since they are usually the same.  There are of course other constructors that you may discover by typing `?Layer` in the console.
 
 ### Interlayers
 
@@ -296,7 +299,7 @@ interlayer_empty_sg_vg = empty_interlayer(  layer_sg,
 interlayers = [interlayer_sg_swg, interlayer_swg_mg, interlayer_mg_vg, interlayer_multiplex_sg_mg, interlayer_empty_sg_vg]
 ```
 
-Next, we explore the API associated to modify and analyze `Layer`s and `Interlayer`s.
+Next, we explore the API associated to modify and analyze `Layer`s and `Interlayer`s. A complete list of methods relating to subgraphs can be found [here](@ref subgraphs_eu).
 
 ### Subgraphs API
 
@@ -304,7 +307,7 @@ API for  `Layer`s and `Interlayer`s (collectively, "subgraphs") are very similar
 
 Subgraphs extend the Graphs.jl's interface, so one may expect every method from Graphs.jl to apply. Anyway, the output and signature is slightly different and thus worth pointing out below.
 
-#### Nodes
+#### [Nodes](@ref nodes_tut_subg)
 
 One may retrieve the `Node`s that a `Layer` represents via:
 
@@ -346,7 +349,7 @@ has_node(layer_sg, layer_sg_nodes[1])
 true
 ```
 
-#### Vertices
+#### [Vertices](@ref vertices_tut_subg)
 
 One may retrieve the `MultilayerVertex`s of a layer by calling:
 
@@ -456,7 +459,7 @@ By design, one may not add nor remove vertices to `Interlayer`s.
 
 Please refer to the Vertex section of the API page ([end-user]() and [developer]()) to discover more methods related to `MultilayerVertex`s. 
 
-### Edges
+### [Edges](@ref edges_tut_subg)
 
 The edge type for multilayer graphs (and thus for this subgraphs) is `MultilayerEdge`, which has a type parameter corresponding to the chosen weight type:
 
@@ -657,7 +660,7 @@ Note that this is not an implementation of a fully-fledged configuration model, 
 
 There is a similar constructor for `MultilayerDiGraph` which requires both the indegree distribution and the outdegree distribution. Anyway due to current performance limitations in the graph realization algorithms, it is suggested to provide two "similar" distributions (similar mean or location parameter, similar variance or shape parameter), in order not to incur in lengthy computational times.  
 
-#### Nodes
+#### [Nodes](@ref nodes_tut_multig)
 
 You may add a node via `add_node`:
 

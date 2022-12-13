@@ -17,7 +17,7 @@ abstract type AbstractInterlayer{T,U,G} <: AbstractSubGraph{T,U,G} end
 """
     Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractInterlayer{T,U,G}
 
-Represents an interlayer in a `Multilayer(Di)Graph`. 
+Represents an interlayer in a `Multilayer(Di)Graph`. Its type hierarchy is: Interlayer <: AbstractInterlayer <: AbstractSubGraph .
 """
 mutable struct Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <:
                AbstractInterlayer{T,U,G}

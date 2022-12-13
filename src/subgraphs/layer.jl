@@ -17,7 +17,7 @@ abstract type AbstractLayer{T,U,G}  <: AbstractSubGraph{T,U,G} end
 """
     mutable struct Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}} <: AbstractLayer{T,U,G}
 
-Represents a layer in a `Multilayer(Di)Graph`. 
+Represents a layer in a `Multilayer(Di)Graph`. Its type hierarchy is: Layer <: AbstractLayer <: AbstractSubGraph .
 """
 mutable struct Layer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractLayer{T,U,G}
     descriptor::LayerDescriptor{T,U,G}
