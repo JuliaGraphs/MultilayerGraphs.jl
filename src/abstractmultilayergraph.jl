@@ -492,7 +492,7 @@ Graphs.indegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVert
 
 Get the outdegree of vertex `v` in `mg`.
 """
-Graphs.outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = length(outneighbors(mg, v))
+Graphs.outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = length(outneighbors(mg, mv))
      
 """
     outdegree(mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} 

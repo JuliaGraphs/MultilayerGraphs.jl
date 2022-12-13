@@ -299,7 +299,7 @@ interlayer_empty_sg_vg = empty_interlayer(  layer_sg,
 interlayers = [interlayer_sg_swg, interlayer_swg_mg, interlayer_mg_vg, interlayer_multiplex_sg_mg, interlayer_empty_sg_vg]
 ```
 
-Next, we explore the API associated to modify and analyze `Layer`s and `Interlayer`s. A complete list of methods relating to subgraphs can be found [here](@ref subgraphs_eu).
+Next, we explore the API associated to modify and analyze `Layer`s and `Interlayer`s.
 
 ### Subgraphs API
 
@@ -403,7 +403,7 @@ interlayer_sg_swg_vertices = mv_vertices(interlayer_sg_swg)
 
 The [`vertices(subgraph::AbstractSubGraph)`](@ref) command would return an internal representation of the `MultilayerVertex`s. This method, together with others, serves to make `MultilayerGraphs.jl` compatible with the Graphs.jl ecosystem, but it is not meant to be called by the end user. It is, anyway, thought to be used by developers who wish to interface their packages with `MultilayerGraphs.jl` just as with other packages of the `Graphs.jl` ecosystem: as said above, a developer-oriented guide will be compiled if there is the need, although docstrings are already completed.
 
-To add a vertex, simply use [`add_vertex!(layer::Layer, mv::MultilayerVertex)`](@ref). Let us define a vertex with metadata to add. Since nodes may not be represented more than once in layers, we have to define a new node too:
+To add a vertex, simply use `add_vertex!`. Let us define a vertex with metadata to add. Since nodes may not be represented more than once in layers, we have to define a new node too:
 
 ```julia
 new_node     = Node("missing_node")
@@ -428,7 +428,7 @@ add_vertex!(layer_mg, new_node, metadata = new_metadata)
 ```
 - The *transparent* interface. After you pass to `add_vertex` the `Layer` and the `Node` you wish to add, you  may pass the same `args` and `kwargs`  that you would pass to the `add_vertex!` dispatch that acts on the underlying graph (after the graph argument). This is a way to let the user directly exploit the API of the underlying graph package, which could be useful for two reasons:
     1. They may be more convenient;
-    1. They should work even if we are not able to integrate the *standard* and the *uniform* interface with a particular `Graphs.jl`'s extension.
+    2. They should work even if we are not able to integrate the *standard* and the *uniform* interface with a particular `Graphs.jl`'s extension.
   
     Here is an example on how to use it:
 ```julia
@@ -437,7 +437,7 @@ add_vertex!(layer_mg, new_node, Dict(pairs(new_metadata)))
 where `Dict(pairs(new_metadata))` is exactly what you would pass to the `add_vertex!` method that acts on `MetaGraphs`:
 ```julia
 metagraph = MetaGraph()
-add_vertex!(metagraph,  Dict(pairs(new_metadata)))
+add_vertex!(metagraph,  Dict(pairs(new_metadata))) # true
 ```
 
 If an underlying graph has an `add_vertex!` interface whose signature overlaps with that of the uniform interface, the uniform interface will be prevail.
@@ -447,7 +447,8 @@ If, using the *transparent* interface, one does not specify any `metadata`, the 
 To remove the vertex, simply do:
 ```julia
 rem_vertex!(layer_sg, new_vertex) # Returns true if succeeds
-```s
+```
+
 To extract metadata:
 ```julia
 get_metadata(layer_mg, MV(new_node))
@@ -455,7 +456,7 @@ get_metadata(layer_mg, MV(new_node))
 
 By design, one may not add nor remove vertices to `Interlayer`s.
 
-Please refer to the Vertex section of the API page ([end-user]() and [developer]()) to discover more methods related to `MultilayerVertex`s. 
+A complete list of methods relating to subgraphs can be found [here](@ref subgraphs_eu).
 
 ### [Edges](@ref edges_tut_subg)
 
@@ -486,7 +487,7 @@ collect(edges(layer_sg))
  ME(MV(Node("node_6"), :layer_sg, NamedTuple()) --> MV(Node("node_7"), :layer_sg, NamedTuple()),	weight = 1.0,	metadata = NamedTuple())
 ```
 
-Where `ME` is a shorthand for `MultilayerEdge`. Besides the two vertices connected, each `MultilayerEdge` carries the information about its `weight` and `metadata`. For unweighted subgraphs, the weight is just `one(weighttype)` and for non-meta subgraphs the metadata are an empty `NamedTuple`s. See `?MultilayerEdge` for additional information.
+Where `ME` is a shorthand for `MultilayerEdge`. Besides the two vertices connected, each `MultilayerEdge` carries the information about its `weight` and `metadata`. For unweighted subgraphs, the weight is just `one(weighttype)` and for non-meta subgraphs the metadata are an empty `NamedTuple`s. See `?MultilayerEdge` for additional information, or refer to the [Edges](@ref edges_eu) to discover more methods related to `MultilayerEdges`s.
 
 The `add_edge` function has the standard, uniform and transparent interfaces too. To understand how they work, let's define a weighted edge:
 
@@ -528,7 +529,7 @@ add_edge!(simpleweightedgraph, 1, 2, _weight)
 
 If an underlying graph has an `add_edge!` interface whose signature overlaps with that of the uniform interface, the uniform interface will prevail.
 
-If, using the *transparent* interface, one does not specify any `weight` or (inclusively) `metadata` keyword argument, the `default_edge_weight` or (inclusively) the `default_edge_metadata` function passed to the `Layer`'s constructor will be called to provide `weight` or `metadata` to the edge (type `?Layer` in the REPL for more information).
+If, using the *transparent* interface, one does not specify any `weight` or (inclusively) `metadata` keyword argument, the `default_edge_weight` or (inclusively) the `default_edge_metadata` function passed to the subgraph's constructor will be called to provide `weight` or `metadata` to the edge (type `?Layer` in the REPL for more information).
 
 To remove the edge, simply do:
 ```julia
@@ -575,8 +576,6 @@ To extract metadata:
 get_metadata(layer_mg, src_m, dst_m)
 ```
 
-Please refer to the Vertex section of the API page ([end-user]() and [developer]()) to discover more methods related to `MultilayerEdges`s.
-
 For the `layer_swg`, the following three signatures would be equivalent:
 
 - *standard* interface:
@@ -600,8 +599,6 @@ The edge may be removed via
 rem_edge!(layer_swg, src_w, dst_w)
 ```
 
-Please refer to the `MultilayerEdge` section of the API page ([end-user]() and [developer]()) to discover more methods related to `MultilayerEdge`s.
-
 ### Multilayer Graphs
 
 Given all the `Layer`s and the `Interlayer`s, let's instantiate a multilayer graph as follows:
@@ -614,7 +611,7 @@ multilayergraph = MultilayerGraph(  layers,                                     
 );
 ```
 
-Keep in mind that `Multilayer(Di)Graph` only supports uniform and standard interface for both `add_vertex!` and `add_edge!`.
+**Keep in mind that `Multilayer(Di)Graph` only supports uniform and standard interface for both `add_vertex!` and `add_edge!`.**
 
 As already stated, a `MultilayerGraph` is an object made of `Layer`s and `Interlayer`s whose collections of vertices each represents a subset of the set of nodes, here being `nodes`.
 
@@ -626,7 +623,8 @@ It is used as:
 
 
 ```julia
-# First, we need to empty the above layers and interlayers, and remove the ones having a `SimpleWeightedGraph`s. These lines are not necessary to comprehend the tutorial, they may be skipped. Just know that the variables `empty_layers` and `empty_interlayers` are two lists of. respectively, empty layers and interlayers that do not have `SimpleWeightedGraph`s as their underlying graphs
+# The configuration model-like constructor will be responsible for creating the edges, so we need to provide it with empty layers and interlayers.
+# To create empty layers and interlayers, we will empty the above subgraphs, and, for compatobility reasons, we'll remove the ones having a `SimpleWeightedGraph`s. These lines are not necessary to comprehend the tutorial, they may be skipped. Just know that the variables `empty_layers` and `empty_interlayers` are two lists of, respectively, empty layers and interlayers that do not have `SimpleWeightedGraph`s as their underlying graphs
 
 empty_layers =  deepcopy([layer for layer in layers if !(layer.graph isa SimpleWeightedGraphs.AbstractSimpleWeightedGraph)])
 
@@ -650,11 +648,7 @@ end
 configuration_multilayergraph = MultilayerGraph(empty_layers, empty_interlayers, truncated(Normal(10), 0.0, 20.0));
 ```
 
-    ┌ Info: Looping through wirings to find one that works...
-    └ @ MultilayerGraphs E:\other_drives\developer07\package_development\MultilayerGraphs\dev\MultilayerGraphs\src\utilities.jl:441
-    
-
-Note that this is not an implementation of a fully-fledged configuration model, which would require to be able to specify a degree distribution for every dimension of multiplexity. Please refer to [#future-developments]().
+Note that this is not an implementation of a fully-fledged configuration model, which would require to be able to specify a degree distribution for every dimension of multiplexity. Please refer to [Future Developments](@ref).
 
 There is a similar constructor for `MultilayerDiGraph` which requires both the indegree distribution and the outdegree distribution. Anyway due to current performance limitations in the graph realization algorithms, it is suggested to provide two "similar" distributions (similar mean or location parameter, similar variance or shape parameter), in order not to incur in lengthy computational times.  
 
@@ -675,7 +669,6 @@ Now one may add vertices that represent that node, e.g.:
 ```julia
 new_vertex = MV(new_node, :layer_sg)
 add_vertex!(multilayergraph, new_vertex)
-rem_vertex!(multilayergraph, new_vertex) # hide
 ```
 ```nothing 
 true
@@ -829,7 +822,6 @@ Note that `wgt` is an object of type [`WeightTensor`](@ref). You may access its 
 
 ```julia
 array(wgt)
-; # hide
 ```
 
 Also, you may index it using `MultilayerVertex`s:
@@ -851,7 +843,7 @@ The package also exports a [`SupraWeightMatrix`](@ref) which is a supra (weighte
 
 #### Multilayer-specific analytical tools
 
-Read a complete list of analytical methods exclusive to multilayer graphs in the dedicated [API section](@ref API) (here "exclusive" means that wither those methods do not exists for standard graphs, or that they had to be reimplemented and so may present some caveats). Refer to their docstrings for more information.
+Read a complete list of analytical methods exclusive to multilayer graphs in the dedicated [API section](@ref msm_eu) (here "exclusive" means that wither those methods do not exists for standard graphs, or that they had to be reimplemented and so may present some caveats). Refer to their docstrings for more information.
 
 ### Future Developments
 
