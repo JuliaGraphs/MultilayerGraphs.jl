@@ -222,6 +222,8 @@ rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
 get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 get_metadata(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
+set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where { T,U, M <: AbstractMultilayerUGraph{T,U}}
+set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where { T,U, M <: AbstractMultilayerDiGraph{T,U}}
 is_directed(mg::AbstractMultilayerUGraph)
 is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
 is_directed(mg::AbstractMultilayerDiGraph)

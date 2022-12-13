@@ -97,7 +97,7 @@ const multilayervertices_meta  = [MV(node, ("I'm node $(node.id)",)) for node in
  MV(Node("node_7"), :nothing, ("I'm node node_7",))
 ```
 
-This conversion is done since it is logical to add vertices to a graph, not nodes, and also for consistency reasons with the ecosystem.
+This conversion from `Node`s to `MultilayerVertex`s is performed since it is logical to add vertices to a graph, not nodes, and also for consistency reasons with the ecosystem.
 
 Printing a `MultilayerVertex` returns:
 
@@ -108,7 +108,7 @@ multilayervertices_meta[1]
 MV(Node("node_1"), :nothing, ("I'm node node_1",))
 ```
 
-Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in ((accessible via the [`layer`](@ref) function), here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex ((accessible via the [`metadata`](@ref) function), no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples). For a complete list of methods applicable to `MultilayerVertices`, plese refer to the [Vertices](@ref vertices_eu) of the API.
+Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in (accessible via the [`layer`](@ref) function, here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex (accessible via the [`metadata`](@ref) function, no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples). For a complete list of methods applicable to `MultilayerVertices`, plese refer to the [Vertices](@ref vertices_eu) of the API.
 
 ### Layers
 
@@ -128,7 +128,7 @@ Layer(
 )
 ```
 
-A `Layer` is considered "weighted" if its underlying graph (`null_graph` argument) has been given the `IsWeighted` trait (traits throughout this package are implemented via [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl), just like Graphs.jl does). Since one may at any moment add a new weighted `Layer` to a `MultilayerGraph` (see below for details), the latter is always considered a "weighted graph", so it is given the `IsWeighted` trait. Thus, all `Layer`s and `Interlayer`s (collectively named "subgraphs" hereafter) must specify their `weighttype` as the last argument of their constructor, so the user may debug their weight matrices immediately after construction. As better specified below, all subgraphs that are meant to be part of the same `MultilayerGraph` must have the same `weighttype`.   
+A `Layer` is considered "weighted" if its underlying graph (`null_graph` argument) has been given the `IsWeighted` trait (traits throughout this package are implemented via [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl), just like Graphs.jl does). Since one may at any moment add a new weighted `Layer` to a `MultilayerGraph` (see below for details), the latter is always considered a "weighted graph", so it is given the `IsWeighted` trait. Thus, all `Layer`s and `Interlayer`s (collectively named "subgraphs" hereafter) must specify their `weighttype` as the last argument of their constructor, so the user may debug their weight matrices ([`weights(subgraph::AbstractSubGraph)`](@ref)) immediately after construction. As better specified below, all subgraphs that are meant to be part of the same `MultilayerGraph` must have the same `weighttype`.   
 
 Before instantiating `Layer`s, we define an utility function to ease randomization:
 
@@ -456,7 +456,6 @@ get_metadata(layer_mg, MV(new_node))
 
 By design, one may not add nor remove vertices to `Interlayer`s.
 
-A complete list of methods relating to subgraphs can be found [here](@ref subgraphs_eu).
 
 ### [Edges](@ref edges_tut_subg)
 
@@ -599,6 +598,8 @@ The edge may be removed via
 rem_edge!(layer_swg, src_w, dst_w)
 ```
 
+A complete list of methods relating to subgraphs can be found [here](@ref subgraphs_eu).
+
 ### Multilayer Graphs
 
 Given all the `Layer`s and the `Interlayer`s, let's instantiate a multilayer graph as follows:
@@ -613,7 +614,7 @@ multilayergraph = MultilayerGraph(  layers,                                     
 
 **Keep in mind that `Multilayer(Di)Graph` only supports uniform and standard interface for both `add_vertex!` and `add_edge!`.**
 
-As already stated, a `MultilayerGraph` is an object made of `Layer`s and `Interlayer`s whose collections of vertices each represents a subset of the set of nodes, here being `nodes`.
+As already stated, a `MultilayerGraph` is an object made of `Layer`s and `Interlayer`s whose collections of vertices each represents a subset of the set of nodes, here being the variable `nodes`.
 
 *Adding* a `Node` to a `MultilayerGraph` will enable its `Layer`s  (and thus its `Interlayer`s) to represent it i.e. you will be able to add `MultilayerVertex`s that represent that `Node` to the multilayer graph.
 
@@ -685,7 +686,7 @@ true
 
 #### Modifying edge weight and metadata and vertex metadata
 
-One may modify the weight of the edge of a multilayer graph via the `set_weight!` function. The call will succeed only if the edge that is acted upon exists and belongs to a weighted subgraph:
+One may modify the weight of the edge of a multilayer graph via the [`set_weight!`](@ref) function. The call will succeed only if the edge that is acted upon exists and belongs to a weighted subgraph:
 
 
 ```julia
