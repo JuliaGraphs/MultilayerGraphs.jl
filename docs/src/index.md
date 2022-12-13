@@ -806,7 +806,7 @@ rem_layer!( multilayergraph,
 true
 ```
 
-Visit the [multilayer graph](@ref msm_eu) subsection of the APIs to discover more useful methods.
+Visit the [multilayer graph](@ref msm_eu) subsection of the edn-user APIs to discover more useful methods.
 
 #### Weight/Adjacency Tensor, Metadata Tensor and Supra Weight/Adjacency Matrix
 
