@@ -128,10 +128,10 @@ _, rand_mv_1_meta, rand_mv_2_meta = _get_srcmv_dstmv_layer(layer_mdg)
 @test has_edge(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta)
 mt = metadata_tensor(multilayerdigraph)
 @test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "hello"
-_metadata = (meta = "byebye",)
+_metadata = (meta = "bye",)
 @test set_metadata!(multilayerdigraph , rand_mv_1_meta, rand_mv_2_meta, _metadata)
 mt = metadata_tensor(multilayerdigraph)
-@test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "byebye"
+@test mt[rand_mv_1_meta, rand_mv_2_meta].meta == get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta == "bye"
 
 # Test Graphs.jl extra overrides
 @test all(indegree(multilayerdigraph) .+ outdegree(multilayerdigraph) .== degree(multilayerdigraph))
