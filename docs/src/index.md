@@ -737,7 +737,7 @@ has_layer(multilayergraph, :new_layer)
 true
 ```
 
-The `add_layer!` function will automatically instantiate all the `Interlayer`s between the newly added `Layer` and the `Layer`s already present in the multilayer graph.
+The [`add_layer!`](@ref) function will automatically instantiate all the `Interlayer`s between the newly added `Layer` and the `Layer`s already present in the multilayer graph.
 
 If you wish to manually specify an interlayer, just do:
 
@@ -761,7 +761,7 @@ specify_interlayer!( multilayergraph,
 true
 ```
 
-Suppose that, after some modifications of `multilayergraph`, you would like to inspect a particular slice (or subgraph) of it (i.e. a `Layer` or an `Interlayer`). You may get both layers and interlayers as properties of the multilayer graph itself.
+Suppose that, after some modifications of `multilayergraph`, you would like to inspect a particular slice (or subgraph) of it (i.e. a `Layer` or an `Interlayer`). You may use both layers and interlayers names as properties of the multilayer graph itself.
 
 ```julia
 # Get a layer by name 
@@ -789,7 +789,7 @@ get_interlayer(multilayergraph, :new_layer, :layer_sg )
 Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer_rev, :new_layer, :layer_sg, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(19, [[8, 9, 10, 11, 12, 13], [9, 13], [12], [9, 10], [9, 12], [8, 13], [9, 11, 12, 13], [1, 6], [1, 2, 4, 5, 7], [1, 4], [1, 7], [1, 3, 5, 7], [1, 2, 6, 7]]), Bijection{Int64,MultilayerVertex} (with 13 pairs))
 ```
 
-**NB:** Although the interlayer from an arbitrary `layer_1` to `layer_2` is the same mathematical object as the interlayer from `layer_2` to `layer_1`, their representations as `Interlayer`s differ in the internals, and most notably in the order of the vertices. The `Interlayer` from `layer_1` to `layer_2` orders its internal vertices label so that the `MultilayerVertex`s of `layer_1` (in the order they were in `layer_1` when the `Interlayer` was instantiated) come before the `MultilayerVertex`s of `layer_2` (in the order they were in `layer_2` when the `Interlayer` was instantiated).
+**NB:** Although the interlayer from an arbitrary `layer_1` to `layer_2` is the same mathematical object as the interlayer from `layer_2` to `layer_1`, their representations as `Interlayer`s differ in the internals, and most notably in the order of the vertices. The `Interlayer` from `layer_1` to `layer_2` orders its vertices so that the `MultilayerVertex`s of `layer_1` (in the order they were in `layer_1` when the `Interlayer` was instantiated) come before the `MultilayerVertex`s of `layer_2` (in the order they were in `layer_2` when the `Interlayer` was instantiated).
 
 When calling `get_interlayer(multilayergraph, :layer_1, :layer_2)` it is returned the `Interlayer` from `layer_1` to `layer_2`. If the Interlayer from `layer_2` to `layer_1` was manually specified or automatically generated during  during the instantiation of the multilayer graph with name, say, `"some_interlayer"`, then the returned `Interlayer` will be named `"some_interlayer_rev"`.
 
@@ -806,7 +806,7 @@ rem_layer!( multilayergraph,
 true
 ```
 
-Visit the **Layers and Interlayers** subsection of the [end-user]() and [developer]() APIs to discover more useful methods.
+Visit the [multilayer graph](@ref msm_eu) subsection of the APIs to discover more useful methods.
 
 #### Weight/Adjacency Tensor, Metadata Tensor and Supra Weight/Adjacency Matrix
 
