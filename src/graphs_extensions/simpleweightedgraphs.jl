@@ -1,4 +1,4 @@
-# Some custom extensions of Graphs.jl and SimpleWeightedGraphs.jl
+#= # Some custom extensions of Graphs.jl and SimpleWeightedGraphs.jl
 """
     SimpleWeightedGraph(n_vertices::Integer, n_edges::Integer; T::Type = Int64, U::Type = Float64)
 
@@ -122,19 +122,10 @@ function SimpleWeightedGraphs.SimpleWeightedDiGraph{T,U}(
         end
     end
     return SimpleWeightedDiGraph{T,U}(adjm)
-end
+end =#
 
 Graphs.weights(g::G) where {T, G <: AbstractSimpleWeightedGraph{T}} = Graphs.weights(g)
 
-#= function _vertices(g::AbstractSimpleWeightedGraph{T}) where T 
-
-    _vs = vertices(g)
-    _nv = length(_vs)
-
-    return  zip(_vs,repeat([NamedTuple()], _nv))
-
-end
- =#
 
 function __add_vertex!(g::AbstractSimpleWeightedGraph{T}; metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer}
     !isempty(metadata) && println("Trying to add a vertex with metadata to a graph of type $(typeof(g)). Metadata $(metadata) will be ignored.")

@@ -1,4 +1,4 @@
-"""
+#= """
     MetaGraph{T,U}()
 
 Empty MetaGraph with vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleGraph. 
@@ -54,7 +54,7 @@ MetaGraphs.MetaGraph{T,U}(adjm::Union{Matrix,SparseMatrixCSC}) where {T,U} =  Me
 
 MetaDiGraph with adjacency matrix `adjm`, vertex type `T` and adjacency matrix eltype `U`. The underlying graph is a SimpleDiGraph. 
 """
-MetaGraphs.MetaDiGraph{T,U}(adjm::Union{Matrix,SparseMatrixCSC}) where {T,U} =  MetaDiGraph{T,U}(SimpleDiGraph(adjm))
+MetaGraphs.MetaDiGraph{T,U}(adjm::Union{Matrix,SparseMatrixCSC}) where {T,U} =  MetaDiGraph{T,U}(SimpleDiGraph(adjm)) =#
 
 __add_vertex!(g::AbstractMetaGraph{T}; metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer} = add_vertex!(g, Dict(Symbol(pair.first) => pair.second for pair in pairs(metadata)))
 
@@ -86,7 +86,6 @@ MetaGraphs.get_prop(subgraph::S, v::MultilayerVertex, prop) where {S <:AbstractS
 """
 MetaGraphs.get_prop(subgraph::S, s::MultilayerVertex, d::MultilayerVertex, prop) where {S <:AbstractSubGraph} = get_prop(subgraph.graph, get_v(subgraph,s), get_v(subgraph,d), prop,)
 
-#_vertices(g::AbstractMetaGraph) = [(v, NamedTuple(props(g,v))) for v in vertices(g)] #[(v, (prop = get_prop(g,v) for prop in keys(props(g,v)))) for v in vertices(g)]
 
 function _add_edge!(g::AbstractMetaGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, W<: Union{<: Real, Nothing}}
     (isnothing(weight) || weight == 1.0) || @warn "Trying to add a weighted edge to an unweighted graph of type $(typeof(g)). Weight $weight will be ignored."

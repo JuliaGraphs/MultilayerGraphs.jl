@@ -1,4 +1,4 @@
-"""
+#= """
 ValGraph(n_vertices::Int, n_edges::Int; T = Int64, kwargs...)
 
 Random ValGraph with `n_vertices` vertices and `n_edges` edges and vertex type `T`. the underlying graph is a SimpleGraph. 
@@ -38,9 +38,8 @@ ValDiGraph{T}(; kwargs...) where T
 
 Random ValDiGraph with `n_vertices` vertices and `n_edges` edges and vertex type `T`. the underlying graph is a SimpleDiGraph. 
 """
-SimpleValueGraphs.ValGraph{T}(; kwargs...) where T =  ValGraph( SimpleGraph{T}(); kwargs... )
+SimpleValueGraphs.ValGraph{T}(; kwargs...) where T =  ValGraph( SimpleGraph{T}(); kwargs... ) =#
 
-# _vertices(g::SimpleValueGraphs.AbstractValGraph) = [(v, get_vertexval(g, v,:)) for v in vertices(g)]
 
 function __add_vertex!(g::SimpleValueGraphs.AbstractValGraph{T}; metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer} 
     if isempty(metadata) 
@@ -79,9 +78,9 @@ function _add_edge!(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T; we
     end
 end
 
-_get_edge_weight(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T, weighttype::Type{U} ) where {T, U <: Real} = one(U)  # hasedgekey(g, :weight) ? U(get_edgeval(g, src, dst, :weight)) :
+_get_edge_weight(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T, weighttype::Type{U} ) where {T, U <: Real} = one(U)
 
-_get_edge_metadata(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T ) where T   = get_edgeval(g, src, dst, :) # NamedTuple()
+_get_edge_metadata(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T ) where T   = get_edgeval(g, src, dst, :) 
 
 function _set_metadata!(g::SimpleValueGraphs.AbstractValGraph{T}, src::T, dst::T, metadata::Union{Tuple, NamedTuple}) where T
     

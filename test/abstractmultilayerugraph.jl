@@ -37,7 +37,7 @@ const n_edges_missing_u =  rand(n_vertices_missing:(n_vertices_missing*(n_vertic
 missing_layer_u = Layer(:missing_layer_u, 
 sample(mvs_metadata, n_vertices_missing, replace = false), 
 n_edges_missing_u,
-MultilayerGraphs.ValGraph{vertextype}(;edgeval_types=(Float64, String, ),
+MultilayerGraphs.ValGraph(SimpleGraph{vertextype}();edgeval_types=(Float64, String, ),
                            edgeval_init=(s, d) -> (s+d, "missing vertex $(s+d)"),
                            vertexval_types=(String,),
                            vertexval_init=v -> ("$(v^2)",),),
