@@ -558,37 +558,6 @@ Internal function. Converts `cart_index` to an integer index such that it corres
 """
 cartIndexTovecIndex(cart_index::Union{NTuple{N, Integer},CartesianIndex}, tensor_size::NTuple{N, <: Integer} ) where N = cart_index[1] + sum( collect(Tuple(cart_index)[2:end] .- 1) .* cumprod(tensor_size[1:end-1]))
 
-
-# TODO:
-"""
-    havel_hakimi_(empty_graph::SimpleGraph, degree_sequence::Vector{<:Integer})
-
-Returns a simple graph with a given finite degree sequence of non-negative integers generated via the Havel-Hakimi algorithm which works as follows:
-1. successively connect the node of highest degree to other nodes of highest degree;
-2. sort the remaining nodes by degree in decreasing order;
-3. repeat the procedure.
-
-## References
-1. [Hakimi (1962)](https://doi.org/10.1137/0110037)
-2. [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X)
-"""
-function havel_hakimi_(empty_graph::SimpleGraph, degree_sequence::Vector{<:Integer}) # Please think about a decent name!
-    # Check whether the given degree sequence contains only non-negative integers
-    !any(degree -> degree < 0, degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) is invalid: it must contain non-negative integers only."))
-    # Check whether the given degree sequence is compatible with the given multilayer graph
-    nv(empty_graph) == length(degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) and the multilayer graph (empty_mg) are incompatible: the length of the degree sequence doesn't coincide with the number of vertices."))
-    # Check whether the given degree sequence is graphical
-    isgraphical(degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) is invalid: it must be graphical (i.e. realizable by a simple graph)."))
-    # Check whether the given multilayer graph is undirected
-    !is_directed(empty_mg) || throw(ArgumentError("The multilayer graph (empty_mg) is invalid: it must be undirected."))
-    # Get all the multilayer vertices from the empty multilayer graph
-    ##mvs = mv_vertices(empty_mg)
-    # Get the length of the degree sequence
-    ##n = length(degree_sequence)
-    ##mvs_degree_dict = Dict(mv => deg for (mv, deg) in zip(mvs, degree_sequence) if deg > 0)
-end
-
-
 """
     havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer})
 
