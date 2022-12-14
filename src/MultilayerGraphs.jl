@@ -146,7 +146,8 @@ export
     δ_1,
     δ_2,
     δ_3,
-    δ_Ω
+    δ_Ω,
+    havel_hakimi_graph_generator_unsafe
     # tensorfacoriazations.jl
 
 using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections
