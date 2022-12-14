@@ -846,6 +846,9 @@ The package also exports a [`SupraWeightMatrix`](@ref) which is a supra (weighte
 
 Read a complete list of analytical methods exclusive to multilayer graphs in the dedicated [API section](@ref msm_eu) (here "exclusive" means that wither those methods do not exists for standard graphs, or that they had to be reimplemented and so may present some caveats). Refer to their docstrings for more information.
 
+#### Compatibility with Graphs.jl
+`Multilayer(Di)Graph`s may be used as an argument to `GraphSpace` in [Agents.jl](https://github.com/JuliaDynamics/Agents.jl). A complete compatibility example may be found in [this test](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/test/agents_jl_integration.jl).
+
 ### Future Developments
 
 - [Implement faster graph realization algorithms](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/32);
