@@ -1,10 +1,10 @@
 # Base extensions
-"""
+#= """
     getindex(od::O, key::Int64) where {O <: OrderedDict}
 
 Return the `key`th pair of `od`, following `od`'s order.
 """
-Base.getindex(od::O, key::Int64) where {O<:OrderedDict} = collect(values(od))[key]
+Base.getindex(od::O, key::Int64) where {O<:OrderedDict} = collect(values(od))[key] =#
 
 # Non package-specific utilities
 """
@@ -590,7 +590,7 @@ end
 
 
 """
-    havel_hakimi_(empty_graph::SimpleGraph, degree_sequence::Vector{<:Integer})
+    havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer})
 
 Returns a simple graph with a given finite degree sequence of non-negative integers generated via the Havel-Hakimi algorithm which works as follows:
 1. successively connect the node of highest degree to other nodes of highest degree;
@@ -601,15 +601,7 @@ Returns a simple graph with a given finite degree sequence of non-negative integ
 1. [Hakimi (1962)](https://doi.org/10.1137/0110037)
 2. [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X)
 """
-function havel_hakimi_graph_generator_unsafe(degree_sequence::Vector{<:Integer}) # Please think about a decent name!
-#=     # Check whether the given degree sequence contains only non-negative integers
-    !any(degree -> degree < 0, degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) is invalid: it must contain non-negative integers only."))
-    # Check whether the given degree sequence is compatible with the given multilayer graph
-    nv(empty_graph) == length(degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) and the multilayer graph (empty_mg) are incompatible: the length of the degree sequence doesn't coincide with the number of vertices."))
-    # Check whether the given degree sequence is graphical
-    isgraphical(degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) is invalid: it must be graphical (i.e. realizable in a simple graph)."))
-    # Check whether the given multilayer graph is undirected
-    !is_directed(empty_mg) || throw(ArgumentError("The multilayer graph (empty_mg) is invalid: it must be undirected.")) =#
+function havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer})
 
     graph = SimpleGraph(length(degree_sequence))
     v_ds = OrderedDict(i => deg for (i,deg) in enumerate(degree_sequence))
@@ -618,16 +610,46 @@ function havel_hakimi_graph_generator_unsafe(degree_sequence::Vector{<:Integer})
     while(any(values(v_ds) .!= 0))
         v_ds = OrderedDict(sort(collect(v_ds), by = last , rev = true))
         S,s = popfirst!(v_ds)
-        @debug "" S, s
         all(collect(values(v_ds))[1:s] .> 0) || throw(ErrorException("The provided `degree_sequence` is not graphical"))
-        # println("here")
         for v in collect(keys(v_ds))[1:s]
             add_edge!(graph, S, v)
-            @debug "", v, length(v_ds), collect(keys(v_ds), v_ds)
             v_ds[v] -= 1
-            println("here")
         end
     end
     
+    return graph
+    
+end
+
+
+"""
+    kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integer},outdegree_sequence::AbstractVector{<:Integer})
+
+Returns a simple graph with a given finite degree sequence of non-negative integers generated via the Havel-Hakimi algorithm which works as follows:
+1. successively connect the node of highest degree to other nodes of highest degree;
+2. sort the remaining nodes by degree in decreasing order;
+3. repeat the procedure.
+
+## References
+1. [Hakimi (1962)](https://doi.org/10.1137/0110037)
+2. [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X)
+"""
+function kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integer},outdegree_sequence::AbstractVector{<:Integer})
+
+    graph = SimpleGraph(length(degree_sequence))
+    v_ds = OrderedDict(i => deg for (i,deg) in enumerate(degree_sequence))
+    
+    
+    while(any(values(v_ds) .!= 0))
+        v_ds = OrderedDict(sort(collect(v_ds), by = last , rev = true))
+        S,s = popfirst!(v_ds)
+        all(collect(values(v_ds))[1:s] .> 0) || throw(ErrorException("The provided `degree_sequence` is not graphical"))
+        for v in collect(keys(v_ds))[1:s]
+            add_edge!(graph, S, v)
+            v_ds[v] -= 1
+        end
+    end
+    
+    return graph
     
 end
