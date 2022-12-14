@@ -578,7 +578,7 @@ function havel_hakimi_(empty_graph::SimpleGraph, degree_sequence::Vector{<:Integ
     # Check whether the given degree sequence is compatible with the given multilayer graph
     nv(empty_graph) == length(degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) and the multilayer graph (empty_mg) are incompatible: the length of the degree sequence doesn't coincide with the number of vertices."))
     # Check whether the given degree sequence is graphical
-    isgraphical(degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) is invalid: it must be graphical (i.e. realizable in a simple graph)."))
+    isgraphical(degree_sequence) || throw(ArgumentError("The degree sequence (degree_sequence) is invalid: it must be graphical (i.e. realizable by a simple graph)."))
     # Check whether the given multilayer graph is undirected
     !is_directed(empty_mg) || throw(ArgumentError("The multilayer graph (empty_mg) is invalid: it must be undirected."))
     # Get all the multilayer vertices from the empty multilayer graph
@@ -598,29 +598,33 @@ Returns a simple graph with a given finite degree sequence of non-negative integ
 3. repeat the procedure.
 
 ## References
-1. [Hakimi (1962)](https://doi.org/10.1137/0110037)
-2. [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X)
+1. [Hakimi (1962)](https://doi.org/10.1137/0110037);
+2. [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X).
 """
 function havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer})
-
+    # Check whether the degree sequence has only non-negative values
+    all(degree_sequence .>= 0) || throw(ArgumentError("The degree sequence must contain non-negative integers only."))
+    # Instantiate an empty simple graph 
     graph = SimpleGraph(length(degree_sequence))
-    v_ds = OrderedDict(i => deg for (i,deg) in enumerate(degree_sequence))
-    
-    
-    while(any(values(v_ds) .!= 0))
-        v_ds = OrderedDict(sort(collect(v_ds), by = last , rev = true))
-        S,s = popfirst!(v_ds)
-        all(collect(values(v_ds))[1:s] .> 0) || throw(ErrorException("The provided `degree_sequence` is not graphical"))
-        for v in collect(keys(v_ds))[1:s]
-            add_edge!(graph, S, v)
-            v_ds[v] -= 1
+    # Create a (vertex, degree) ordered dictionary
+    vertices_degrees_dict = OrderedDict(vertex => degree for (vertex, degree) in enumerate(degree_sequence))
+    # Havel-Hakimi algorithm  
+    while(any(values(vertices_degrees_dict) .!= 0))
+        # Sort the new sequence in non-increasing order
+        vertices_degrees_dict = OrderedDict(sort(collect(vertices_degrees_dict), by = last , rev = true))
+        # Remove the first vertex and distribute its stabs 
+        max_vertex, max_degree = popfirst!(vertices_degrees_dict)
+        # Check whether the new sequence has only non-negative values
+        all(collect(values(vertices_degrees_dict))[1:max_degree] .> 0) || throw(ErrorException("The degree sequence is not graphical."))
+        # Connect the node of highest degree to other nodes of highest degree 
+        for vertex in collect(keys(vertices_degrees_dict))[1:max_degree]
+            add_edge!(graph, max_vertex, vertex)
+            vertices_degrees_dict[vertex] -= 1
         end
     end
-    
+    # Return the simple graph
     return graph
-    
 end
-
 
 """
     kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integer},outdegree_sequence::AbstractVector{<:Integer})
