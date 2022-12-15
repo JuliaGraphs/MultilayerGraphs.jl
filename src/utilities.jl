@@ -596,6 +596,50 @@ function havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer}
 end
 
 """
+    lexicographical_order_lt(A::Vector{T}, B::Vector{T}) where T
+
+The less than (lt) function that implements lexicographical order
+
+See [Wikipedia](https://en.wikipedia.org/wiki/Lexicographic_order).
+"""
+function lexicographical_order_lt(A::Union{Vector{T},NTuple{N,T}}, B::Union{Vector{T}, NTuple{M,T}}) where {N,M,T}
+    A_dc = deepcopy(A)
+    B_dc = deepcopy(B)
+    diff_length = length(A) - length(B)
+    if diff_length >= 0
+        A_dc = vcat(A_dc, repeat([-Inf], diff_length))
+    else
+        B_dc = vcat(B_dc, repeat([-Inf], abs(diff_length)))
+    end
+
+    for (a,b) in zip(A_dc, B_dc)
+        if a != b
+            a < b
+        end
+    end
+
+end
+
+"""
+lexicographical_order_ntuple(A::NTuple{N,T}, B::NTuple{M,T}) where {N,T}
+
+The less than (lt) function that implements lexicographical order for `NTuple` of equal length.
+
+See [Wikipedia](https://en.wikipedia.org/wiki/Lexicographic_order).
+"""
+function lexicographical_order_ntuple(A::NTuple{N,T}, B::NTuple{N,T}) where {N,T}
+
+    for (a,b) in zip(A, B)
+        if a != b
+            a < b
+        end
+    end
+
+    return false
+
+end
+
+"""
     kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integer},outdegree_sequence::AbstractVector{<:Integer})
 
 Returns a simple graph with a given finite degree sequence of non-negative integers generated via the Havel-Hakimi algorithm which works as follows:
@@ -609,18 +653,30 @@ Returns a simple graph with a given finite degree sequence of non-negative integ
 """
 function kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integer},outdegree_sequence::AbstractVector{<:Integer})
 
-    graph = SimpleGraph(length(degree_sequence))
-    v_ds = OrderedDict(i => deg for (i,deg) in enumerate(degree_sequence))
+    length(indegree_sequence) == length(outdegree_sequence) || throw(ArgumentError("The provided `indegree_sequence` and `outdegree_sequence` must be of the dame length."))
+
+    graph = SimpleDiGraph(length(indegree_sequence))
+    A_B = zip(deepcopy(indegree_sequence), deepcopy(outdegree_sequence))
+    v_ds = OrderedDict(i => tup for (i,tup) in enumerate(A_B))
     
     
-    while(any(values(v_ds) .!= 0))
-        v_ds = OrderedDict(sort(collect(v_ds), by = last , rev = true))
-        S,s = popfirst!(v_ds)
-        all(collect(values(v_ds))[1:s] .> 0) || throw(ErrorException("The provided `degree_sequence` is not graphical"))
-        for v in collect(keys(v_ds))[1:s]
+    while(any(vcat(values(v_ds)...) .!= 0 ))
+
+        v_ds = OrderedDict(sort(collect(v_ds), by = last, lt = lexicographical_order_ntuple , rev = true))
+
+        @debug "", v_ds
+
+        S, (a_i, b_i) = vcat(popfirst!(v_ds)...)
+
+        # all(vcat(collect(values(v_ds))[1:b_i]...) .> 0) || throw(ErrorException("The degree sequences are not digraphical."))
+
+        @debug "", S, a_i, b_i
+
+        for (v,degs) in collect(v_ds)[1:b_i]
             add_edge!(graph, S, v)
-            v_ds[v] -= 1
+            v_ds[v] = (degs[1]-1, degs[2])
         end
+
     end
     
     return graph
