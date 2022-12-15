@@ -583,7 +583,7 @@ function havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer}
         vertices_degrees_dict = OrderedDict(sort(collect(vertices_degrees_dict), by = last , rev = true))
         # Remove the first vertex and distribute its stabs 
         max_vertex, max_degree = popfirst!(vertices_degrees_dict)
-        # Check whether the new sequence has only non-negative values
+        # Check whether the new sequence has only positive values
         all(collect(values(vertices_degrees_dict))[1:max_degree] .> 0) || throw(ErrorException("The degree sequence is not graphical."))
         # Connect the node of highest degree to other nodes of highest degree 
         for vertex in collect(keys(vertices_degrees_dict))[1:max_degree]
