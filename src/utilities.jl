@@ -642,7 +642,11 @@ end
 """
     kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integer},outdegree_sequence::AbstractVector{<:Integer})
 
-Returns a simple directed graph with given finite in-degree and out-degree sequences of non-negative integers generated via the Kleitman-Wang algorithm.
+Returns a simple directed graph with given finite in-degree and out-degree sequences of non-negative integers generated via the Kleitman-Wang algorithm, that works like follows:
+1. Sort the indegree-oudegree pairs in lexicographical order;
+2. Select a pair that has strictly positive outdegree, say the i-th pairs that has outdegree = b_i;
+3. Subtract 1 to the first b_i highest indegrees (the i-th being excluded), and set b_i to 0;
+4. Repeat from 1. until all indegree-oudegree pairs are of the form (0.0).
 
 ## References
 - [Wikipedia](https://en.wikipedia.org/wiki/Kleitman%E2%80%93Wang_algorithms)
