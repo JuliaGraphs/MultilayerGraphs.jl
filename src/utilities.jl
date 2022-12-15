@@ -581,7 +581,7 @@ function havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer}
     while(any(values(vertices_degrees_dict) .!= 0))
         # Sort the new sequence in non-increasing order
         vertices_degrees_dict = OrderedDict(sort(collect(vertices_degrees_dict), by = last , rev = true))
-        # Remove the first vertex and distribute its stabs 
+        # Remove the first vertex and distribute its stabs
         max_vertex, max_degree = popfirst!(vertices_degrees_dict)
         # Check whether the new sequence has only positive values
         all(collect(values(vertices_degrees_dict))[1:max_degree] .> 0) || throw(ErrorException("The degree sequence is not graphical."))
@@ -631,7 +631,7 @@ function lexicographical_order_ntuple(A::NTuple{N,T}, B::NTuple{N,T}) where {N,T
 
     for (a,b) in zip(A, B)
         if a != b
-            a < b
+            return a < b
         end
     end
 
@@ -660,17 +660,30 @@ function kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integ
     v_ds = OrderedDict(i => tup for (i,tup) in enumerate(A_B))
     
     
-    while(any(vcat(values(v_ds)...) .!= 0 ))
+    while(any(Iterators.flatten(values(v_ds)) .!= 0 ))
+
+        
 
         v_ds = OrderedDict(sort(collect(v_ds), by = last, lt = lexicographical_order_ntuple , rev = true))
 
-        @debug "", v_ds
+        @debug "" collect(Iterators.flatten(values(v_ds)))
 
-        S, (a_i, b_i) = vcat(popfirst!(v_ds)...)
+        # @debug "", v_ds
+        S, (a_i, b_i) = 0,(0,0)
+        for (_S, (_a_i, _b_i)) in collect(deepcopy(v_ds))
+            @debug "" _S _a_i _b_i
+            if _b_i != 0
+                @debug "" _b_i
+                S, a_i, b_i = (_S,_a_i, _b_i) #Iterators.flatten(popfirst!(v_ds)...)
+                delete!(v_ds, _S )
+                break
+            end
+        end
+                
 
         # all(vcat(collect(values(v_ds))[1:b_i]...) .> 0) || throw(ErrorException("The degree sequences are not digraphical."))
 
-        @debug "", S, a_i, b_i
+        # @debug "", S, a_i, b_i
 
         for (v,degs) in collect(v_ds)[1:b_i]
             add_edge!(graph, S, v)
