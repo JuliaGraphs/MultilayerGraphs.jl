@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - graph_realization
     tags: '*'
   pull_request:
 concurrency:
