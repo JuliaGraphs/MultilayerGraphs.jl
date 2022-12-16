@@ -202,7 +202,10 @@ function MultilayerGraph(empty_multilayergraph::MultilayerGraph{T,U}, degree_seq
         isgraphical(degree_sequence) || throw(ArgumentError("degree_sequence must be graphical.")) 
     end
 
-    edge_list = _random_undirected_configuration(_multilayergraph, degree_sequence, allow_self_loops)
+    # edge_list = _random_undirected_configuration(_multilayergraph, degree_sequence, allow_self_loops)
+    equivalent_graph = havel_hakimi_graph_generator(degree_sequence)
+
+    edge_list = [ME(empty_multilayergraph.v_V_associations[src(edge)], empty_multilayergraph.v_V_associations[dst(edge)]) for edge in edges(equivalent_graph) ]
 
     for edge in edge_list
         add_edge!(_multilayergraph, edge)

@@ -146,7 +146,9 @@ export
     δ_1,
     δ_2,
     δ_3,
-    δ_Ω
+    δ_Ω,
+    havel_hakimi_graph_generator,
+    kleitman_wang_graph_generator
     # tensorfacoriazations.jl
 
 using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections
