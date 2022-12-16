@@ -598,7 +598,7 @@ end
 """
     lexicographical_order_lt(A::Vector{T}, B::Vector{T}) where T
 
-The less than (lt) function that implements lexicographical order
+The less than (lt) function that implements lexicographical order.
 
 See [Wikipedia](https://en.wikipedia.org/wiki/Lexicographic_order).
 """
@@ -611,13 +611,11 @@ function lexicographical_order_lt(A::Union{Vector{T},NTuple{N,T}}, B::Union{Vect
     else
         B_dc = vcat(B_dc, repeat([-Inf], abs(diff_length)))
     end
-
     for (a,b) in zip(A_dc, B_dc)
         if a != b
             a < b
         end
     end
-
 end
 
 """
@@ -643,10 +641,10 @@ end
     kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integer},outdegree_sequence::AbstractVector{<:Integer})
 
 Returns a simple directed graph with given finite in-degree and out-degree sequences of non-negative integers generated via the Kleitman-Wang algorithm, that works like follows:
-1. Sort the indegree-oudegree pairs in lexicographical order;
+1. Sort the indegree-outdegree pairs in lexicographical order;
 2. Select a pair that has strictly positive outdegree, say the i-th pairs that has outdegree = b_i;
 3. Subtract 1 to the first b_i highest indegrees (the i-th being excluded), and set b_i to 0;
-4. Repeat from 1. until all indegree-oudegree pairs are of the form (0.0).
+4. Repeat from 1. until all indegree-outdegree pairs are of the form (0.0).
 
 ## References
 - [Wikipedia](https://en.wikipedia.org/wiki/Kleitman%E2%80%93Wang_algorithms)
@@ -664,12 +662,10 @@ function kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integ
     # Create a (vertex, degree) ordered dictionary
     S = zip(deepcopy(indegree_sequence), deepcopy(outdegree_sequence))
     vertices_degrees_dict = OrderedDict(i => tup for (i,tup) in enumerate(S))
-    
     # Kleitman-Wang algorithm  
     while(any(Iterators.flatten(values(vertices_degrees_dict)) .!= 0 ))
         # Sort the new sequence in non-increasing lexicographical order
         vertices_degrees_dict = OrderedDict(sort(collect(vertices_degrees_dict), by = last, lt = lexicographical_order_ntuple , rev = true))
-
         # Find a vertex with positive outdegree,a nd temporarily remove it from `vertices_degrees_dict`
         i, (a_i, b_i) = 0,(0,0)
         for (_i, (_a_i, _b_i)) in collect(deepcopy(vertices_degrees_dict))
@@ -678,22 +674,16 @@ function kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integ
                 delete!(vertices_degrees_dict, _i)
                 break
             end
-        end
-                
-         # Connect the vertex foudn above to other nodes of highest degree 
+        end        
+        # Connect the vertex found above to other nodes of highest degree 
         for (v,degs) in collect(vertices_degrees_dict)[1:b_i]
             add_edge!(graph, i, v)
             vertices_degrees_dict[v] = (degs[1]-1, degs[2])
         end
-
         # Check whether the new sequence has only positive values
         all(collect(Iterators.flatten(collect(values(vertices_degrees_dict))))[1:b_i] .>= 0) || throw(ErrorException("The in-degree and out-degree sequences are not digraphical."))
-
         # Reinsert the vertex, with zero outdegree
         vertices_degrees_dict[i] = (a_i, 0)
-
     end
-    
     return graph
-    
 end
