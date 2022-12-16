@@ -210,7 +210,10 @@ function MultilayerDiGraph(
         
     end
     
-    edge_list = _random_directed_configuration(_multilayerdigraph, indegree_sequence, outdegree_sequence, allow_self_loops)
+    # edge_list = _random_directed_configuration(_multilayerdigraph, indegree_sequence, outdegree_sequence, allow_self_loops)
+    equivalent_graph = kleitman_wang_graph_generator(indegree_sequence, outdegree_sequence)
+
+    edge_list = [ME(_multilayerdigraph.v_V_associations[src(edge)], _multilayerdigraph.v_V_associations[dst(edge)]) for edge in edges(equivalent_graph) ]
 
     for edge in edge_list
         add_edge!(_multilayerdigraph, edge)

@@ -687,7 +687,7 @@ function kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integ
         end
 
         # Check whether the new sequence has only positive values
-        all(collect(values(vertices_degrees_dict))[1:max_degree] .> 0) || throw(ErrorException("The degree sequence is not graphical."))
+        all(collect(Iterators.flatten(collect(values(vertices_degrees_dict))))[1:b_i] .>= 0) || throw(ErrorException("The in-degree and out-degree sequences are not digraphical."))
 
         # Reinsert the vertex, with zero outdegree
         vertices_degrees_dict[i] = (a_i, 0)
