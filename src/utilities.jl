@@ -426,7 +426,7 @@ function isdigraphical(
 end
 
 
-"""
+#= """
     _random_undirected_configuration(empty_mg::M, degree_sequence::Vector{ <: Integer}) where {T,U,M <: MultilayerGraph{T,U}}
 
 Internal function. Returns a `MultilayerEdge` list compatible with `empty_mg`, using a relatively inefficient algorithm.
@@ -548,7 +548,7 @@ function _random_directed_configuration(empty_mg::M, indegree_sequence::Vector{ 
             success = length(mvs_indegree_dict) == 0 && length(mvs_outdegree_dict) == 0
         end
     return edge_list
-end
+end =#
 
 
 """
