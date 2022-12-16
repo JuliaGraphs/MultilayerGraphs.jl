@@ -39,7 +39,6 @@ In the package documentation you can find a [tutorial](https://juliagraphs.org/M
 
 ## Future Developments 
 
-- [ ] [Implement faster graph realization algorithms](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/32);
 - [ ] [Implement more general configuration models / graph generators](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/33);
 - [ ] [Implement graph of layers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/34);
 - [ ] [Implement projected monoplex and overlay graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/35);
