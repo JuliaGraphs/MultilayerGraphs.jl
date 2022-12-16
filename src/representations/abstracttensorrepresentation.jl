@@ -11,11 +11,12 @@ Concrete subtypes must have an `array` field (a 4-dimensional tensor of eltype U
 """
 abstract type AbstractTensorRepresentation end
 
-
 """
     getindex(atr::AbstractTensorRepresentation, src_mv::MultilayerVertex, dst_mv::MultilayerVertex)
 """
-function Base.getindex(atr::AbstractTensorRepresentation, src_mv::MultilayerVertex, dst_mv::MultilayerVertex)
+function Base.getindex(
+    atr::AbstractTensorRepresentation, src_mv::MultilayerVertex, dst_mv::MultilayerVertex
+)
     # Find the index of the source node in the array of node
     src_n_idx = atr.idx_N_associations(src_mv.node)
     # Find the index of the destination node in the array of node
@@ -31,7 +32,11 @@ end
 """
     getindex(atr::AbstractTensorRepresentation, src_tup::Tuple{String, Symbol}, dst_tup::Tuple{String, Symbol})
 """
-function Base.getindex(atr::AbstractTensorRepresentation, src_tup::Tuple{String, Symbol}, dst_tup::Tuple{String, Symbol})
+function Base.getindex(
+    atr::AbstractTensorRepresentation,
+    src_tup::Tuple{String,Symbol},
+    dst_tup::Tuple{String,Symbol},
+)
     # Find the index of the source node in the adjacency tensor
     src_n_idx = atr.idx_N_associations(Node(src_tup[1]))
     # Find the index of the destination node in the adjacency tensor

@@ -1,7 +1,5 @@
 # This script has been copy-pasted from https://github.com/mhauru/TensorFactorizations.jl
 
-
-
 """
     tensoreig(A, a, b; chis=nothing, eps=0,
               return_error=false, print_error=false,
@@ -77,7 +75,6 @@ function tensoreig(
     end
     return retval
 end
-
 
 """
 Format the bond dimensions listed in chis to a standard format.

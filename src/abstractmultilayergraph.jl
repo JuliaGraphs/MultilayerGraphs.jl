@@ -30,14 +30,15 @@ An abstract type for multilayer graphs. It is a subtype of AbstractGraph and its
 """
 abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 
-
 # Nodes
 """
     nodes(mg::AbstractMultilayerGraph
 
 Return the nodes of the AbstractMultilayerGraph `mg`, in order of addition.
 """
-nodes(mg::AbstractMultilayerGraph) = [couple[2] for couple in sort(collect(mg.idx_N_associations), by = first)]
+function nodes(mg::AbstractMultilayerGraph)
+    return [couple[2] for couple in sort(collect(mg.idx_N_associations); by=first)]
+end
 
 """
     nn(mg::M) where {M <: AbstractMultilayerGraph }
@@ -61,12 +62,12 @@ Add node `n` to `mg`. Return true if succeeds.
 function add_node!(mg::AbstractMultilayerGraph, n::Node)
     !has_node(mg, n) || return false
 
-    maximum_idx = isempty(domain(mg.idx_N_associations)) ?  0 : maximum(domain(mg.idx_N_associations))
+    maximum_idx =
+        isempty(domain(mg.idx_N_associations)) ? 0 : maximum(domain(mg.idx_N_associations))
 
     mg.idx_N_associations[maximum_idx + 1] = n
 
     return true
-
 end
 
 """
@@ -76,7 +77,7 @@ Remove node `n` to `mg`. Return true if succeeds.
 """
 function rem_node!(mg::AbstractMultilayerGraph, n::Node)
     has_node(mg, n) || return false
-    
+
     idx_tbr = mg.idx_N_associations(n)
 
     delete!(mg.idx_N_associations, idx_tbr)
@@ -84,7 +85,7 @@ function rem_node!(mg::AbstractMultilayerGraph, n::Node)
     Vs_tbr = MultilayerVertex[]
     for V in image(mg.v_V_associations)
         if V.node == n
-            push!(Vs_tbr,V)
+            push!(Vs_tbr, V)
         end
     end
 
@@ -101,27 +102,30 @@ Return the vertex type of `mg`.
 """
 Base.eltype(::M) where {T,M<:AbstractMultilayerGraph{T}} = T
 
-
 """
     has_vertex(mg::M, v::T) where {T,M <: AbstractMultilayerGraph{T}}
 
 Return true if `v` is in mg, else false.
 """
-Graphs.has_vertex(mg::M, v::T ) where {T, M <: AbstractMultilayerGraph{T}} = v in domain(mg.v_V_associations) 
+function Graphs.has_vertex(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T}}
+    return v in domain(mg.v_V_associations)
+end
 
 """
     has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex) 
 
 Return true if `mv` is in `mg`, else false.
 """
-Graphs.has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = get_bare_mv(mv) in image(mg.v_V_associations)
-    
+function Graphs.has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return get_bare_mv(mv) in image(mg.v_V_associations)
+end
+
 """
     mv_vertices(mg::AbstractMultilayerGraph)
 
 Return a list of the `MultilayerVertex`s contained in `mg`.
 """
-mv_vertices(mg::AbstractMultilayerGraph) =  [get_rich_mv(mg, v) for v in vertices(mg)]
+mv_vertices(mg::AbstractMultilayerGraph) = [get_rich_mv(mg, v) for v in vertices(mg)]
 
 """
     nv(mg::M) where {M <: AbstractMultilayerGraph }
@@ -135,29 +139,33 @@ Graphs.nv(mg::AbstractMultilayerGraph) = length(mg.v_V_associations)
 
 Return the collection of the vertices of `mg`.
 """
-Graphs.vertices(mg::M) where {M<:AbstractMultilayerGraph} = sort(collect(domain(mg.v_V_associations)))
+function Graphs.vertices(mg::M) where {M<:AbstractMultilayerGraph}
+    return sort(collect(domain(mg.v_V_associations)))
+end
 
 """
     get_metadata(mg::AbstractMultilayerGraph, bare_mv::MultilayerVertex)
 
 Return the metadata associated to `MultilayerVertex` mv (regardless of metadata assigned to `bare_mv`).
 """
-get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = mg.v_metadata_dict[get_v(mg, mv)]
+function get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return mg.v_metadata_dict[get_v(mg, mv)]
+end
 
 """
     set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
 
 Set the metadata of vertex `mv` to `metadata`. Return true if succeeds
 """
-function set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
-
+function set_metadata!(
+    mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple,NamedTuple}
+)
     descriptor = mg.layers[get_layer_idx(mg, layer(mv))]
     is_meta(descriptor.null_graph) || return false
     has_vertex(mg, mv) || return false
     mg.v_metadata_dict[get_v(mg, mv)] = metadata
 
     return true
-
 end
 
 # Edges
@@ -180,70 +188,108 @@ Graphs.ne(mg::AbstractMultilayerGraph) = length(edges(mg))
 
 Return true if `mg` has an edge between the source and the destination of `edge` (does not check edge or vertex metadata).
 """
-Graphs.has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge)  = has_edge(mg, get_v(mg,src(edge)), get_v(mg,dst(edge)) )
+function Graphs.has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge)
+    return has_edge(mg, get_v(mg, src(edge)), get_v(mg, dst(edge)))
+end
 
 """
     has_edge(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
-Graphs.has_edge(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)  = has_edge(mg,get_v(mg,src), get_v(mg,dst) )
+function Graphs.has_edge(
+    mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+    return has_edge(mg, get_v(mg, src), get_v(mg, dst))
+end
 
 """
     add_edge!(mg::M, src::T, dst::T; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}} 
 
 Internal method. Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
-Graphs.add_edge!(mg::M, src::T, dst::T; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}} = add_edge!(mg, ME(mg.v_V_associations[src], mg.v_V_associations[dst], weight, metadata))
+function Graphs.add_edge!(
+    mg::M,
+    src::T,
+    dst::T;
+    weight::Union{Nothing,U}=one(U),
+    metadata::Union{Tuple,NamedTuple}=NamedTuple(),
+) where {T,U,M<:AbstractMultilayerGraph{T,U}}
+    return add_edge!(
+        mg, ME(mg.v_V_associations[src], mg.v_V_associations[dst], weight, metadata)
+    )
+end
 
 """
     add_edge!(mg::M, src::V, dst::V; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}, V <: MultilayerVertex}
 
 Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
-Graphs.add_edge!(mg::M, src::V, dst::V; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}, V <: MultilayerVertex} = add_edge!(mg, ME(src, dst, weight, metadata))
+function Graphs.add_edge!(
+    mg::M,
+    src::V,
+    dst::V;
+    weight::Union{Nothing,U}=one(U),
+    metadata::Union{Tuple,NamedTuple}=NamedTuple(),
+) where {T,U,M<:AbstractMultilayerGraph{T,U},V<:MultilayerVertex}
+    return add_edge!(mg, ME(src, dst, weight, metadata))
+end
 
 """
     rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}}
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
+function Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}}
+    return rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
+end
 
 """
     rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge) = rem_edge!(mg, src(me), dst(me))
-
+function Graphs.rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
+    return rem_edge!(mg, src(me), dst(me))
+end
 
 """
     get_halfegde(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where M <: AbstractMultilayerGraph
 
 Internal function. Return the `HalfEdge`, if it exists, between `src` and `dst`. Error if there is no `HalfEdge`.
 """
-function get_halfegde(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where M <: AbstractMultilayerGraph
-    has_edge(mg, src, dst) || throw(ErrorException("There is no `HalfEdge` from `src` to `dst`"))
-    halfedges_from_src = fadjlist(mg)[get_v(mg,src)]
-    return halfedges_from_src[findfirst(halfedge -> vertex(halfedge) == dst,halfedges_from_src)]
+function get_halfegde(
+    mg::M, src::MultilayerVertex, dst::MultilayerVertex
+) where {M<:AbstractMultilayerGraph}
+    has_edge(mg, src, dst) ||
+        throw(ErrorException("There is no `HalfEdge` from `src` to `dst`"))
+    halfedges_from_src = fadjlist(mg)[get_v(mg, src)]
+    return halfedges_from_src[findfirst(
+        halfedge -> vertex(halfedge) == dst, halfedges_from_src
+    )]
 end
-
 
 """
     get_metadata(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
 Return the metadata associated to the `MultilayerEdge` from `src` to `dst`.
 """
-get_metadata(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = get_halfegde(mg, src, dst).metadata
+function get_metadata(
+    mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+    return get_halfegde(mg, src, dst).metadata
+end
 
 """
     get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertexph
 
 Return the weight associated to the `MultilayerEdge` from `src` to `dst`.
 """
-SimpleWeightedGraphs.get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)  = get_halfegde(mg, src, dst).weight
-
+function SimpleWeightedGraphs.get_weight(
+    mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+    return get_halfegde(mg, src, dst).weight
+end
 
 # Layers and Interlayers
 
@@ -274,7 +320,10 @@ has_layer(mg::AbstractMultilayerGraph, layer_name::Symbol) = layer_name in mg.la
 Internal function. It is called by the `add_layer!` API functions, which needs to specify the default interlayer graph type.
 """
 function _add_layer!(
-    mg::M, new_layer::L; default_interlayers_null_graph::H, default_interlayers_structure::String ="multiplex"
+    mg::M,
+    new_layer::L;
+    default_interlayers_null_graph::H,
+    default_interlayers_structure::String="multiplex",
 ) where {
     T,
     U,
@@ -293,7 +342,11 @@ function _add_layer!(
 
     # Check that the default_interlayers_null_graph argument is indeed empty
     if !(nv(default_interlayers_null_graph) == ne(default_interlayers_null_graph) == 0)
-        throw(ErrorException("The `default_interlayer_empty_graph` has not been assigned to an empty graph. Expected 0 vertices and 0 edges, found $(nv(default_interlayers_null_graph)) vertices and $(ne(default_interlayers_null_graph)) edges."))
+        throw(
+            ErrorException(
+                "The `default_interlayer_empty_graph` has not been assigned to an empty graph. Expected 0 vertices and 0 edges, found $(nv(default_interlayers_null_graph)) vertices and $(ne(default_interlayers_null_graph)) edges.",
+            ),
+        )
     end
 
     # Add the new layer
@@ -319,21 +372,38 @@ function _add_layer!(
     if default_interlayers_structure == "multiplex"
         for layer_descriptor in mg.layers
             if layer_descriptor.name != new_layer.name
-                _specify_interlayer!( mg, multiplex_interlayer(new_layer, getproperty(mg, layer_descriptor.name), default_interlayers_null_graph) )
+                _specify_interlayer!(
+                    mg,
+                    multiplex_interlayer(
+                        new_layer,
+                        getproperty(mg, layer_descriptor.name),
+                        default_interlayers_null_graph,
+                    ),
+                )
             end
         end
     elseif default_interlayers_structure == "empty"
         for layer_descriptor in mg.layers
             if layer_descriptor.name != new_layer.name
-                _specify_interlayer!( mg, empty_interlayer(new_layer, getproperty(mg, layer_descriptor.name), default_interlayers_null_graph) )
+                _specify_interlayer!(
+                    mg,
+                    empty_interlayer(
+                        new_layer,
+                        getproperty(mg, layer_descriptor.name),
+                        default_interlayers_null_graph,
+                    ),
+                )
             end
         end
     else
-        throw(ErrorException("Default interlayer structured as '$default_interlayers_structure' not yet implemented. Only 'multiplex' and 'null' are available."))
+        throw(
+            ErrorException(
+                "Default interlayer structured as '$default_interlayers_structure' not yet implemented. Only 'multiplex' and 'null' are available.",
+            ),
+        )
     end
 
     return true
-
 end
 
 """
@@ -341,7 +411,9 @@ end
 
 Remove layer `layer_name` from multilayer graph `mg`. If `remove_nodes` is true, also remove from the multilayer graph all the nodes associated with the layer. Warning: this action has multilayer-wide consequences, amd may inadvertently remove vertices and edges that were meant to be kept.
 """
-function rem_layer!(mg::AbstractMultilayerGraph, layer_name::Symbol; remove_nodes::Bool = false)
+function rem_layer!(
+    mg::AbstractMultilayerGraph, layer_name::Symbol; remove_nodes::Bool=false
+)
     layer_idx = get_layer_idx(mg, layer_name)
     isnothing(layer_idx) && return false
 
@@ -366,11 +438,11 @@ function rem_layer!(mg::AbstractMultilayerGraph, layer_name::Symbol; remove_node
         end
     end
 
-    delete!.(Ref(mg.interlayers),  keys_tbr)
+    delete!.(Ref(mg.interlayers), keys_tbr)
     return true
 end
 
- """
+"""
     function _specify_interlayer!(
         mg::M, new_interlayer::In
     ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerGraph{T,U},In<:Interlayer{T,U,G}}
@@ -379,17 +451,36 @@ Internal function. It is called by the `specify_interlayer!` API functions.
 """
 function _specify_interlayer!(
     mg::M, new_interlayer::In
-    ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerGraph{T,U},In<:Interlayer{T,U,G}}
-
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerGraph{T,U},In<:Interlayer{T,U,G}}
     all(in.([new_interlayer.layer_1, new_interlayer.layer_2], Ref(mg.layers_names))) ||
     #  throw(
     #      ErrorException(
-            throw(ErrorException("The new interlayer connects two layers that are not (one or both) part of the multilayer graph. Make sure you spelled the `layer_1` and `layer_2` arguments of the `Interlayer` correctly. Available layers are $(mg.layers_names), found $(new_interlayer.layer_1) and $(new_interlayer.layer_2)."))
+        throw(
+            ErrorException(
+                "The new interlayer connects two layers that are not (one or both) part of the multilayer graph. Make sure you spelled the `layer_1` and `layer_2` arguments of the `Interlayer` correctly. Available layers are $(mg.layers_names), found $(new_interlayer.layer_1) and $(new_interlayer.layer_2).",
+            ),
+        )
     #      ),
     #  )
 
     # Check that it has the correct number of nodes on both layers
-    (isempty(setdiff(Set(new_interlayer.layer_1_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_1)))) ) &&  isempty(setdiff(Set(new_interlayer.layer_2_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_2)))) )) || throw(ErrorException("The nodes in the interlayer $(new_interlayer.name) do not correspond to the nodes in the respective layers $(new_interlayer.layer_1) and $(new_interlayer.layer_2). Found $( setdiff(Set(new_interlayer.layer_1_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_1)))) ) and $(setdiff(Set(new_interlayer.layer_2_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_2)))))"))
+    (
+        isempty(
+            setdiff(
+                Set(new_interlayer.layer_1_nodes),
+                Set(nodes(Base.getproperty(mg, new_interlayer.layer_1))),
+            ),
+        ) && isempty(
+            setdiff(
+                Set(new_interlayer.layer_2_nodes),
+                Set(nodes(Base.getproperty(mg, new_interlayer.layer_2))),
+            ),
+        )
+    ) || throw(
+        ErrorException(
+            "The nodes in the interlayer $(new_interlayer.name) do not correspond to the nodes in the respective layers $(new_interlayer.layer_1) and $(new_interlayer.layer_2). Found $( setdiff(Set(new_interlayer.layer_1_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_1)))) ) and $(setdiff(Set(new_interlayer.layer_2_nodes), Set(nodes(Base.getproperty(mg, new_interlayer.layer_2)))))",
+        ),
+    )
 
     # A rem_interlayer! function may not exist since there always must be all interlayers. We then proceed to effectively remove the interlayer here
     key = Set([new_interlayer.layer_1, new_interlayer.layer_2])
@@ -401,7 +492,8 @@ function _specify_interlayer!(
         end
     end
 
-    mg.interlayers[Set([new_interlayer.layer_1, new_interlayer.layer_2])] = new_interlayer.descriptor
+    mg.interlayers[Set([new_interlayer.layer_1, new_interlayer.layer_2])] =
+        new_interlayer.descriptor
 
     for edge in edges(new_interlayer)
         success = add_edge!(mg, edge)
@@ -422,9 +514,21 @@ Return the `Interlayer` between `layer_1` and `layer_2`.
 function get_interlayer(
     mg::AbstractMultilayerGraph, layer_1_name::Symbol, layer_2_name::Symbol
 )
-    layer_1_name ∈ mg.layers_names || throw(ErrorException("$layer_1_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names)."))
-    layer_2_name ∈ mg.layers_names || throw(ErrorException("$layer_2_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names)."))
-    layer_1_name != layer_2_name || throw(ErrorException("`layer_1` argument is the same as `layer_2`. There is no interlayer between a layer and itself."))
+    layer_1_name ∈ mg.layers_names || throw(
+        ErrorException(
+            "$layer_1_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names).",
+        ),
+    )
+    layer_2_name ∈ mg.layers_names || throw(
+        ErrorException(
+            "$layer_2_name doesn't belong to the multilayer graph. Available layers are $(mg.layers_names).",
+        ),
+    )
+    layer_1_name != layer_2_name || throw(
+        ErrorException(
+            "`layer_1` argument is the same as `layer_2`. There is no interlayer between a layer and itself.",
+        ),
+    )
 
     names = [layer_1_name, layer_2_name]
     for interlayer_descriptor in values(mg.interlayers)
@@ -432,7 +536,9 @@ function get_interlayer(
             return get_subgraph(mg, interlayer_descriptor)
         elseif all(interlayer_descriptor.layers_names .== reverse(names))
             interlayer = get_subgraph(mg, interlayer_descriptor)
-            return get_symmetric_interlayer(interlayer; symmetric_interlayer_name = String(interlayer.name)*"_rev" )
+            return get_symmetric_interlayer(
+                interlayer; symmetric_interlayer_name=String(interlayer.name) * "_rev"
+            )
         end
     end
 end
@@ -442,13 +548,15 @@ end
 
 Return the index of the `Layer` whose name is `layer_name` within `mg.layers`.
 """
-function get_layer_idx(mg::M, layer_name::Symbol) where {T,U,M<:AbstractMultilayerGraph{T,U}}
+function get_layer_idx(
+    mg::M, layer_name::Symbol
+) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     idx = findfirst(descriptor -> descriptor.name == layer_name, mg.layers)
     if !isnothing(idx)
         return idx
     else
         return nothing
-    end 
+    end
 end
 
 """
@@ -456,17 +564,31 @@ end
 
 Return the descriptor associated to the interlayer connecting `layer_1` to `layer_2` (or to the Layer named `layer_1` if `layer_1` == `layer_2`)
 """
-function get_subgraph_descriptor(mg::M, layer_1_name::Symbol, layer_2_name::Symbol) where {T,U,M<:AbstractMultilayerGraph{T,U}}
+function get_subgraph_descriptor(
+    mg::M, layer_1_name::Symbol, layer_2_name::Symbol
+) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     if layer_1_name == layer_2_name
         idx = get_layer_idx(mg, layer_1_name)
         if !isnothing(idx)
-            return mg.layers[idx] 
+            return mg.layers[idx]
         else
-            throw(ErrorException("The multilayer graph does not contain any Layer named $(layer_1_name). Available layers are $(mg.layers_names)."))
+            throw(
+                ErrorException(
+                    "The multilayer graph does not contain any Layer named $(layer_1_name). Available layers are $(mg.layers_names).",
+                ),
+            )
         end
     else
-        layer_1_name ∈ mg.layers_names || throw(ErrorException("$layer_1_name does nto belong to the multilayer graph. Available layers are $(mg.layers_names)."))
-        layer_2_name ∈ mg.layers_names ||throw(ErrorException("$layer_2_name does nto belong to the multilayer graph. Available layers are $(mg.layers_names)."))
+        layer_1_name ∈ mg.layers_names || throw(
+            ErrorException(
+                "$layer_1_name does nto belong to the multilayer graph. Available layers are $(mg.layers_names).",
+            ),
+        )
+        layer_2_name ∈ mg.layers_names || throw(
+            ErrorException(
+                "$layer_2_name does nto belong to the multilayer graph. Available layers are $(mg.layers_names).",
+            ),
+        )
 
         return mg.interlayers[Set([layer_1_name, layer_2_name])]
     end
@@ -478,60 +600,76 @@ end
 
 Get the indegree of vertex `v` in `mg`.
 """
-Graphs.indegree( mg::AbstractMultilayerGraph, v::MultilayerVertex) = length(inneighbors(mg, v))
+function Graphs.indegree(mg::AbstractMultilayerGraph, v::MultilayerVertex)
+    return length(inneighbors(mg, v))
+end
 
 """
     indegree( mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex}
 
 Get the vector of indegrees of vertices `vs` in `mg`.
 """
-Graphs.indegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) = [indegree(mg, x) for x in vs]
+function Graphs.indegree(
+    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
+)
+    return [indegree(mg, x) for x in vs]
+end
 
 """
     outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 
 Get the outdegree of vertex `v` in `mg`.
 """
-Graphs.outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = length(outneighbors(mg, mv))
-     
+function Graphs.outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return length(outneighbors(mg, mv))
+end
+
 """
     outdegree(mg::M, vs::AbstractVector{V}=vertices(mg)) where {T,M<:AbstractMultilayerGraph{T,<:Real},V<:MultilayerVertex} 
 
 Get the vector of outdegrees of vertices `vs` in `mg`.
 """
-Graphs.outdegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) = [outdegree(mg, x) for x in vs]
+function Graphs.outdegree(
+    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
+)
+    return [outdegree(mg, x) for x in vs]
+end
 
 """
     degree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) 
 
 Get the degree of vertices `vs` in `mg`.
 """
-Graphs.degree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) = [degree(mg, x) for x in vs]
+function Graphs.degree(
+    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
+)
+    return [degree(mg, x) for x in vs]
+end
 
 """
     inneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex ) 
 
 Return the list of inneighbors of `mv` within `mg`.
 """
-Graphs.inneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex ) = inneighbors(mg, get_v(mg, mv))
+function Graphs.inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return inneighbors(mg, get_v(mg, mv))
+end
 
 """
     outneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 
 Return the list of outneighbors of `v` within `mg`.
 """
-Graphs.outneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex) = outneighbors(mg, get_v(mg, mv))
-
+function Graphs.outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return outneighbors(mg, get_v(mg, mv))
+end
 
 """
     outneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T}}
 
 Return the list of outneighbors of `v` within `mg`.
 """
-function Graphs.outneighbors(
-    mg::M, v::T
-) where {T, M<:AbstractMultilayerGraph{T}}
-
+function Graphs.outneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T}}
     _outneighbors = T[]
 
     for helfedge in mg.fadjlist[v]
@@ -561,35 +699,44 @@ weighttype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} = U
     
 Return the list of `MultilayerVertex` inneighbors of `mv` within `mg`.
 """
-mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = getindex.(Ref(mg.v_V_associations), inneighbors(mg, mv))
+function mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return getindex.(Ref(mg.v_V_associations), inneighbors(mg, mv))
+end
 
 """
     mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 
 Return the list of `MultilayerVertex` outneighbors of `mv` within `mg`.
 """
-mv_outneighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex) = getindex.(Ref(mg.v_V_associations), outneighbors(mg, mv))
-
+function mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return getindex.(Ref(mg.v_V_associations), outneighbors(mg, mv))
+end
 
 """
     mv_neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 
 Return the list of `MultilayerVertex` neighbors of `mv` within `mg`.
 """
-mv_neighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex) = getindex.(Ref(mg.v_V_associations), neighbors(mg, mv))
+function mv_neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return getindex.(Ref(mg.v_V_associations), neighbors(mg, mv))
+end
 
 """
     get_supra_weight_matrix_from_weight_tensor(weight_tensor::Array{U, 4}) where { U <: Real}
 
 Internal method. Convert a weight tensor into the corresponding supra-adjacency matrix.
 """
-function get_supra_weight_matrix_from_weight_tensor(weight_tensor::Array{U, 4}) where { U <: Real}
-    N = size(weight_tensor,1)
-    L = size(weight_tensor,3)
-    supra_weight_matrix  = Array{U}(undef, N*L, N*L)
+function get_supra_weight_matrix_from_weight_tensor(
+    weight_tensor::Array{U,4}
+) where {U<:Real}
+    N = size(weight_tensor, 1)
+    L = size(weight_tensor, 3)
+    supra_weight_matrix = Array{U}(undef, N * L, N * L)
     for i in 1:L
         for j in 1:L
-            supra_weight_matrix[(N*(i - 1) + 1):N*i, (N*(j - 1)+1):N*j ] .= weight_tensor[1:N, 1:N, i, j]
+            supra_weight_matrix[(N * (i - 1) + 1):(N * i), (N * (j - 1) + 1):(N * j)] .= weight_tensor[
+                1:N, 1:N, i, j
+            ]
         end
     end
     return supra_weight_matrix
@@ -600,21 +747,24 @@ end
 
 Internal method. Convert a supra-adjacency matrix into the corresponding weight tensor.
 """
-function get_weight_tensor_from_supra_weight_matrix(mg::M, supra_weight_matrix::S) where {T, U, S <: Array{U, 2}, M <: AbstractMultilayerGraph{T,U} }
+function get_weight_tensor_from_supra_weight_matrix(
+    mg::M, supra_weight_matrix::S
+) where {T,U,S<:Array{U,2},M<:AbstractMultilayerGraph{T,U}}
     N = nn(mg)
     L = nl(mg)
-    weight_tensor  = zeros(U, N, N, L, L)
+    weight_tensor = zeros(U, N, N, L, L)
     if N != 0
         for i in 1:L
             for j in 1:L
-                weight_tensor[1:N, 1:N, i, j]  .= supra_weight_matrix[(N*(i - 1) + 1):N*i, (N*(j - 1) + 1):N*j] 
+                weight_tensor[1:N, 1:N, i, j] .= supra_weight_matrix[
+                    (N * (i - 1) + 1):(N * i), (N * (j - 1) + 1):(N * j)
+                ]
             end
         end
         return weight_tensor
     else
         return weight_tensor
     end
-
 end
 
 """
@@ -622,35 +772,34 @@ end
 
 Compute the weight tensor of `mg`. Return an object of type `WeightTensor`.
 """
-function weight_tensor(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+function weight_tensor(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     N = nn(mg)
     L = nl(mg)
 
-    _size = (N,N,L,L)
+    _size = (N, N, L, L)
 
     _weight_tensor = zeros(U, _size...)
 
-    v_V_associations = Bijection{Int, Union{MissingVertex, MultilayerVertex}}()
-    
+    v_V_associations = Bijection{Int,Union{MissingVertex,MultilayerVertex}}()
 
     for (_src_v, halfedges_from_src) in enumerate(mg.fadjlist)
         if !isempty(halfedges_from_src)
             src_v = T(_src_v)
 
-            src_bare_V    = mg.v_V_associations[src_v]
-            src_n_idx     = mg.idx_N_associations(src_bare_V.node)
+            src_bare_V = mg.v_V_associations[src_v]
+            src_n_idx = mg.idx_N_associations(src_bare_V.node)
             src_layer_idx = get_layer_idx(mg, src_bare_V.layer)
-            
 
             for halfedge in halfedges_from_src
                 dst_bare_V = vertex(halfedge)
 
                 dst_n_idx = mg.idx_N_associations(dst_bare_V.node)
                 dst_layer_idx = get_layer_idx(mg, dst_bare_V.layer)
-#=                 vec_idx = cartIndexTovecIndex( (src_n_idx,dst_n_idx,src_layer_idx ,dst_layer_idx ) ,_size)
-                v_V_associations[vec_idx] =  =#
-                _weight_tensor[src_n_idx,dst_n_idx,src_layer_idx ,dst_layer_idx] = weight(halfedge)
-
+                #=                 vec_idx = cartIndexTovecIndex( (src_n_idx,dst_n_idx,src_layer_idx ,dst_layer_idx ) ,_size)
+                                v_V_associations[vec_idx] =  =#
+                _weight_tensor[src_n_idx, dst_n_idx, src_layer_idx, dst_layer_idx] = weight(
+                    halfedge
+                )
             end
         end
     end
@@ -663,23 +812,22 @@ end
 
 Internal function. Return the `v_V_associations` for `mg` taking into account missing vertices (the order of the vertices of each layer is induced by the order of the nodes in `mg.idx_N_associations`).
 """
-function get_v_V_associations_withmissings(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+function get_v_V_associations_withmissings(
+    mg::M
+) where {T,U,M<:AbstractMultilayerGraph{T,U}}
+    v_V_associations = Bijection{T,Union{MissingVertex,MultilayerVertex}}()
 
-    v_V_associations = Bijection{T,  Union{MissingVertex, MultilayerVertex} }()
+    n_nodes = nn(mg)
+    n_layers = nl(mg)
 
-    n_nodes   = nn(mg)
-    n_layers  = nl(mg)
-
-
-
-    for i in 1:(n_nodes*n_layers)
+    for i in 1:(n_nodes * n_layers)
         v_V_associations[i] = MissingVertex()
     end
 
     for V in mv_vertices(mg)
         if !(V isa MissingVertex)
             layer_idxs = get_layer_idx(mg, V.layer)
-            v = T(mg.idx_N_associations(V.node) + (layer_idxs[1]-1)*n_nodes)
+            v = T(mg.idx_N_associations(V.node) + (layer_idxs[1] - 1) * n_nodes)
             delete!(v_V_associations, v)
             v_V_associations[v] = get_bare_mv(V)
         end
@@ -693,19 +841,17 @@ end
 
 Compute the supra weight matrix of `mg`. Return an object of type `SupraWeightMatrix`
 """
-function supra_weight_matrix(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
-
-    n_nodes   = nn(mg)
-    n_layers  = nl(mg)
+function supra_weight_matrix(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
+    n_nodes = nn(mg)
+    n_layers = nl(mg)
 
     v_V_associations = get_v_V_associations_withmissings(mg)
 
-    _supra_weight_matrix = zeros(U,n_nodes*n_layers, n_nodes*n_layers)
-    for (_src_v,halfedges) in enumerate(mg.fadjlist)
+    _supra_weight_matrix = zeros(U, n_nodes * n_layers, n_nodes * n_layers)
+    for (_src_v, halfedges) in enumerate(mg.fadjlist)
         src_v = v_V_associations(mg.v_V_associations[_src_v])
 
         for halfedge in halfedges
-
             _weight = isnothing(weight(halfedge)) ? one(U) : weight(halfedge)
             dst_v = v_V_associations(vertex(halfedge))
             # The loop goes through the entire fadjlist, so [dst_v, src_v] will be obtained at some point
@@ -716,36 +862,33 @@ function supra_weight_matrix(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U
     return SupraWeightMatrix(_supra_weight_matrix, v_V_associations)
 end
 
-
-
-
 """
     metadata_tensor(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 
 Compute the weight tensor of `mg`. Return an object of type `WeightTensor`.
 """
-function metadata_tensor(mg::M) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+function metadata_tensor(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     N = nn(mg)
     L = nl(mg)
 
-    _metadata_tensor = Array{Union{Nothing,Tuple,NamedTuple}}( nothing, N, N, L, L)
+    _metadata_tensor = Array{Union{Nothing,Tuple,NamedTuple}}(nothing, N, N, L, L)
 
     for (_src_v, halfedges_from_src) in enumerate(mg.fadjlist)
         if !isempty(halfedges_from_src)
             src_v = T(_src_v)
 
-            src_bare_V    = mg.v_V_associations[src_v]
-            src_n_idx     = mg.idx_N_associations(src_bare_V.node)
+            src_bare_V = mg.v_V_associations[src_v]
+            src_n_idx = mg.idx_N_associations(src_bare_V.node)
             src_layer_idx = get_layer_idx(mg, src_bare_V.layer)
-            
 
             for halfedge in halfedges_from_src
                 dst_bare_V = vertex(halfedge)
 
                 dst_n_idx = mg.idx_N_associations(dst_bare_V.node)
                 dst_layer_idx = get_layer_idx(mg, dst_bare_V.layer)
-                _metadata_tensor[src_n_idx, dst_n_idx, src_layer_idx, dst_layer_idx] = metadata(halfedge)
-
+                _metadata_tensor[src_n_idx, dst_n_idx, src_layer_idx, dst_layer_idx] = metadata(
+                    halfedge
+                )
             end
         end
     end
@@ -805,9 +948,7 @@ function multilayer_global_clustering_coefficient(
     # end
 
     # DeDomenico2013 denominator implementation
-    F =
-        ones(size(wgt)...) .-
-        multilayer_kronecker_delta(size(wgt))
+    F = ones(size(wgt)...) .- multilayer_kronecker_delta(size(wgt))
     den = ein"ijkm,jnmo,niok ->"(A_right, F, A_right)[]
 
     return _normalization_inverse * (num / den)
@@ -821,7 +962,6 @@ Return the complete multilayer global clustering coefficient, equal to the ratio
 function multilayer_weighted_global_clustering_coefficient(
     mg::M, w::Vector{Float64}, norm_factor::Union{Float64,Symbol}=:max
 ) where {M<:AbstractMultilayerGraph} #This is well defined for both weighted and unweighted multilayer graphs
-
     wgt = weight_tensor(mg).array
 
     sum(w) == 1 ||
@@ -836,9 +976,7 @@ function multilayer_weighted_global_clustering_coefficient(
 
     num = ein"ijkm,jnmo,niok,skmo,s ->"(A_right, A_right, A_right, δ_Ω(num_layers), w)[]
 
-    F =
-        ones(size(wgt)...) .-
-        multilayer_kronecker_delta(size(wgt))
+    F = ones(size(wgt)...) .- multilayer_kronecker_delta(size(wgt))
 
     den = ein"ijkm,jnmo,niok,skmo,s ->"(A_right, F, A_right, δ_Ω(num_layers), w)[]
 
@@ -856,32 +994,20 @@ Return the overlay clustering coefficient as calculated in [De Domenico et al. (
 function overlay_clustering_coefficient(
     mg::AbstractMultilayerGraph, norm_factor::Union{Float64,Symbol}=:max
 )
-
     wgt = weight_tensor(mg).array
 
     _normalization_inverse = 1.0
     if norm_factor == :max
-        _normalization_inverse =
-            1.0 / (maximum(ein"ijkl->ij"(wgt)) / length(mg.layers))
+        _normalization_inverse = 1.0 / (maximum(ein"ijkl->ij"(wgt)) / length(mg.layers))
         # Check that we are using OMEinsum correctly.
         # @assert all(ein"ijkl->ij"(mg.array) .== dropdims(sum(mg.array, dims = (3,4)), dims = (3,4)))
     end
 
-    num = ein"ij,jm,mi ->"(
-        ein"ijkm->ij"(wgt),
-        ein"ijkm->ij"(wgt),
-        ein"ijkm->ij"(wgt),
-    )[]
+    num = ein"ij,jm,mi ->"(ein"ijkm->ij"(wgt), ein"ijkm->ij"(wgt), ein"ijkm->ij"(wgt))[]
 
-    F =
-        ones(size(wgt)...) -
-        multilayer_kronecker_delta(size(wgt))
+    F = ones(size(wgt)...) - multilayer_kronecker_delta(size(wgt))
 
-    den = ein"ij,jm,mi ->"(
-        ein"ijkm->ij"(wgt),
-        ein"ijkm->ij"(F),
-        ein"ijkm->ij"(wgt),
-    )[]
+    den = ein"ij,jm,mi ->"(ein"ijkm->ij"(wgt), ein"ijkm->ij"(F), ein"ijkm->ij"(wgt))[]
 
     return _normalization_inverse * (num / den)
 end
@@ -901,9 +1027,8 @@ The returned values are: the eigenvector centrality and the relative error at ea
 Note: in the limit case of a monoplex graph, this function outputs a eigenvector centrality vector that coincides the one outputted by Graphs.jl's `eigenvector_centrality`.
 """
 function Graphs.eigenvector_centrality(
-    mg::M; weighted::Bool = true,  norm::String="1", tol::Float64=1e-6, maxiter::Int64=2000
+    mg::M; weighted::Bool=true, norm::String="1", tol::Float64=1e-6, maxiter::Int64=2000
 ) where {T,U,M<:AbstractMultilayerGraph{T,U}}
-
     swm_m = nothing
     v_V_associations_withmissings = nothing
     if weighted
@@ -934,15 +1059,21 @@ function Graphs.eigenvector_centrality(
     if norm == "1"
         X = X ./ sum(X)
     elseif norm == "n"
-        X = X ./ (sum(X) / num_nodes)        
+        X = X ./ (sum(X) / num_nodes)
     end
 
     # Reorder centrality values ot march the order multilayer vertices are given in mv_vertices(mg)
-    layers_mvs_ordered = [couple[2] for couple in sort(collect(v_V_associations_withmissings), by = first) if !(couple[2] isa MissingVertex)]
+    layers_mvs_ordered = [
+        couple[2] for couple in sort(collect(v_V_associations_withmissings); by=first) if
+        !(couple[2] isa MissingVertex)
+    ]
 
     _sortperm = sortperm(mg.v_V_associations.(layers_mvs_ordered))
 
-    X = vec(X)[[couple[1] for couple in sort(collect(v_V_associations_withmissings), by = first) if !(couple[2] isa MissingVertex)]]
+    X = vec(X)[[
+        couple[1] for couple in sort(collect(v_V_associations_withmissings); by=first) if
+        !(couple[2] isa MissingVertex)
+    ]]
 
     X = X[_sortperm]
 
@@ -961,7 +1092,6 @@ Calculate the modularity of `mg`, as shown in [De Domenico et al. (2013)](https:
 function Graphs.modularity(
     mg::M, c::Matrix{Int64}; null_model::Union{String,Array{U,4}}="degree"
 ) where {T,U,M<:AbstractMultilayerGraph{T,U}}
-
     wgt = weight_tensor(mg).array
 
     # Check that c has the correct size
@@ -981,7 +1111,7 @@ function Graphs.modularity(
     end
 
     # Build P
-    P = Array{Float64}(undef, size(wgt)) 
+    P = Array{Float64}(undef, size(wgt))
     tot_links = length(edges(mg))
     if typeof(null_model) != String && size(null_model) == size(P)
         P .= null_model
@@ -996,26 +1126,17 @@ function Graphs.modularity(
             layer_1_idx = cart_idx[3]
             layer_2_idx = cart_idx[4]
 
-                mv1 = MultilayerVertex(
-                    mg.idx_N_associations[cart_idx[1]], mg.layers[layer_1_idx].name
-                )
-                mv2 = MultilayerVertex(
-                    mg.idx_N_associations[cart_idx[2]], mg.layers[layer_2_idx].name
-                )
-                if has_vertex(mg, mv1) && has_vertex(mg, mv2) # haskey(mg.v_V_associations.finv, mv1 ) && haskey(mg.v_V_associations.finv, mv2 )
-                    P[cart_idx] =
-                    (
-                        degree(
-                            mg,
-                            mv1,
-                        ) * degree(
-                            mg,
-                            mv2,
-                        )
-                    ) / (2 * tot_links - 1)
-                else
-                    P[cart_idx] = 0.0
-                end
+            mv1 = MultilayerVertex(
+                mg.idx_N_associations[cart_idx[1]], mg.layers[layer_1_idx].name
+            )
+            mv2 = MultilayerVertex(
+                mg.idx_N_associations[cart_idx[2]], mg.layers[layer_2_idx].name
+            )
+            if has_vertex(mg, mv1) && has_vertex(mg, mv2) # haskey(mg.v_V_associations.finv, mv1 ) && haskey(mg.v_V_associations.finv, mv2 )
+                P[cart_idx] = (degree(mg, mv1) * degree(mg, mv2)) / (2 * tot_links - 1)
+            else
+                P[cart_idx] = 0.0
+            end
         end
     else
         throw(ErrorException("Null model '$null_model' not implemented."))
@@ -1029,7 +1150,6 @@ function Graphs.modularity(
 
     return (1 / K) * ein"ija,ikjm,kma->"(S, B, S)[]
 end
-
 
 # Base overloads
 """
@@ -1054,17 +1174,21 @@ end
 
 Internal method. Get the Integer label associated to `mv` within `mg.v_V_associations`.
 """
-get_v(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = mg.v_V_associations(get_bare_mv(mv))
-
+function get_v(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return mg.v_V_associations(get_bare_mv(mv))
+end
 
 """
     get_rich_mv(mg::M, i::T) where {T,U, M <: AbstractMultilayerGraph{T,U}}
 
 Return `V` together with its metadata.
 """
-function get_rich_mv(mg::M, i::T; perform_checks::Bool = false) where {T,U, M <: AbstractMultilayerGraph{T,U}}
+function get_rich_mv(
+    mg::M, i::T; perform_checks::Bool=false
+) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     if perform_checks
-        haskey(mg.v_V_associations,i) || throw(ErrorException("$i is not a vertex of the multilayer graph"))
+        haskey(mg.v_V_associations, i) ||
+            throw(ErrorException("$i is not a vertex of the multilayer graph"))
     end
 
     bare_V = mg.v_V_associations[i]

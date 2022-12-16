@@ -425,7 +425,6 @@ function isdigraphical(
     return true
 end
 
-
 #= """
     _random_undirected_configuration(empty_mg::M, degree_sequence::Vector{ <: Integer}) where {T,U,M <: MultilayerGraph{T,U}}
 
@@ -488,7 +487,6 @@ function _random_undirected_configuration(empty_mg::M, degree_sequence::Vector{ 
 
 end
 
-
 """
     _random_directed_configuration(empty_mg::M, indegree_sequence::Vector{ <: Integer}, outdegree_sequence::Vector{ <: Integer}, allow_self_loops::Bool) where {T,U,M <: MultilayerDiGraph{T,U}}
 
@@ -550,13 +548,17 @@ function _random_directed_configuration(empty_mg::M, indegree_sequence::Vector{ 
     return edge_list
 end =#
 
-
 """
     cartIndexTovecIndex(cart_index::CartesianIndex, tensor_size::NTuple{N, <: Integer} ) where N
 
 Internal function. Converts `cart_index` to an integer index such that it corresponds to the same element under flattening of the tensor whose size is `tensor_size`.
 """
-cartIndexTovecIndex(cart_index::Union{NTuple{N, Integer},CartesianIndex}, tensor_size::NTuple{N, <: Integer} ) where N = cart_index[1] + sum( collect(Tuple(cart_index)[2:end] .- 1) .* cumprod(tensor_size[1:end-1]))
+function cartIndexTovecIndex(
+    cart_index::Union{NTuple{N,Integer},CartesianIndex}, tensor_size::NTuple{N,<:Integer}
+) where {N}
+    return cart_index[1] +
+           sum(collect(Tuple(cart_index)[2:end] .- 1) .* cumprod(tensor_size[1:(end - 1)]))
+end
 
 """
     havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer})
@@ -572,19 +574,25 @@ Returns a simple graph with a given finite degree sequence of non-negative integ
 """
 function havel_hakimi_graph_generator(degree_sequence::AbstractVector{<:Integer})
     # Check whether the degree sequence has only non-negative values
-    all(degree_sequence .>= 0) || throw(ArgumentError("The degree sequence must contain non-negative integers only."))
+    all(degree_sequence .>= 0) ||
+        throw(ArgumentError("The degree sequence must contain non-negative integers only."))
     # Instantiate an empty simple graph 
     graph = SimpleGraph(length(degree_sequence))
     # Create a (vertex, degree) ordered dictionary
-    vertices_degrees_dict = OrderedDict(vertex => degree for (vertex, degree) in enumerate(degree_sequence))
+    vertices_degrees_dict = OrderedDict(
+        vertex => degree for (vertex, degree) in enumerate(degree_sequence)
+    )
     # Havel-Hakimi algorithm  
-    while(any(values(vertices_degrees_dict) .!= 0))
+    while (any(values(vertices_degrees_dict) .!= 0))
         # Sort the new sequence in non-increasing order
-        vertices_degrees_dict = OrderedDict(sort(collect(vertices_degrees_dict), by = last , rev = true))
+        vertices_degrees_dict = OrderedDict(
+            sort(collect(vertices_degrees_dict); by=last, rev=true)
+        )
         # Remove the first vertex and distribute its stabs
         max_vertex, max_degree = popfirst!(vertices_degrees_dict)
         # Check whether the new sequence has only positive values
-        all(collect(values(vertices_degrees_dict))[1:max_degree] .> 0) || throw(ErrorException("The degree sequence is not graphical."))
+        all(collect(values(vertices_degrees_dict))[1:max_degree] .> 0) ||
+            throw(ErrorException("The degree sequence is not graphical."))
         # Connect the node of highest degree to other nodes of highest degree 
         for vertex in collect(keys(vertices_degrees_dict))[1:max_degree]
             add_edge!(graph, max_vertex, vertex)
@@ -602,7 +610,9 @@ The less than (lt) function that implements lexicographical order.
 
 See [Wikipedia](https://en.wikipedia.org/wiki/Lexicographic_order).
 """
-function lexicographical_order_lt(A::Union{Vector{T},NTuple{N,T}}, B::Union{Vector{T}, NTuple{M,T}}) where {N,M,T}
+function lexicographical_order_lt(
+    A::Union{Vector{T},NTuple{N,T}}, B::Union{Vector{T},NTuple{M,T}}
+) where {N,M,T}
     A_dc = deepcopy(A)
     B_dc = deepcopy(B)
     diff_length = length(A) - length(B)
@@ -611,7 +621,7 @@ function lexicographical_order_lt(A::Union{Vector{T},NTuple{N,T}}, B::Union{Vect
     else
         B_dc = vcat(B_dc, repeat([-Inf], abs(diff_length)))
     end
-    for (a,b) in zip(A_dc, B_dc)
+    for (a, b) in zip(A_dc, B_dc)
         if a != b
             a < b
         end
@@ -626,15 +636,13 @@ The less than (lt) function that implements lexicographical order for `NTuple` o
 See [Wikipedia](https://en.wikipedia.org/wiki/Lexicographic_order).
 """
 function lexicographical_order_ntuple(A::NTuple{N,T}, B::NTuple{N,T}) where {N,T}
-
-    for (a,b) in zip(A, B)
+    for (a, b) in zip(A, B)
         if a != b
             return a < b
         end
     end
 
     return false
-
 end
 
 """
@@ -650,38 +658,63 @@ Returns a simple directed graph with given finite in-degree and out-degree seque
 - [Wikipedia](https://en.wikipedia.org/wiki/Kleitman%E2%80%93Wang_algorithms)
 - [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X)
 """
-function kleitman_wang_graph_generator(indegree_sequence::AbstractVector{<:Integer}, outdegree_sequence::AbstractVector{<:Integer})
-
-    length(indegree_sequence) == length(outdegree_sequence) || throw(ArgumentError("The provided `indegree_sequence` and `outdegree_sequence` must be of the dame length."))
+function kleitman_wang_graph_generator(
+    indegree_sequence::AbstractVector{<:Integer},
+    outdegree_sequence::AbstractVector{<:Integer},
+)
+    length(indegree_sequence) == length(outdegree_sequence) || throw(
+        ArgumentError(
+            "The provided `indegree_sequence` and `outdegree_sequence` must be of the dame length.",
+        ),
+    )
     # Check whether the indegree_sequence and outdegree_sequence have only non-negative values
-    all(indegree_sequence .>= 0) || throw(ArgumentError("The `indegree_sequence` sequence must contain non-negative integers only."))
-    all(outdegree_sequence .>= 0) || throw(ArgumentError("The `outdegree_sequence` sequence must contain non-negative integers only."))
+    all(indegree_sequence .>= 0) || throw(
+        ArgumentError(
+            "The `indegree_sequence` sequence must contain non-negative integers only."
+        ),
+    )
+    all(outdegree_sequence .>= 0) || throw(
+        ArgumentError(
+            "The `outdegree_sequence` sequence must contain non-negative integers only."
+        ),
+    )
 
     # Instantiate an empty simple graph 
     graph = SimpleDiGraph(length(indegree_sequence))
     # Create a (vertex, degree) ordered dictionary
     S = zip(deepcopy(indegree_sequence), deepcopy(outdegree_sequence))
-    vertices_degrees_dict = OrderedDict(i => tup for (i,tup) in enumerate(S))
+    vertices_degrees_dict = OrderedDict(i => tup for (i, tup) in enumerate(S))
     # Kleitman-Wang algorithm  
-    while(any(Iterators.flatten(values(vertices_degrees_dict)) .!= 0 ))
+    while (any(Iterators.flatten(values(vertices_degrees_dict)) .!= 0))
         # Sort the new sequence in non-increasing lexicographical order
-        vertices_degrees_dict = OrderedDict(sort(collect(vertices_degrees_dict), by = last, lt = lexicographical_order_ntuple , rev = true))
+        vertices_degrees_dict = OrderedDict(
+            sort(
+                collect(vertices_degrees_dict);
+                by=last,
+                lt=lexicographical_order_ntuple,
+                rev=true,
+            ),
+        )
         # Find a vertex with positive outdegree,a nd temporarily remove it from `vertices_degrees_dict`
-        i, (a_i, b_i) = 0,(0,0)
+        i, (a_i, b_i) = 0, (0, 0)
         for (_i, (_a_i, _b_i)) in collect(deepcopy(vertices_degrees_dict))
             if _b_i != 0
-                i, a_i, b_i = (_i,_a_i, _b_i)
+                i, a_i, b_i = (_i, _a_i, _b_i)
                 delete!(vertices_degrees_dict, _i)
                 break
             end
-        end        
+        end
         # Connect the vertex found above to other nodes of highest degree 
-        for (v,degs) in collect(vertices_degrees_dict)[1:b_i]
+        for (v, degs) in collect(vertices_degrees_dict)[1:b_i]
             add_edge!(graph, i, v)
-            vertices_degrees_dict[v] = (degs[1]-1, degs[2])
+            vertices_degrees_dict[v] = (degs[1] - 1, degs[2])
         end
         # Check whether the new sequence has only positive values
-        all(collect(Iterators.flatten(collect(values(vertices_degrees_dict))))[1:b_i] .>= 0) || throw(ErrorException("The in-degree and out-degree sequences are not digraphical."))
+        all(
+            collect(Iterators.flatten(collect(values(vertices_degrees_dict))))[1:b_i] .>= 0
+        ) || throw(
+            ErrorException("The in-degree and out-degree sequences are not digraphical."),
+        )
         # Reinsert the vertex, with zero outdegree
         vertices_degrees_dict[i] = (a_i, 0)
     end

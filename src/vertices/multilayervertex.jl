@@ -3,7 +3,7 @@
 
 An abstract type representing an abstract MultilayerGraph vertex.
 """
-abstract type AbstractMultilayerVertex{S} <: AbstractVertex end 
+abstract type AbstractMultilayerVertex{S} <: AbstractVertex end
 
 """
     MultilayerVertex{N <: Integer} <: AbstractMultilayerVertex{N}
@@ -23,10 +23,14 @@ Constructs a `MultilayerVertex` representing [`Node`](@ref) `node` in [`Layer`](
 """
 struct MultilayerVertex{S} <: AbstractMultilayerVertex{S}
     node::Node
-    layer::Union{Nothing, Symbol}
-    metadata::Union{<: NamedTuple, <: Tuple}
+    layer::Union{Nothing,Symbol}
+    metadata::Union{<:NamedTuple,<:Tuple}
 
-    MultilayerVertex(node::Node, layer::Union{Nothing, Symbol},  metadata::Union{<: NamedTuple, <: Tuple}) = new{layer}(node, layer, metadata)
+    function MultilayerVertex(
+        node::Node, layer::Union{Nothing,Symbol}, metadata::Union{<:NamedTuple,<:Tuple}
+    )
+        return new{layer}(node, layer, metadata)
+    end
 end
 
 """
@@ -48,7 +52,9 @@ MultilayerVertex(node::Node, not::Nothing) = MultilayerVertex(node, nothing, Nam
 
 Return `MultilayerVertex(node, nothing, metadata)`.
 """
-MultilayerVertex(node::Node, metadata::Union{Tuple,NamedTuple}) = MultilayerVertex(node, nothing, metadata)
+function MultilayerVertex(node::Node, metadata::Union{Tuple,NamedTuple})
+    return MultilayerVertex(node, nothing, metadata)
+end
 
 """
     MultilayerVertex(node::Node)
@@ -66,7 +72,11 @@ Alias for `MultilayerVertex`
 const MV = MultilayerVertex
 
 # Base overrides
-Base.:(==)(lhs::MultilayerVertex, rhs::MultilayerVertex) = (lhs.node == rhs.node) && (lhs.layer == rhs.layer) && (lhs.metadata == rhs.metadata)
+function Base.:(==)(lhs::MultilayerVertex, rhs::MultilayerVertex)
+    return (lhs.node == rhs.node) &&
+           (lhs.layer == rhs.layer) &&
+           (lhs.metadata == rhs.metadata)
+end
 Base.isequal(lhs::MultilayerVertex, rhs::MultilayerVertex) = lhs == rhs
 
 """
@@ -74,14 +84,12 @@ Base.isequal(lhs::MultilayerVertex, rhs::MultilayerVertex) = lhs == rhs
 """
 get_bare_mv(mv::MultilayerVertex) = MV(mv.node, mv.layer)
 
-
 """
     node(mv::MultilayerVertex)
 
 Returns the Node represented by `mv`.
 """
 node(mv::MultilayerVertex) = mv.node
-
 
 """
     layer(mv::MultilayerVertex)
@@ -98,7 +106,9 @@ Return the metadata associated to `mv`.
 metadata(mv::MultilayerVertex) = mv.metadata
 
 # Compare multilayer vertices 
-function compare_multilayervertices(V1::MultilayerVertex, V2::MultilayerVertex; check_metadata = false)
+function compare_multilayervertices(
+    V1::MultilayerVertex, V2::MultilayerVertex; check_metadata=false
+)
     # Check if the two nodes are the same
     V1.node == V2.node || return false
     # Check if the two layers are the same
@@ -112,5 +122,7 @@ function compare_multilayervertices(V1::MultilayerVertex, V2::MultilayerVertex; 
 end
 
 # Console print utilities
-to_string( x::M) where {S  , M <: MultilayerVertex{S}} = "MV($(x.node), :$(x.layer), $(x.metadata))" 
+function to_string(x::M) where {S,M<:MultilayerVertex{S}}
+    return "MV($(x.node), :$(x.layer), $(x.metadata))"
+end
 Base.show(io::IO, x::MultilayerVertex) = print(io, to_string(x))

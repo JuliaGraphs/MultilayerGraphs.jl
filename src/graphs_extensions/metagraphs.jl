@@ -1,43 +1,85 @@
-__add_vertex!(g::AbstractMetaGraph{T}; metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer} = add_vertex!(g, Dict(Symbol(pair.first) => pair.second for pair in pairs(metadata)))
+function __add_vertex!(
+    g::AbstractMetaGraph{T}; metadata::Union{Tuple,NamedTuple}=NamedTuple()
+) where {T<:Integer}
+    return add_vertex!(
+        g, Dict(Symbol(pair.first) => pair.second for pair in pairs(metadata))
+    )
+end
 
-_get_vertex_metadata(g::AbstractMetaGraph{T}, vertex::T) where T = NamedTuple(props(g,vertex))
+function _get_vertex_metadata(g::AbstractMetaGraph{T}, vertex::T) where {T}
+    return NamedTuple(props(g, vertex))
+end
 
 # MetaGraphs.jl extra overrides. They are necessary since one may not modify an edge's metadata via add_edge!, for this kind of graphs
 """
     set_prop!(subgraph::S, prop, val) where {S <:AbstractSubGraph}
 """
-MetaGraphs.set_prop!(subgraph::S, prop, val) where {S <:AbstractSubGraph} = set_prop!(subgraph.graph, prop, val)
+function MetaGraphs.set_prop!(subgraph::S, prop, val) where {S<:AbstractSubGraph}
+    return set_prop!(subgraph.graph, prop, val)
+end
 """
     set_prop!(layer::L, v::MultilayerVertex, prop, val) where {L <: Layer} 
 """
-MetaGraphs.set_prop!(layer::L, v::MultilayerVertex, prop, val) where {L <: Layer} = set_prop!(layer.graph, get_v(layer,v), prop, val)
+function MetaGraphs.set_prop!(layer::L, v::MultilayerVertex, prop, val) where {L<:Layer}
+    return set_prop!(layer.graph, get_v(layer, v), prop, val)
+end
 """
 set_prop!(subgraph::S, s::MultilayerVertex, d::MultilayerVertex,  prop, val) where {S <:AbstractSubGraph}
 """
-MetaGraphs.set_prop!(subgraph::S, s::MultilayerVertex, d::MultilayerVertex,  prop, val) where {S <:AbstractSubGraph} = set_prop!(subgraph.graph, get_v(subgraph,s), get_v(subgraph,d), prop, val)
+function MetaGraphs.set_prop!(
+    subgraph::S, s::MultilayerVertex, d::MultilayerVertex, prop, val
+) where {S<:AbstractSubGraph}
+    return set_prop!(subgraph.graph, get_v(subgraph, s), get_v(subgraph, d), prop, val)
+end
 
 """
     get_prop(subgraph::S, prop) where {S <:AbstractSubGraph}
 """
-MetaGraphs.get_prop(subgraph::S, prop) where {S <:AbstractSubGraph}  = get_prop(subgraph.graph, prop)
+function MetaGraphs.get_prop(subgraph::S, prop) where {S<:AbstractSubGraph}
+    return get_prop(subgraph.graph, prop)
+end
 """
 """
-MetaGraphs.get_prop(subgraph::S, v::MultilayerVertex, prop) where {S <:AbstractSubGraph} = get_prop(subgraph.graph, get_v(subgraph,v), prop)
+function MetaGraphs.get_prop(
+    subgraph::S, v::MultilayerVertex, prop
+) where {S<:AbstractSubGraph}
+    return get_prop(subgraph.graph, get_v(subgraph, v), prop)
+end
 """
     get_prop(subgraph::S, v::MultilayerVertex, prop) where {S <:AbstractSubGraph}
 """
-MetaGraphs.get_prop(subgraph::S, s::MultilayerVertex, d::MultilayerVertex, prop) where {S <:AbstractSubGraph} = get_prop(subgraph.graph, get_v(subgraph,s), get_v(subgraph,d), prop,)
-
-
-function _add_edge!(g::AbstractMetaGraph{T}, src::T, dst::T; weight::W = nothing, metadata::Union{Tuple,NamedTuple} = NamedTuple()) where {T <: Integer, W<: Union{<: Real, Nothing}}
-    (isnothing(weight) || weight == 1.0) || @warn "Trying to add a weighted edge to an unweighted graph of type $(typeof(g)). Weight $weight will be ignored."
-    add_edge!(g, src, dst, Dict(key => value for (key,value) in pairs(metadata) ))
+function MetaGraphs.get_prop(
+    subgraph::S, s::MultilayerVertex, d::MultilayerVertex, prop
+) where {S<:AbstractSubGraph}
+    return get_prop(subgraph.graph, get_v(subgraph, s), get_v(subgraph, d), prop)
 end
 
-_get_edge_weight(g::AbstractMetaGraph{T}, src::T, dst::T, weighttype::Type{U} ) where {T, U <: Real} = one(U) 
+function _add_edge!(
+    g::AbstractMetaGraph{T},
+    src::T,
+    dst::T;
+    weight::W=nothing,
+    metadata::Union{Tuple,NamedTuple}=NamedTuple(),
+) where {T<:Integer,W<:Union{<:Real,Nothing}}
+    (isnothing(weight) || weight == 1.0) ||
+        @warn "Trying to add a weighted edge to an unweighted graph of type $(typeof(g)). Weight $weight will be ignored."
+    return add_edge!(g, src, dst, Dict(key => value for (key, value) in pairs(metadata)))
+end
 
-_get_edge_metadata(g::AbstractMetaGraph{T}, src::T, dst::T ) where T = NamedTuple(props(g,src,dst)) 
+function _get_edge_weight(
+    g::AbstractMetaGraph{T}, src::T, dst::T, weighttype::Type{U}
+) where {T,U<:Real}
+    return one(U)
+end
 
-_set_metadata!(g::AbstractMetaGraph{T}, src::T, dst::T, metadata::NamedTuple) where T = set_props!(g, src, dst, Dict(key => value for (key,value) in pairs(metadata)))
+function _get_edge_metadata(g::AbstractMetaGraph{T}, src::T, dst::T) where {T}
+    return NamedTuple(props(g, src, dst))
+end
 
-Graphs.weights(g::AbstractMetaGraph{T}) where T = adjacency_matrix(g)
+function _set_metadata!(
+    g::AbstractMetaGraph{T}, src::T, dst::T, metadata::NamedTuple
+) where {T}
+    return set_props!(g, src, dst, Dict(key => value for (key, value) in pairs(metadata)))
+end
+
+Graphs.weights(g::AbstractMetaGraph{T}) where {T} = adjacency_matrix(g)

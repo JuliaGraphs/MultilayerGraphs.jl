@@ -9,4 +9,21 @@ include("simplevaluegraphs.jl")
 
 Internal function. It serves as a unified interface between MultilayerGraphs.jl `edges` method and the homonymous methods of the other packages.
 """
-_edges(g::Union{Graphs.SimpleGraphs.AbstractSimpleGraph{T}, AbstractSimpleWeightedGraph{T}, AbstractMetaGraph{T}, SimpleValueGraphs.AbstractValGraph{T} }, weighttype::Type{U}) where {T,U} = [ (src(edge), dst(edge), _get_edge_weight(g, src(edge),dst(edge), weighttype), _get_edge_metadata(g, src(edge),dst(edge))) for edge in  edges(g)]
+function _edges(
+    g::Union{
+        Graphs.SimpleGraphs.AbstractSimpleGraph{T},
+        AbstractSimpleWeightedGraph{T},
+        AbstractMetaGraph{T},
+        SimpleValueGraphs.AbstractValGraph{T},
+    },
+    weighttype::Type{U},
+) where {T,U}
+    return [
+        (
+            src(edge),
+            dst(edge),
+            _get_edge_weight(g, src(edge), dst(edge), weighttype),
+            _get_edge_metadata(g, src(edge), dst(edge)),
+        ) for edge in edges(g)
+    ]
+end

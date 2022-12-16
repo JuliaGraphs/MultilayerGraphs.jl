@@ -24,8 +24,7 @@ Default concrete subtype of AbstractMultilayerEdge.
 
 Default constructor.
 """
-struct MultilayerEdge{U<:Union{<:Real,Nothing}} <:
-       AbstractMultilayerEdge{U}
+struct MultilayerEdge{U<:Union{<:Real,Nothing}} <: AbstractMultilayerEdge{U}
     src::AbstractMultilayerVertex
     dst::AbstractMultilayerVertex
     weight::U
@@ -37,23 +36,31 @@ end
 
 Convert to `MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())`.
 """
-MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex) = MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())
-
+function MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex)
+    return MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())
+end
 
 """
     MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U) where {U <: Real}
 
 Convert to `MultilayerEdge{U}(src, dst, weight, NamedTuple())`.
 """
-MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U) where {U <: Real} = MultilayerEdge{U}(src, dst, weight, NamedTuple())
-
+function MultilayerEdge(
+    src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U
+) where {U<:Real}
+    return MultilayerEdge{U}(src, dst, weight, NamedTuple())
+end
 
 """
     MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple)
 
 Convert to `MultilayerEdge{Nothing}(src, dst, nothing, metadata)`.
 """
-MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple) = MultilayerEdge{Nothing}(src, dst, nothing, metadata)
+function MultilayerEdge(
+    src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple
+)
+    return MultilayerEdge{Nothing}(src, dst, nothing, metadata)
+end
 
 """
     ME
@@ -98,7 +105,12 @@ Return and edge between `dst(e)` and `src(e)` with same `weight(e)` and `metadat
 Base.reverse(e::MultilayerEdge) = MultilayerEdge(dst(e), src(e), weight(e), metadata(e))
 
 # Compare multilayer edges
-function compare_multilayeredges(lhs::MultilayerEdge, rhs::MultilayerEdge;check_weight::Bool = false, check_metadata::Bool = false)
+function compare_multilayeredges(
+    lhs::MultilayerEdge,
+    rhs::MultilayerEdge;
+    check_weight::Bool=false,
+    check_metadata::Bool=false,
+)
     # Check source
     _check_src = lhs.src == rhs.src ? true : return false
     # check destination
@@ -111,7 +123,7 @@ function compare_multilayeredges(lhs::MultilayerEdge, rhs::MultilayerEdge;check_
     # Check metadata
     _check_metadata = false
     if check_metadata
-        _check_metadata =  lhs.metadata == rhs.metadata ? true : return false
+        _check_metadata = lhs.metadata == rhs.metadata ? true : return false
     else
         _check_metadata = true
     end
@@ -119,13 +131,20 @@ function compare_multilayeredges(lhs::MultilayerEdge, rhs::MultilayerEdge;check_
 end
 
 # Base overrides
-Base.:(==)(lhs::MultilayerEdge, rhs::MultilayerEdge) = (lhs.src == rhs.src) && (lhs.dst == rhs.dst) && (lhs.weight == rhs.weight) && (lhs.metadata == rhs.metadata) # 
+function Base.:(==)(lhs::MultilayerEdge, rhs::MultilayerEdge)
+    return (lhs.src == rhs.src) &&
+           (lhs.dst == rhs.dst) &&
+           (lhs.weight == rhs.weight) &&
+           (lhs.metadata == rhs.metadata)
+end # 
 
-function Base.isequal(lhs::E1, rhs::E2) where {E1 <: MultilayerEdge, E2 <: MultilayerEdge} 
+function Base.isequal(lhs::E1, rhs::E2) where {E1<:MultilayerEdge,E2<:MultilayerEdge}
     # println("here")
-    lhs == rhs
+    return lhs == rhs
 end
 
 # Console print utilities
-to_string(x::MultilayerEdge) = "ME($(to_string(src(x))) --> $(to_string(dst(x))),\tweight = $(weight(x)),\tmetadata = $(metadata(x)))"
-Base.show(io::IO, x::MultilayerEdge) = print(io, to_string(x) )
+function to_string(x::MultilayerEdge)
+    return "ME($(to_string(src(x))) --> $(to_string(dst(x))),\tweight = $(weight(x)),\tmetadata = $(metadata(x)))"
+end
+Base.show(io::IO, x::MultilayerEdge) = print(io, to_string(x))

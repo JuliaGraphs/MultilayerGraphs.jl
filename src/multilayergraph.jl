@@ -6,10 +6,10 @@ A concrete type that can represent a general multilayer graph. Its internal fiel
 mutable struct MultilayerGraph{T,U} <: AbstractMultilayerUGraph{T,U}
     layers::Vector{LayerDescriptor{T,U}} # vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
     interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}} # the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all undirected.
-    v_V_associations::Bijection{ T, <: MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
-    idx_N_associations::Bijection{ Int64 , Node} # A Bijection from Bijections.jl that associates Int64 to `Node`s.
-    fadjlist::Vector{Vector{HalfEdge{ <: MultilayerVertex, <: Union{Nothing, U}}}} # the forward adjacency list of the MultilayerGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that originate from `v_V_associations[i]`.
-    v_metadata_dict::Dict{T, <: Union{ <: Tuple, <: NamedTuple}} #  A Dictionary that associates numeric vertices to their metadata.
+    v_V_associations::Bijection{T,<:MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
+    idx_N_associations::Bijection{Int64,Node} # A Bijection from Bijections.jl that associates Int64 to `Node`s.
+    fadjlist::Vector{Vector{HalfEdge{<:MultilayerVertex,<:Union{Nothing,U}}}} # the forward adjacency list of the MultilayerGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that originate from `v_V_associations[i]`.
+    v_metadata_dict::Dict{T,<:Union{<:Tuple,<:NamedTuple}} #  A Dictionary that associates numeric vertices to their metadata.
 end
 
 # Traits
@@ -36,19 +36,23 @@ Construct a MultilayerGraph with layers given by `layers`. The interlayers will 
 function MultilayerGraph(
     layers::Vector{<:Layer{T,U}},
     specified_interlayers::Vector{<:Interlayer{T,U}};
-    default_interlayers_null_graph::H = SimpleGraph{T}(),
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
     default_interlayers_structure::String="multiplex",
-) where {T,U, H <: AbstractGraph{T}}
-
+) where {T,U,H<:AbstractGraph{T}}
     multilayergraph = MultilayerGraph(T, U)
 
     for layer in deepcopy(layers)
-        add_layer!(multilayergraph, layer; default_interlayers_null_graph = default_interlayers_null_graph, default_interlayers_structure = default_interlayers_structure)
+        add_layer!(
+            multilayergraph,
+            layer;
+            default_interlayers_null_graph=default_interlayers_null_graph,
+            default_interlayers_structure=default_interlayers_structure,
+        )
     end
 
     if !isnothing(specified_interlayers)
         for interlayer in deepcopy(specified_interlayers)
-            specify_interlayer!(multilayergraph, interlayer) 
+            specify_interlayer!(multilayergraph, interlayer)
         end
     end
 
@@ -63,17 +67,21 @@ fadjlist(mg::MultilayerGraph) = mg.fadjlist
 # Vertices
 
 # Edges
-    
+
 """
     add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 
 Add MultilayerEdge `me` to the MultilayerGraph `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+function Graphs.add_edge!(
+    mg::M, me::E
+) where {T,U,M<:AbstractMultilayerUGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
     _src = get_bare_mv(src(me))
     _dst = get_bare_mv(dst(me))
-    has_vertex(mg, _src) || throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, _dst) || throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+    has_vertex(mg, _src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, _dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
 
     # Add edge to `edge_dict`
     src_V_idx = get_v(mg, _src)
@@ -91,9 +99,9 @@ function Graphs.add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGrap
         end
         return true
     else
-#=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
-        set_weight!(mg, src, dst, _weight)
-        set_metadata!(mg, src, dst, _metadata) =#
+        #=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
+                set_weight!(mg, src, dst, _weight)
+                set_metadata!(mg, src, dst, _metadata) =#
         return false
     end
 end
@@ -103,10 +111,14 @@ end
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex)
+function Graphs.rem_edge!(
+    mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
     # Perform routine checks
-    has_vertex(mg, src) || throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, dst) || throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+    has_vertex(mg, src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
 
     has_edge(mg, src, dst) || return false
 
@@ -117,13 +129,17 @@ function Graphs.rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, d
     _dst = get_bare_mv(dst)
 
     if get_bare_mv(src) != get_bare_mv(dst)
-        src_idx_tbr = findfirst(halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx])
+        src_idx_tbr = findfirst(
+            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
+        )
         deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
 
         dst_idx_tbr = findfirst(halfedge -> halfedge.vertex == _src, mg.fadjlist[dst_V_idx])
         deleteat!(mg.fadjlist[dst_V_idx], dst_idx_tbr)
     else
-        src_idx_tbr = findfirst(halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx])
+        src_idx_tbr = findfirst(
+            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
+        )
         deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
     end
 
@@ -151,15 +167,27 @@ function MultilayerGraph(
     empty_layers::Vector{<:Layer{T,U}},
     empty_interlayers::Vector{<:Interlayer{T,U}},
     degree_distribution::UnivariateDistribution;
-    allow_self_loops::Bool = false,
-    default_interlayers_null_graph::H = SimpleGraph{T}(),
-) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
+    allow_self_loops::Bool=false,
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
+) where {T<:Integer,U<:Real,H<:AbstractGraph{T}}
+    !allow_self_loops || throw(
+        ErrorException(
+            "`allow_self_loops` must currently be set to `false`. The configuration model algorithm does not support self-loops yet.",
+        ),
+    )
 
-    !allow_self_loops || throw(ErrorException("`allow_self_loops` must currently be set to `false`. The configuration model algorithm does not support self-loops yet."))
+    minimum(support(degree_distribution)) >= 0 || throw(
+        ErrorException(
+            "The `degree_distribution` must have positive support. Found $(support(degree_distribution)).",
+        ),
+    )
 
-    minimum(support(degree_distribution)) >= 0 ||  throw(ErrorException("The `degree_distribution` must have positive support. Found $(support(degree_distribution))."))
-    
-    empty_multilayergraph = MultilayerGraph(empty_layers, empty_interlayers; default_interlayers_null_graph = default_interlayers_null_graph, default_interlayers_structure = "empty")
+    empty_multilayergraph = MultilayerGraph(
+        empty_layers,
+        empty_interlayers;
+        default_interlayers_null_graph=default_interlayers_null_graph,
+        default_interlayers_structure="empty",
+    )
 
     n = nv(empty_multilayergraph)
 
@@ -167,16 +195,18 @@ function MultilayerGraph(
     acceptable = false
 
     while !acceptable
-        degree_sequence = round.(Ref(Int), rand(degree_distribution, nv(empty_multilayergraph)))
+        degree_sequence =
+            round.(Ref(Int), rand(degree_distribution, nv(empty_multilayergraph)))
 
-        acceptable = all(0 .<= degree_sequence .< n) 
+        acceptable = all(0 .<= degree_sequence .< n)
 
         if acceptable
-            acceptable = isgraphical(degree_sequence) 
+            acceptable = isgraphical(degree_sequence)
         end
-
     end
-    return MultilayerGraph(empty_multilayergraph, degree_sequence; allow_self_loops = false, perform_checks = false)
+    return MultilayerGraph(
+        empty_multilayergraph, degree_sequence; allow_self_loops=false, perform_checks=false
+    )
 end
 
 """
@@ -187,25 +217,44 @@ end
 
 Return a random `MultilayerGraph` with degree sequence `degree_sequence`. `allow_self_loops` controls the presence of self-loops, while if `perform_checks` is true, the `degree_sequence` os checked to be graphical.
 """
-function MultilayerGraph(empty_multilayergraph::MultilayerGraph{T,U}, degree_sequence::Vector{<:Integer}; allow_self_loops::Bool = false, perform_checks::Bool = true) where {T,U}
+function MultilayerGraph(
+    empty_multilayergraph::MultilayerGraph{T,U},
+    degree_sequence::Vector{<:Integer};
+    allow_self_loops::Bool=false,
+    perform_checks::Bool=true,
+) where {T,U}
+    (allow_self_loops && perform_checks) &&
+        @warn "Checks for graphicality and coherence with the provided `empty_multilayergraph` are currently performed without taking into account self-loops. Thus said checks may fail even though the provided `degree_sequence` may be graphical when one allows for self-loops within the multilayer graph to be present. If you are sure that the provided `degree_sequence` is indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient."
 
-    (allow_self_loops && perform_checks) && @warn "Checks for graphicality and coherence with the provided `empty_multilayergraph` are currently performed without taking into account self-loops. Thus said checks may fail even though the provided `degree_sequence` may be graphical when one allows for self-loops within the multilayer graph to be present. If you are sure that the provided `degree_sequence` is indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient."
-    
     _multilayergraph = deepcopy(empty_multilayergraph)
 
-    ne(_multilayergraph) == 0 || throw(ErrorException("The `empty_multilayergraph` argument should be an empty MultilayerGraph. Found $(ne(_multilayergraph)) edges."))
+    ne(_multilayergraph) == 0 || throw(
+        ErrorException(
+            "The `empty_multilayergraph` argument should be an empty MultilayerGraph. Found $(ne(_multilayergraph)) edges.",
+        ),
+    )
 
     if perform_checks
         n = nv(_multilayergraph)
-        n == length(degree_sequence) || throw(ErrorException("The number of vertices of the provided empty MultilayerGraph does not match the length of the degree sequence. Found $(nv(_multilayergraph)) and $(length(degree_sequence))."))
+        n == length(degree_sequence) || throw(
+            ErrorException(
+                "The number of vertices of the provided empty MultilayerGraph does not match the length of the degree sequence. Found $(nv(_multilayergraph)) and $(length(degree_sequence)).",
+            ),
+        )
 
-        isgraphical(degree_sequence) || throw(ArgumentError("degree_sequence must be graphical.")) 
+        isgraphical(degree_sequence) ||
+            throw(ArgumentError("degree_sequence must be graphical."))
     end
 
     # edge_list = _random_undirected_configuration(_multilayergraph, degree_sequence, allow_self_loops)
     equivalent_graph = havel_hakimi_graph_generator(degree_sequence)
 
-    edge_list = [ME(empty_multilayergraph.v_V_associations[src(edge)], empty_multilayergraph.v_V_associations[dst(edge)]) for edge in edges(equivalent_graph) ]
+    edge_list = [
+        ME(
+            empty_multilayergraph.v_V_associations[src(edge)],
+            empty_multilayergraph.v_V_associations[dst(edge)],
+        ) for edge in edges(equivalent_graph)
+    ]
 
     for edge in edge_list
         add_edge!(_multilayergraph, edge)
@@ -219,28 +268,48 @@ end
 
 Return a null MultilayerGraph with with vertex type `T` weighttype `U`. Use this constructor and then add Layers and Interlayers via the `add_layer!` and `specify_interlayer!` methods.
 """
-MultilayerGraph(T::Type{<:Number}, U::Type{<:Number}) =  MultilayerGraph{T,U}(
-                                                                                LayerDescriptor{T,U}[],
-                                                                                OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}}(),
-                                                                                Bijection{ T , MultilayerVertex}(),
-                                                                                Bijection{ Int64 , Node}(),
-                                                                                Vector{HalfEdge{MultilayerVertex, <: Union{Nothing, U}}}[],
-                                                                                Dict{T, Union{Tuple,NamedTuple}}()
-)
+function MultilayerGraph(T::Type{<:Number}, U::Type{<:Number})
+    return MultilayerGraph{T,U}(
+        LayerDescriptor{T,U}[],
+        OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}}(),
+        Bijection{T,MultilayerVertex}(),
+        Bijection{Int64,Node}(),
+        Vector{HalfEdge{MultilayerVertex,<:Union{Nothing,U}}}[],
+        Dict{T,Union{Tuple,NamedTuple}}(),
+    )
+end
 
 """
     MultilayerGraph(layers::Vector{<:Layer{T,U}}; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String="multiplex") where {T,U, H <: AbstractGraph{T}}
 
 Construct a MultilayerGraph with layers `layers` and all interlayers with structure `default_interlayers_structure` (only "multiplex" and "empty" are allowed) and type `default_interlayers_null_graph`.
 """
-MultilayerGraph(layers::Vector{<:Layer{T,U}}; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String="multiplex") where {T,U, H <: AbstractGraph{T}} = MultilayerGraph(layers, Interlayer{T,U}[]; default_interlayers_null_graph = default_interlayers_null_graph, default_interlayers_structure = default_interlayers_structure)
+function MultilayerGraph(
+    layers::Vector{<:Layer{T,U}};
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {T,U,H<:AbstractGraph{T}}
+    return MultilayerGraph(
+        layers,
+        Interlayer{T,U}[];
+        default_interlayers_null_graph=default_interlayers_null_graph,
+        default_interlayers_structure=default_interlayers_structure,
+    )
+end
 
 # Base overloads
 """
     Base.getproperty(mg::M, f::Symbol) where { M <: MultilayerGraph }
 """
 function Base.getproperty(mg::MultilayerGraph, f::Symbol)#  where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-    if f in (:v_V_associations, :fadjlist, :idx_N_associations, :layers, :interlayers, :v_metadata_dict) # :weight_tensor, :supra_weight_matrix, 
+    if f in (
+        :v_V_associations,
+        :fadjlist,
+        :idx_N_associations,
+        :layers,
+        :interlayers,
+        :v_metadata_dict,
+    ) # :weight_tensor, :supra_weight_matrix, 
         Base.getfield(mg, f)
     elseif f == :edge_list
         return edges(mg)

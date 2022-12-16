@@ -12,8 +12,8 @@ wt = WeightTensor(mg)
 wt[mv1, mv2]
 ```
 """
-struct WeightTensor{U <: Real} <: AbstractTensorRepresentation
+struct WeightTensor{U<:Real} <: AbstractTensorRepresentation
     array::Array{U,4}
     layers_names::Vector{Symbol}
-    idx_N_associations::Bijection{Int64, Node}
+    idx_N_associations::Bijection{Int64,Node}
 end

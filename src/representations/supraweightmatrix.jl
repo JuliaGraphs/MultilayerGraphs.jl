@@ -14,5 +14,5 @@ swm[mv1, mv2]
 """
 struct SupraWeightMatrix{T,U} <: AbstractMatrixRepresentation
     array::Array{U,2}
-    v_V_associations::Bijection{T, <: Union{ <: MissingVertex, <: MultilayerVertex}}
+    v_V_associations::Bijection{T,<:Union{<:MissingVertex,<:MultilayerVertex}}
 end

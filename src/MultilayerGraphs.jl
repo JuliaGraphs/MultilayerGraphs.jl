@@ -20,7 +20,7 @@
 
 module MultilayerGraphs
 
-export 
+export
     # Node.jl 
     AbstractNode,
     Node,
@@ -37,7 +37,7 @@ export
     # missingvertex.jl
     MissingVertex,
     # multilayeredge.jl
-    AbstractMultilayerEdge, 
+    AbstractMultilayerEdge,
     MultilayerEdge,
     ME,
     weight,
@@ -149,15 +149,13 @@ export
     δ_Ω,
     havel_hakimi_graph_generator,
     kleitman_wang_graph_generator
-    # tensorfacoriazations.jl
+# tensorfacoriazations.jl
 
 using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections
 using Distributions: Uniform
 using LinearAlgebra, Statistics, OMEinsum, TensorOperations, Distributions
 using DataStructures, SparseArrays
 using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
-
-
 
 include("node.jl")
 include("vertices/abstractvertex.jl")

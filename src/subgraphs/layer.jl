@@ -12,7 +12,7 @@ An abstract type representing a generic Layer.
 - `U`: the `MultilayerEdge` weight eltype;
 - `G`: the underlying graph type.
 """
-abstract type AbstractLayer{T,U,G}  <: AbstractSubGraph{T,U,G} end
+abstract type AbstractLayer{T,U,G} <: AbstractSubGraph{T,U,G} end
 
 """
     mutable struct Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}} <: AbstractLayer{T,U,G}
@@ -22,14 +22,27 @@ Represents a layer in a `Multilayer(Di)Graph`. Its type hierarchy is: Layer <: A
 mutable struct Layer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractLayer{T,U,G}
     descriptor::LayerDescriptor{T,U,G}
     graph::G
-    v_V_associations::Bijection{T, <: MultilayerVertex}
+    v_V_associations::Bijection{T,<:MultilayerVertex}
     # Inner constructor that performs checks on request
-    function Layer(descriptor::LayerDescriptor{T,U,G}, graph::G, v_V_associations::Bijection{T, <: MultilayerVertex}; check_consistency = true) where {T,U,G}
+    function Layer(
+        descriptor::LayerDescriptor{T,U,G},
+        graph::G,
+        v_V_associations::Bijection{T,<:MultilayerVertex};
+        check_consistency=true,
+    ) where {T,U,G}
         if check_consistency
             # Check that the graph type is the same as the one in the descriptor
-            typeof(descriptor.null_graph) == typeof(graph) || throw(ErrorException("Graph types between the provided `descriptor` and `graph` cannot differ. Found $(typeof(descriptor.null_graph)) and $(typeof(graph))."))
+            typeof(descriptor.null_graph) == typeof(graph) || throw(
+                ErrorException(
+                    "Graph types between the provided `descriptor` and `graph` cannot differ. Found $(typeof(descriptor.null_graph)) and $(typeof(graph)).",
+                ),
+            )
             # Check that the graph vertices are the same as the ones in the association
-            all(vertices(graph) .== sort(domain(v_V_associations))) || throw(ErrorException("The graph has a different set of vertices w.r.t. the domain of `v_V_associations`. Found $(vertices(graph)) and $(sort(domain(v_V_associations)))."))
+            all(vertices(graph) .== sort(domain(v_V_associations))) || throw(
+                ErrorException(
+                    "The graph has a different set of vertices w.r.t. the domain of `v_V_associations`. Found $(vertices(graph)) and $(sort(domain(v_V_associations))).",
+                ),
+            )
         end
         return new{T,U,G}(descriptor, graph, v_V_associations)
     end
@@ -59,8 +72,24 @@ Constructor for `Layer`.
 # KWARGS
 
 """
-function Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
-    descriptor = LayerDescriptor(name, null_graph, weighttype,  default_vertex_metadata = default_vertex_metadata, default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata)
+function Layer(
+    name::Symbol,
+    vertices::Vector{<:MultilayerVertex},
+    edge_list::Vector{<:MultilayerEdge},
+    null_graph::G,
+    weighttype::Type{U};
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_weight::Function=(src, dst) -> one(U),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
+    descriptor = LayerDescriptor(
+        name,
+        null_graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
+    )
 
     return Layer(descriptor, vertices, edge_list)
 end
@@ -76,17 +105,34 @@ Constructor for `Layer`.
 - `vertices::Vector{<: MultilayerVertex}`;
 - `edge_list::Vector{<:MultilayerEdge}`;
 """
-function Layer(descriptor::LayerDescriptor{T}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer}
+function Layer(
+    descriptor::LayerDescriptor{T},
+    vertices::Vector{<:MultilayerVertex},
+    edge_list::Vector{<:MultilayerEdge},
+) where {T<:Integer}
     # First check that the vertices are of the correct type
     if hasproperty(eltype(vertices), :parameters)
         par = eltype(vertices).parameters[1]
-        (isnothing(par) || par == descriptor.name) || throw(ErrorException("`vertices` should be a `Vector{MultilayerVertex{:$(descriptor.name)}}` or a `Vector{MultilayerVertex{nothing}}`. Found $(typeof(vertices))"))
+        (isnothing(par) || par == descriptor.name) || throw(
+            ErrorException(
+                "`vertices` should be a `Vector{MultilayerVertex{:$(descriptor.name)}}` or a `Vector{MultilayerVertex{nothing}}`. Found $(typeof(vertices))",
+            ),
+        )
     else
         # if not, throw an error
-        throw(ErrorException("`vertices` should be a `Vector{MultilayerVertex{:$(descriptor.name)}}` or a `Vector{MultilayerVertex{nothing}}`. Found $(typeof(vertices))"))
+        throw(
+            ErrorException(
+                "`vertices` should be a `Vector{MultilayerVertex{:$(descriptor.name)}}` or a `Vector{MultilayerVertex{nothing}}`. Found $(typeof(vertices))",
+            ),
+        )
     end
     # Create the layer
-    layer = Layer(descriptor, deepcopy(descriptor.null_graph),  Bijection{T, MultilayerVertex{descriptor.name}}(), check_consistency = false)
+    layer = Layer(
+        descriptor,
+        deepcopy(descriptor.null_graph),
+        Bijection{T,MultilayerVertex{descriptor.name}}();
+        check_consistency=false,
+    )
     # Add the vertices one by one
     for mv in vertices
         add_vertex!(layer, mv)
@@ -129,25 +175,30 @@ Return a random `Layer`.
 """
 function Layer(
     name::Symbol,
-    vertices::Vector{ <: MultilayerVertex},
+    vertices::Vector{<:MultilayerVertex},
     ne::Int64,
     null_graph::G,
     weighttype::Type{U};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_weight::Function = (src, dst) -> nothing,
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    allow_self_loops::Bool = false
-
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
-
-    descriptor = LayerDescriptor(name, null_graph, weighttype; default_vertex_metadata = default_vertex_metadata, default_edge_weight = default_edge_weight, default_edge_metadata = default_edge_metadata) 
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_weight::Function=(src, dst) -> nothing,
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    allow_self_loops::Bool=false,
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
+    descriptor = LayerDescriptor(
+        name,
+        null_graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
+    )
     edge_list = MultilayerEdge[]
 
     for i in 1:ne
         # Generate a random vertex
-        rand_vertex_1  = rand(vertices)
+        rand_vertex_1 = rand(vertices)
         # Generate another random vertex
-        rand_vertex_2  = nothing
+        rand_vertex_2 = nothing
         # If we don't allow self loops, keep generating until we get a vertex that isn't the same as the previous one.
         if !allow_self_loops
             while isnothing(rand_vertex_2) || rand_vertex_2.node == rand_vertex_1.node
@@ -157,13 +208,21 @@ function Layer(
             rand_vertex_2 = rand(vertices)
         end
         # Add the edge to the edge list
-        push!(edge_list, MultilayerEdge(MV(rand_vertex_1.node, name), MV(rand_vertex_2.node, name), default_edge_weight(rand_vertex_1,rand_vertex_2), default_edge_metadata(rand_vertex_1,rand_vertex_2 )))
+        push!(
+            edge_list,
+            MultilayerEdge(
+                MV(rand_vertex_1.node, name),
+                MV(rand_vertex_2.node, name),
+                default_edge_weight(rand_vertex_1, rand_vertex_2),
+                default_edge_metadata(rand_vertex_1, rand_vertex_2),
+            ),
+        )
     end
 
-    edge_list = MultilayerEdge[rand() < 0.5 ? me : reverse(me) for me in  edge_list]
-    layer = Layer(descriptor, vertices,  edge_list)
+    edge_list = MultilayerEdge[rand() < 0.5 ? me : reverse(me) for me in edge_list]
+    layer = Layer(descriptor, vertices, edge_list)
 
-    return layer 
+    return layer
 end
 
 """
@@ -173,13 +232,14 @@ Return `true` if `n` is a node of `layer`.
 """
 has_node(layer::Layer, n::Node) = MV(n, layer.name) ∈ image(layer.v_V_associations)
 
-
 """
     has_vertex(layer::Layer, mv::MultilayerVertex)
 
 Return `true` if `v` is a vertex of `layer`.
 """
-Graphs.has_vertex(layer::Layer, mv::MultilayerVertex) = MV(node(mv), name(layer)) ∈ collect(image(layer.v_V_associations))
+function Graphs.has_vertex(layer::Layer, mv::MultilayerVertex)
+    return MV(node(mv), name(layer)) ∈ collect(image(layer.v_V_associations))
+end
 
 # TODO:
 # Implement a MultilayerVertex constructor that leaves the .layer field unspecified, for ease of use of the following function
@@ -189,9 +249,10 @@ Graphs.has_vertex(layer::Layer, mv::MultilayerVertex) = MV(node(mv), name(layer)
 Add vertex to layer `layer`. 
 """
 function Graphs.add_vertex!(layer::Layer, mv::MultilayerVertex)
-
-    (isnothing(mv.layer) || mv.layer == layer.name) || throw(ErrorException("The multilayer vertex $mv cannot belong to layer $(layer.name)."))
-    add_vertex!(layer, mv.node; metadata = mv.metadata )
+    (isnothing(mv.layer) || mv.layer == layer.name) || throw(
+        ErrorException("The multilayer vertex $mv cannot belong to layer $(layer.name)."),
+    )
+    return add_vertex!(layer, mv.node; metadata=mv.metadata)
 end
 
 """
@@ -199,26 +260,34 @@ end
 
 Add vertex associated with node `n` to layer `layer`. This method supports the uniform and transparent interfaces. See the [Vertices](@ref) section of the Tutorial.
 """
-function Graphs.add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, L <: Layer{T}} 
+function Graphs.add_vertex!(layer::L, n::Node, args...; kwargs...) where {T,L<:Layer{T}}
     # Check if the vertex is already in the layer
     has_node(layer, n) && return false
 
     success = false
-    if isempty(args) && length(kwargs) == 1 && issetequal(Set([:metadata]), Set(keys(kwargs)) )
+    if isempty(args) &&
+        length(kwargs) == 1 &&
+        issetequal(Set([:metadata]), Set(keys(kwargs)))
         # If only the metadata is provided, call the standard add_vertex method
-        success = add_vertex_standard!(layer; metadata = values(kwargs).metadata)
+        success = add_vertex_standard!(layer; metadata=values(kwargs).metadata)
     elseif length(args) == length(kwargs) == 0
         # If no arguments or keyword arguments are provided, use the layer's default vertex metadata
-        success = add_vertex_standard!(layer, metadata = layer.default_vertex_metadata(MV(n, layer.name)))
+        success = add_vertex_standard!(
+            layer; metadata=layer.default_vertex_metadata(MV(n, layer.name))
+        )
     else
         # Otherwise, call the generic add_vertex method
-        success =  add_vertex!(layer.graph, args...; kwargs... )
+        success = add_vertex!(layer.graph, args...; kwargs...)
     end
 
     # Check if the vertex is already in the layer
     if success
         # Get the last vertex in the layer
-        last_vertex = length(layer.v_V_associations) == 0 ? zero(T) : maximum(domain(layer.v_V_associations))
+        last_vertex = if length(layer.v_V_associations) == 0
+            zero(T)
+        else
+            maximum(domain(layer.v_V_associations))
+        end
         # Add the vertex to the layer
         layer.v_V_associations[last_vertex + one(T)] = MV(n, layer.name)
         return true
@@ -232,23 +301,29 @@ end
 
 Add vertex with metadata to layer `layer`.
 """
-add_vertex_standard!(layer::Layer; metadata::Union{Tuple, NamedTuple}= NamedTuple()) = _add_vertex!(layer; metadata = metadata)
+function add_vertex_standard!(layer::Layer; metadata::Union{Tuple,NamedTuple}=NamedTuple())
+    return _add_vertex!(layer; metadata=metadata)
+end
 
 """
     _add_vertex!( layer::L; metadata::Union{Tuple, NamedTuple}= NamedTuple()) where {T, U, G, L <: Layer{T,U,G}}
 
 Add vertex with metadata to layer `layer`.
 """
-_add_vertex!( layer::L; metadata::Union{Tuple, NamedTuple}= NamedTuple()) where {T, U, G, L <: Layer{T,U,G}} = __add_vertex!(layer.graph; metadata = metadata)
-     
+function _add_vertex!(
+    layer::L; metadata::Union{Tuple,NamedTuple}=NamedTuple()
+) where {T,U,G,L<:Layer{T,U,G}}
+    return __add_vertex!(layer.graph; metadata=metadata)
+end
+
 """
     rem_vertex!(layer::Layer, mv::MultilayerVertex) 
 
 Remove vertex `mv` from layer `layer`.
 """
-function Graphs.rem_vertex!(layer::Layer, mv::MultilayerVertex) 
+function Graphs.rem_vertex!(layer::Layer, mv::MultilayerVertex)
     (isnothing(mv.layer) || mv.layer == layer.name) || return false
-    rem_vertex!(layer, mv.node)
+    return rem_vertex!(layer, mv.node)
 end
 
 """
@@ -262,7 +337,7 @@ function Graphs.rem_vertex!(layer::Layer, n::Node)
 
     if success
         # Get the key of the node to be removed
-        v = layer.v_V_associations(MV(n,layer.name))
+        v = layer.v_V_associations(MV(n, layer.name))
         # Get the last node and its key
         last_v = maximum(domain(layer.v_V_associations))
 
@@ -290,36 +365,72 @@ end
 
 Remove vertex `v` from layer `layer`.
 """
-Graphs.rem_vertex!(layer::L, v::T) where {T, L <: Layer{T}} = rem_vertex!(layer.graph, v)
+Graphs.rem_vertex!(layer::L, v::T) where {T,L<:Layer{T}} = rem_vertex!(layer.graph, v)
 
 """
     add_edge!(layer::L, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...) where {L <: Layer} 
 
 Add edge from vertex `src` to vertex `dst` to layer `layer`. Returns true if succeeds. This method supports the uniform and transparent interfaces. See the [Edges](@ref edges_tut_subg) section of the Tutorial.
 """
-function Graphs.add_edge!(layer::Layer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...)
+function Graphs.add_edge!(
+    layer::Layer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...
+)
     # Check if the vertices exist
-    !has_vertex(layer, src)  && throw( ErrorException( "Vertex $(src) does not belong to the layer."))
-    !has_vertex(layer, dst) && throw( ErrorException( "Vertex $(dst) does not belong to the layer."))
+    !has_vertex(layer, src) &&
+        throw(ErrorException("Vertex $(src) does not belong to the layer."))
+    !has_vertex(layer, dst) &&
+        throw(ErrorException("Vertex $(dst) does not belong to the layer."))
 
     # Check if the edge already exists
     if !has_edge(layer, src, dst)
         # If the edge doesn't exist, add it
         # If the user does not specify any arguments, we use the default values
-        if isempty(args) && length(kwargs) == 2 && issetequal(Set([:weight, :metadata]), Set(keys(kwargs)) )
-            success = add_edge_standard!(layer, src, dst, weight = values(kwargs).weight, metadata = values(kwargs).metadata)
-        # If the user only specifies the weight, we use the default metadata
-        elseif isempty(args) && length(kwargs) == 1 && issetequal(Set([:weight]), Set(keys(kwargs)) )
-            success = add_edge_standard!(layer, src, dst, weight = values(kwargs).weight, metadata = layer.default_edge_metadata(src, dst))
-        # If the user only specifies the metadata, we use the default weight
-        elseif isempty(args) && length(kwargs) == 1 && issetequal(Set([:metadata]), Set(keys(kwargs)) )
-            success = add_edge_standard!(layer, src, dst, weight = layer.default_edge_weight(src, dst), metadata =  values(kwargs).metadata)
-        # If the user does not specify any arguments, we use the default values
+        if isempty(args) &&
+            length(kwargs) == 2 &&
+            issetequal(Set([:weight, :metadata]), Set(keys(kwargs)))
+            success = add_edge_standard!(
+                layer,
+                src,
+                dst;
+                weight=values(kwargs).weight,
+                metadata=values(kwargs).metadata,
+            )
+            # If the user only specifies the weight, we use the default metadata
+        elseif isempty(args) &&
+            length(kwargs) == 1 &&
+            issetequal(Set([:weight]), Set(keys(kwargs)))
+            success = add_edge_standard!(
+                layer,
+                src,
+                dst;
+                weight=values(kwargs).weight,
+                metadata=layer.default_edge_metadata(src, dst),
+            )
+            # If the user only specifies the metadata, we use the default weight
+        elseif isempty(args) &&
+            length(kwargs) == 1 &&
+            issetequal(Set([:metadata]), Set(keys(kwargs)))
+            success = add_edge_standard!(
+                layer,
+                src,
+                dst;
+                weight=layer.default_edge_weight(src, dst),
+                metadata=values(kwargs).metadata,
+            )
+            # If the user does not specify any arguments, we use the default values
         elseif length(args) == length(kwargs) == 0
-            success = add_edge_standard!(layer, src, dst, weight = layer.default_edge_weight(src, dst), metadata = layer.default_edge_metadata(src, dst))
+            success = add_edge_standard!(
+                layer,
+                src,
+                dst;
+                weight=layer.default_edge_weight(src, dst),
+                metadata=layer.default_edge_metadata(src, dst),
+            )
         else
             # If the user specifies arguments, we use those instead of the defaults
-            success = add_edge!(layer.graph, get_v(layer,src), get_v(layer,dst), args...; kwargs... )
+            success = add_edge!(
+                layer.graph, get_v(layer, src), get_v(layer, dst), args...; kwargs...
+            )
         end
         return success
     else
@@ -349,8 +460,14 @@ Overload `getproperty` for `Layer`s.
 """
 function Base.getproperty(layer::L, f::Symbol) where {L<:Layer}
     if f ∈ (:descriptor, :graph, :v_V_associations)
-        Base.getfield(layer, f) 
-    elseif f ∈ (:name, :null_graph, :default_vertex_metadata, :default_edge_weight, :default_edge_metadata)
+        Base.getfield(layer, f)
+    elseif f ∈ (
+        :name,
+        :null_graph,
+        :default_vertex_metadata,
+        :default_edge_weight,
+        :default_edge_metadata,
+    )
         Base.getfield(layer.descriptor, f)
     end
 end
