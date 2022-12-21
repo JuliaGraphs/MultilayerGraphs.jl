@@ -1,8 +1,8 @@
 # MultilayerGraphs.jl 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/LICENSE)
-[![Stable](https://img.shields.io/badge/Docs-Stable-blue.svg)](https://juliagraphs.org/MultilayerGraphs.jl/stable)
-[![Dev](https://img.shields.io/badge/Docs-Dev-lightblue.svg)](https://juliagraphs.org/MultilayerGraphs.jl/dev)
+[![Docs: Stable](https://img.shields.io/badge/Docs-Stable-blue.svg)](https://juliagraphs.org/MultilayerGraphs.jl/stable)
+[![Docs: Dev](https://img.shields.io/badge/Docs-Dev-lightblue.svg)](https://juliagraphs.org/MultilayerGraphs.jl/dev)
 [![CI](https://github.com/JuliaGraphs/MultilayerGraphs.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/actions/workflows/CI.yml)
 [![Compat Helper](https://github.com/JuliaGraphs/MultilayerGraphs.jl/actions/workflows/CompatHelper.yml/badge.svg)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/actions/workflows/CompatHelper.yml)
 [![Format Check](https://github.com/JuliaGraphs/MultilayerGraphs.jl/actions/workflows/FormatCheck.yml/badge.svg)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/actions/workflows/FormatCheck.yml)
