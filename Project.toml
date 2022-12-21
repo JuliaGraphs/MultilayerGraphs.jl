@@ -1,7 +1,7 @@
 name = "MultilayerGraphs"
 uuid = "af984530-d72f-4904-8b81-b992bbbeaf3f"
 authors = ["Claudio Moroni <43729990+ClaudMor@users.noreply.github.com>", "Pietro Monticone <38562595+pitmonticone@users.noreply.github.com>"]
-version = "1.0.1"
+version = "1.0.2"
 
 [deps]
 Bijections = "e2ed5e7c-b2de-5872-ae92-c73ca462fb04"
