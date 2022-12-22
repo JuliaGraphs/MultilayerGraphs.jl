@@ -1,19 +1,5 @@
 # CUSTOM TYPE/CLASS
 # This file defines the custom type `Interlayer` and straightforwardly makes it compatible with the Graphs.jl ecosystem. The reason to have this custom type is to have a way not to break other people's code when modification to interlayers are required.
-
-"""
-    AbstractInterlayer{T,U,G}
-
-An abstract type representing a generic Interlayer.
-
-# PARAMETRIC TYPES
-
-- `T`: the node type;
-- `U`: the adjacency matrix/tensor eltype;
-- `G`: the underlying graph type.
-"""
-abstract type AbstractInterlayer{T,U,G} <: AbstractSubGraph{T,U,G} end
-
 """
     Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractInterlayer{T,U,G}
 

@@ -1,9 +1,3 @@
-"""
-    AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} 
-
-Abstract type representing an undirected multilayer graph.
-"""
-abstract type AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 
 # Nodes
 # Vertices

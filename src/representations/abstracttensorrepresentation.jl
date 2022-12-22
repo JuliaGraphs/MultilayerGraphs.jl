@@ -1,15 +1,3 @@
-"""
-    AbstractTensorRepresentation{U}
-
-An abstract type encoding a generic tensorial representation of the links and metadata of a multilayer graph. 
-
-Concrete subtypes must have an `array` field (a 4-dimensional tensor of eltype U, indexes as [source_node_idx, destination_node_idx, source_layer_idx, destination_layer_idx ]).
-
-# PARAMETRIC TYPES
-
-- `U`: the weight type of the multilayer graph.
-"""
-abstract type AbstractTensorRepresentation end
 
 """
     getindex(atr::AbstractTensorRepresentation, src_mv::MultilayerVertex, dst_mv::MultilayerVertex)

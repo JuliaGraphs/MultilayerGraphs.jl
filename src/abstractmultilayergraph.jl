@@ -23,12 +23,7 @@
 # vertices
 # nodes
 
-"""
-    AbstractMultilayerGraph{T <: Integer, U <: Real} <: AbstractGraph{T}
 
-An abstract type for multilayer graphs. It is a subtype of AbstractGraph and its concrete subtypes may extend Graphs.jl.
-"""
-abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 
 # Nodes
 """
@@ -289,6 +284,19 @@ function SimpleWeightedGraphs.get_weight(
     mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex
 )
     return get_halfegde(mg, src, dst).weight
+end
+
+"""
+    empty(mg::AbstractMultilayerGraph)
+
+Returns a copy of `mg` with no edges.
+"""
+function Base.empty(mg::AbstractMultilayerGraph)
+    empty_mg = deepcopy(mg)
+    for edge in edges(mg)
+        rem_edge!(empty_mg, edge)
+    end
+    return empty_mg
 end
 
 # Layers and Interlayers

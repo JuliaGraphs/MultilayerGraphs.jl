@@ -1,18 +1,4 @@
 """
-    AbstractMatrixRepresentation{T,U}
-
-An abstract type encoding a generic matrix representation of the links and metadata of a multilayer graph. 
-
-Concrete subtypes must have an `array` field (a matrix of eltype U) and a `v_V_associations` (a `Bijection{T, Union{MissingVertex, MultilayerVertex}}`).
-
-# PARAMETRIC TYPES
-
-- `T`: the type of the internal representation of vertices;
-- `U`: the weight type of the multilayer graph.
-"""
-abstract type AbstractMatrixRepresentation end
-
-"""
     getindex(amr::AbstractMatrixRepresentation, src_mv::MultilayerVertex, dst_mv::MultilayerVertex)
 """
 function Base.getindex(

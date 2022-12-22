@@ -107,6 +107,7 @@ export
     add_node!,
     rem_node!,
     set_metadata!,
+    empty,
     nl,
     nIn,
     has_layer,

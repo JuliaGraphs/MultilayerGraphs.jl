@@ -1,9 +1,4 @@
-"""
-    abstract type AbstractSubGraph{T <: Integer,U <: Real,G <: AbstractGraph{T}}
 
-An abstract type representing a subgraph (i.e. a layer or an interlayer).
-"""
-abstract type AbstractSubGraph{T<:Integer,U<:Real,G<:AbstractGraph{T}} end
 
 # Nodes
 """

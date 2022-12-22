@@ -159,6 +159,10 @@ mt = metadata_tensor(multilayerdigraph)
     get_metadata(multilayerdigraph, rand_mv_1_meta, rand_mv_2_meta).meta ==
     "bye"
 
+## Test add_edge!, rem_edge! and empty
+empty_mg = empty(multilayerdigraph)
+@test ne(empty_mg) == 0
+
 # Test Graphs.jl extra overrides
 @test all(
     indegree(multilayerdigraph) .+ outdegree(multilayerdigraph) .==

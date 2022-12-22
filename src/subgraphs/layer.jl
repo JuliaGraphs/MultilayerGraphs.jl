@@ -1,19 +1,5 @@
 # CUSTOM TYPE/CLASS
 # This file defines the custom type `Layer` and straightforwardly makes it compatible with the Graphs.jl ecosystem. The reason to have this custom type is to have a way not to break other people's code when modification to layers are required.
-
-"""
-    AbstractLayer{T,U,G}
-
-An abstract type representing a generic Layer.
-
-# FIELDS
-
-- `T`: the node type;
-- `U`: the `MultilayerEdge` weight eltype;
-- `G`: the underlying graph type.
-"""
-abstract type AbstractLayer{T,U,G} <: AbstractSubGraph{T,U,G} end
-
 """
     mutable struct Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}} <: AbstractLayer{T,U,G}
 
@@ -92,6 +78,44 @@ function Layer(
     )
 
     return Layer(descriptor, vertices, edge_list)
+end
+
+
+"""
+    Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
+
+Constructor for `Layer`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+- `null_graph::G`: the Layer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown;
+- `weighttype::Type{U}`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+
+# KWARGS
+
+"""
+function Layer(
+    name::Symbol,
+    mg::AbstractMultilayerGraph{T,U};
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_weight::Function=(src, dst) -> one(U),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+) where {T<:Integer,U<:Real}
+
+
+    descriptor = LayerDescriptor(
+        name,
+        empty(mg),
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
+    )
+
+    return Layer(descriptor, mv_vertices(mg), collect(edges(mg)))
 end
 
 """
