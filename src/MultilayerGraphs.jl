@@ -74,6 +74,7 @@ export
     # layer.jl
     AbstractLayer,
     Layer,
+    simple_layer,
     has_node,
     add_vertex!,
     rem_vertex!,

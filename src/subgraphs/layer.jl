@@ -94,6 +94,51 @@ function Layer(
     return Layer(descriptor, vertices, edge_list)
 end
 
+
+"""
+    simple_layer(
+        name::Symbol,
+        vertices::Vector{<:MultilayerVertex},
+        edge_list::Vector{<:MultilayerEdge},
+        weighttype::Type{U};
+        default_vertex_metadata::Function=mv -> NamedTuple(),
+        default_edge_weight::Function=(src, dst) -> one(U),
+        default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    ) where {T<:Integer,U<:Real}
+
+Constructor for `Layer`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+- `null_graph::G`: the Layer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown;
+- `weighttype::Type{U}`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+
+# KWARGS
+
+"""
+function simple_layer(
+    name::Symbol,
+    vertices::Vector{<:MultilayerVertex},
+    edge_list::Vector{<:MultilayerEdge};
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+    descriptor = LayerDescriptor(
+        name,
+        SimpleGraph{vertextype}(),
+        weighttype;
+#=         default_vertex_metadata=mv -> NamedTuple(),
+        default_edge_weight=(src, dst) -> one(U),
+        default_edge_metadata=(src, dst) -> NamedTuple(), =#
+    )
+
+    return Layer(descriptor, vertices, edge_list)
+end
+
 """
     Layer(descriptor::LayerDescriptor{T}, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{<:MultilayerEdge}) where {T <: Integer}
 
@@ -175,7 +220,7 @@ Return a random `Layer`.
 """
 function Layer(
     name::Symbol,
-    vertices::Vector{<:MultilayerVertex},
+    vertices::Vector{MultilayerVertex{ <: Union{Val{name}, Val{nothing}}}},
     ne::Int64,
     null_graph::G,
     weighttype::Type{U};
