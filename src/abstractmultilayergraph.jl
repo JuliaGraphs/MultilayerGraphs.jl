@@ -299,6 +299,20 @@ function Base.empty(mg::AbstractMultilayerGraph)
     return empty_mg
 end
 
+
+"""
+    null(mg::AbstractMultilayerGraph)
+
+Returns a copy of `mg` with no edges nor vertices.
+"""
+function null(mg::AbstractMultilayerGraph)
+    null_mg = empty(mg)
+    for vertex in mv_vertices(mg)
+        rem_vertex!(null_mg, vertex)
+    end
+    return null_mg
+end
+
 # Layers and Interlayers
 
 """

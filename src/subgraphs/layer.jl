@@ -108,8 +108,8 @@ function Layer(
 
     descriptor = LayerDescriptor(
         name,
-        empty(mg),
-        weighttype;
+        null(mg),
+        U;
         default_vertex_metadata=default_vertex_metadata,
         default_edge_weight=default_edge_weight,
         default_edge_metadata=default_edge_metadata,

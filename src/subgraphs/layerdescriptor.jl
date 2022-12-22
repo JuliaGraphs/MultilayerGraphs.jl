@@ -36,7 +36,7 @@ struct LayerDescriptor{T,U,G} <: AbstractLayerDescriptor{T,U,G}
     ) where {T,U,G<:AbstractGraph{T}}
         nv(null_graph) == ne(null_graph) == 0 || throw(
             ErrorException(
-                "The provided graph is not empty. It contains $(nv(null_graph)) vertices and $(ne(null_graph)). Expected 0 and 0.",
+                "The provided graph is not null. It contains $(nv(null_graph)) vertices and $(ne(null_graph)) edges. Expected 0 and 0.",
             ),
         )
         return new{T,weighttype,G}(

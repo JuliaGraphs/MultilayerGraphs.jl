@@ -108,6 +108,7 @@ export
     rem_node!,
     set_metadata!,
     empty,
+    null,
     nl,
     nIn,
     has_layer,
@@ -158,6 +159,7 @@ using LinearAlgebra, Statistics, OMEinsum, TensorOperations, Distributions
 using DataStructures, SparseArrays
 using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
 
+include("abstract_types.jl")
 include("node.jl")
 include("vertices/abstractvertex.jl")
 include("vertices/multilayervertex.jl")
