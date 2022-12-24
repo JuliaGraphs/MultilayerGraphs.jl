@@ -162,12 +162,6 @@ function MultilayerDiGraph(
         ),
     )
 
-    minimum(support(indegree_distribution)) >= 0 || throw(
-        ErrorException(
-            "Both the `indegree_distribution` and the `outdegree_distribution` must have positive support. Found $(support(indegree_distribution)) and $(support(outdegree_distribution)).",
-        ),
-    )
-
     empty_multilayerdigraph = MultilayerDiGraph(
         empty_layers,
         empty_interlayers;
@@ -177,23 +171,7 @@ function MultilayerDiGraph(
 
     n = nv(empty_multilayerdigraph)
 
-    indegree_sequence = Vector{Int64}(undef, n)
-    outdegree_sequence = Vector{Int64}(undef, n)
-    acceptable = false
-
-    @info "Trying to sample a digraphical sequence from the two provided distributions..."
-    while !acceptable
-        indegree_sequence .=
-            round.(Ref(Int), rand(indegree_distribution, nv(empty_multilayerdigraph)))
-        outdegree_sequence .=
-            round.(Ref(Int), rand(outdegree_distribution, nv(empty_multilayerdigraph)))
-
-        acceptable = all(0 .<= vcat(indegree_sequence, outdegree_sequence) .< n)
-
-        if acceptable
-            acceptable = isdigraphical(indegree_sequence, outdegree_sequence)
-        end
-    end
+    indegree_sequence,outdegree_sequence = sample_digraphical_degree_sequences(indegree_distribution,outdegree_distribution,n)
 
     return MultilayerDiGraph(
         empty_multilayerdigraph,

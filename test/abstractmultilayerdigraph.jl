@@ -125,7 +125,6 @@ end
 ## Test set_weight!
 _, rand_mv_1_weight, rand_mv_2_weight = _get_srcmv_dstmv_layer(layer_swdg)
 _weight = 3.14
-@debug "" rand_mv_1_weight rand_mv_2_weight mv_vertices(multilayerdigraph)
 @test !has_edge(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight)
 @test add_edge!(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight, weight=_weight)
 @test has_edge(multilayerdigraph, rand_mv_1_weight, rand_mv_2_weight)
@@ -200,7 +199,6 @@ modularity(
 wgt = weight_tensor(multilayerdigraph)
 sam = supra_weight_matrix(multilayerdigraph)
 for edge in collect(edges(multilayerdigraph.layer_swdg))
-    @debug "" src(edge) dst(edge) edge
     @test wgt[src(edge), dst(edge)] == MultilayerGraphs.weight(edge)
     @test sam[src(edge), dst(edge)] == MultilayerGraphs.weight(edge)
 end

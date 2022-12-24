@@ -176,11 +176,6 @@ function MultilayerGraph(
         ),
     )
 
-    minimum(support(degree_distribution)) >= 0 || throw(
-        ErrorException(
-            "The `degree_distribution` must have positive support. Found $(support(degree_distribution)).",
-        ),
-    )
 
     empty_multilayergraph = MultilayerGraph(
         empty_layers,
@@ -191,19 +186,8 @@ function MultilayerGraph(
 
     n = nv(empty_multilayergraph)
 
-    degree_sequence = nothing
-    acceptable = false
+    degree_sequence = sample_graphical_degree_sequence(degree_distribution,n)
 
-    while !acceptable
-        degree_sequence =
-            round.(Ref(Int), rand(degree_distribution, nv(empty_multilayergraph)))
-
-        acceptable = all(0 .<= degree_sequence .< n)
-
-        if acceptable
-            acceptable = isgraphical(degree_sequence)
-        end
-    end
     return MultilayerGraph(
         empty_multilayergraph, degree_sequence; allow_self_loops=false, perform_checks=false
     )

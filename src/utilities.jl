@@ -720,3 +720,73 @@ function kleitman_wang_graph_generator(
     end
     return graph
 end
+
+
+"""
+    sample_graphical_degree_sequence(degree_distribution::UnivariateDistribution, n::Integer)
+
+Sample a graphical degree sequence for a graph with `n` vertices from `degree_distribution`
+"""
+function sample_graphical_degree_sequence(degree_distribution::UnivariateDistribution, n::Integer)
+
+    minimum(support(degree_distribution)) >= 0 || throw(
+        ErrorException(
+            "The `degree_distribution` must have positive support. Found $(support(degree_distribution)).",
+        ),
+    )
+
+
+    @info "Trying to sample a graphical sequence from the provided distribution $degree_distribution..."
+
+    degree_sequence = nothing
+    acceptable = false
+
+    while !acceptable
+        degree_sequence = round.(Ref(Int), rand(degree_distribution, n))
+
+        acceptable = all(0 .<= degree_sequence .< n)
+
+        if acceptable
+            acceptable = isgraphical(degree_sequence)
+        end
+    end
+
+    return degree_sequence
+
+end
+
+
+"""
+    sample_digraphical_degree_sequences(indegree_distribution::UnivariateDistribution, outdegree_distribution::UnivariateDistribution, n::Integer)
+
+Sample a digraphical couple `(indegree_sequence, outdegree_sequence)` for a graph with `n` vertices from respectively `indegree_distribution` and `outdegree_distribution`.
+"""
+function sample_digraphical_degree_sequences(indegree_distribution::UnivariateDistribution, outdegree_distribution::UnivariateDistribution, n::Integer)
+
+    minimum(support(indegree_distribution)) >= 0 && minimum(support(outdegree_distribution)) >= 0  || throw(
+        ErrorException(
+            "Both the `indegree_distribution` and the `outdegree_distribution` must have positive support. Found $(support(indegree_distribution)) and $(support(outdegree_distribution)).",
+        ),
+    )
+
+    indegree_sequence = Vector{Int64}(undef, n)
+    outdegree_sequence = Vector{Int64}(undef, n)
+    acceptable = false
+
+    @info "Trying to sample a digraphical sequence from the two provided distributions $indegree_distribution and $outdegree_distribution..."
+    while !acceptable
+        indegree_sequence .=
+            round.(Ref(Int), rand(indegree_distribution, n))
+        outdegree_sequence .=
+            round.(Ref(Int), rand(outdegree_distribution, n))
+
+        acceptable = all(0 .<= vcat(indegree_sequence, outdegree_sequence) .< n)
+
+        if acceptable
+            acceptable = isdigraphical(indegree_sequence, outdegree_sequence)
+        end
+    end
+
+    return (indegree_sequence,outdegree_sequence)
+
+end
