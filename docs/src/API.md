@@ -112,6 +112,7 @@ mv_outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 mv_neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 has_edge(subgraph::AbstractSubGraph,me::MultilayerEdge)
 has_edge( subgraph::AbstractSubGraph, s::MultilayerVertex, d::MultilayerVertex)
+has_edge( layer::Layer, s::MultilayerVertex{nothing}, d::MultilayerVertex{nothing})
 ne(subgraph::AbstractSubGraph)
 edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} 
 add_edge!( subgraph::S, me::E) where {T,U<:Real,S<:AbstractSubGraph{T,U},E<:MultilayerEdge{ <: Union{U, Nothing}}}

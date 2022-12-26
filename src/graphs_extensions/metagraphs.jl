@@ -63,7 +63,7 @@ function _add_edge!(
 ) where {T<:Integer,W<:Union{<:Real,Nothing}}
     (isnothing(weight) || weight == 1.0) ||
         @warn "Trying to add a weighted edge to an unweighted graph of type $(typeof(g)). Weight $weight will be ignored."
-    return add_edge!(g, src, dst, Dict(key => value for (key, value) in pairs(metadata)))
+    return add_edge!(g, src, dst, Dict(Symbol(pair.first) => pair.second for pair in pairs(metadata) )) #Symbol(string(key)) => value for (key, value) in pairs(metadata)
 end
 
 function _get_edge_weight(

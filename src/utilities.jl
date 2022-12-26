@@ -790,3 +790,25 @@ function sample_digraphical_degree_sequences(indegree_distribution::UnivariateDi
     return (indegree_sequence,outdegree_sequence)
 
 end
+
+
+"""
+    get_valtypes(init_function::Function)
+
+Return the `vertexval_types` (or `edgeval_types`), deduced from from the `init_function` (which must be the `vertexval_init` or the `edgeval_init` function) for SimpleValueGraphs.jl's structs.
+"""
+function get_valtypes(init_function::Function)
+
+    returned_type = Base.return_types(init_function)[1]
+
+    if returned_type <: Tuple
+        tuple(returned_type.parameters...)
+    elseif returned_type <: NamedTuple
+        returned_namedtuple_type = returned_type.parameters
+
+        type_pars = tuple(returned_namedtuple_type[end].parameters...)
+
+        NamedTuple{returned_namedtuple_type[1]}(type_pars)
+    end
+
+end

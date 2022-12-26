@@ -62,8 +62,8 @@ Constructor for `Layer`.
 """
 function Layer(
     descriptor::LayerDescriptor{T},
-    vertices::Vector{<:MultilayerVertex},
-    edge_list::Vector{<:MultilayerEdge},
+    vertices::Union{Vector{<:MultilayerVertex}, Vector{<:Node}},
+    edge_list::Union{Vector{<:MultilayerEdge}, Vector{Tuple{MultilayerVertex, MultilayerVertex}}}
 ) where {T<:Integer}
     # First check that the vertices are of the correct type
     if hasproperty(eltype(vertices), :parameters)
@@ -89,12 +89,26 @@ function Layer(
         check_consistency=false,
     )
     # Add the vertices one by one
-    for mv in vertices
-        add_vertex!(layer, mv)
+    @debug "" vertices isa Vector{MultilayerVertex{nothing}} vertices
+    if vertices isa Vector{MultilayerVertex}
+        for mv in vertices
+            add_vertex!(layer, mv)
+        end
+    else
+        for node in vertices
+            add_vertex!(layer, MV(node, descriptor.default_vertex_metadata(MV(node))))
+        end
     end
     # Add the edges
-    for edge in edge_list
-        add_edge!(layer, edge)
+    if edge_list isa Vector{MultilayerEdge}
+        for edge in edge_list
+            add_edge!(layer, edge)
+        end
+    else
+        for tup in edge_list
+            src_mv,dst_mv = tup
+            add_edge!(layer, ME(src_mv, dst_mv, weight = descriptor.default_edge_weight(src_mv, dst_mv), metadata = descriptor.default_edge_metadata(src_mv, dst_mv) ))
+        end
     end
     return layer
 end
@@ -281,7 +295,7 @@ end
     Layer(
         name::Symbol,
         vertices::Vector{ <: MultilayerVertex},
-        degree_sequence::Vector{Integer},
+        degree_sequence::Vector{<:Integer},
         null_graph::G,
         weighttype::Type{U};
         default_vertex_metadata::Function = mv -> NamedTuple(),
@@ -295,7 +309,7 @@ Returns an undirected `Layer` with given `degree_sequence` realized using the Ha
 
 - `name::Symbol`: The name of the Layer
 - `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer
-- `degree_sequence::Vector{Integer}`: The degree sequence of the vertices, in the order they are given in `vertices`.
+- `degree_sequence::Vector{<:Integer}`: The degree sequence of the vertices, in the order they are given in `vertices`.
 - `null_graph::G`: the Layer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
 - `weighttype::Type{U}`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted);
 
@@ -307,7 +321,7 @@ Returns an undirected `Layer` with given `degree_sequence` realized using the Ha
 @traitfn function Layer(
     name::Symbol,
     vertices::Vector{MultilayerVertex{nothing}},#Vector{MultilayerVertex{ <: Union{Val{name}, Val{nothing}}}},
-    degree_sequence::Vector{Integer},
+    degree_sequence::Vector{<:Integer},
     null_graph::G,
     weighttype::Type{U};
     default_vertex_metadata::Function=mv -> NamedTuple(),
@@ -380,7 +394,7 @@ Returns a directed `Layer` whose indegree and oudegree sequences are sampled fro
     default_edge_metadata::Function   = (src, dst) -> NamedTuple(),
 ) where {T<:Integer,U<:Real,G<:AbstractGraph{T}; IsDirected{G}}
 
-    indegree_sequence,outdegree_sequence = sample_digraphical_degree_sequences(indegree_distribution, outdegree_distribution, n)
+    indegree_sequence,outdegree_sequence = sample_digraphical_degree_sequences(indegree_distribution, outdegree_distribution, length(vertices))
 
     return Layer(
         name,
@@ -401,8 +415,8 @@ end
     Layer(
         name::Symbol,
         vertices::Vector{ <: MultilayerVertex},
-        indegree_sequence::Vector{Integer},
-        outdegree_sequence::Vector{Integer},
+        indegree_sequence::Vector{<:Integer},
+        outdegree_sequence::Vector{<:Integer},
         null_graph::G,
         weighttype::Type{U};
         default_vertex_metadata::Function = mv -> NamedTuple(),
@@ -416,8 +430,8 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
 
 - `name::Symbol`: The name of the Layer
 - `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer
-- `indegree_sequence::Vector{Integer}`: The indegree sequence of the vertices, in the order they are given in `vertices`.
-- `outdegree_sequence::Vector{Integer}`: The outdegree sequence of the vertices, in the order they are given in `vertices`.
+- `indegree_sequence::Vector{<:Integer}`: The indegree sequence of the vertices, in the order they are given in `vertices`.
+- `outdegree_sequence::Vector{<:Integer}`: The outdegree sequence of the vertices, in the order they are given in `vertices`.
 - `null_graph::G`: the Layer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
 - `weighttype::Type{U}`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted);
 
@@ -429,8 +443,8 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
 @traitfn function Layer(
     name::Symbol,
     vertices::Vector{MultilayerVertex{nothing}},#Vector{MultilayerVertex{ <: Union{Val{name}, Val{nothing}}}},
-    indegree_sequence::Vector{Integer},
-    outdegree_sequence::Vector{Integer},
+    indegree_sequence::Vector{<:Integer},
+    outdegree_sequence::Vector{<:Integer},
     null_graph::G,
     weighttype::Type{U};
     default_vertex_metadata::Function = mv -> NamedTuple(),
@@ -465,6 +479,7 @@ end
 
 
 # Quick constructors
+#####
 """
     simple_layer(
         name::Symbol,
@@ -474,7 +489,7 @@ end
         weighttype::Type{U} = Float64
     ) where {T<:Integer,U<:Real}
 
-Constructor for a `Layer` whosw underlying graph is a `SimpleGraph` from `Graphs.jl`.
+Constructor for a `Layer` whose underlying graph is a `SimpleGraph` from `Graphs.jl`.
 
 # ARGUMENTS
 
@@ -507,18 +522,18 @@ end
     simple_layer(
         name::Symbol,
         vertices::Vector{MultilayerVertex{nothing}},
-        edge_list::Vector{<:MultilayerEdge};
+        degree_distribution::UnivariateDistribution;
         vertextype::Type{T} = Int64,
         weighttype::Type{U} = Float64
     ) where {T<:Integer,U<:Real}
 
-Constructor for a `Layer` whosw underlying graph is a `SimpleGraph` from `Graphs.jl`.
+Constructor for a `Layer` whose underlying graph is a `SimpleGraph` from `Graphs.jl` with a degree sequence sampled from `degree_distribution`. Realization is performed via the Havel-Hakimi algorithm.
 
 # ARGUMENTS
 
 - `name::Symbol`: The name of the Layer;
 - `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
-- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+- `degree_distribution::UnivariateDistribution`: The degree distribution from which the degree sequence is sampled ;
 - `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
 - `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
 """
@@ -540,6 +555,894 @@ function simple_layer(
                     weighttype
     )
     
+end
+
+## SimpleDiGraph
+"""
+    simple_dilayer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `SimpleDiGraph` from `Graphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function simple_dilayer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{<:MultilayerEdge};
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                SimpleDiGraph{vertextype}(),
+                weighttype
+    )
+
+end
+
+
+"""
+    simple_dilayer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        indegree_distribution::UnivariateDistribution,
+        outdegree_distribution::UnivariateDistribution;
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `SimplDiGraph{vertextype}` from `Graphs.jl` with a indegree and outdegree sequences respectively sampled from `indegree_distribution` and `outdegree_distribution`. Realization is performed via the Kleitman-Wang algorithm.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `indegree_distribution::UnivariateDistribution`: The degree distribution from which the indegree sequence is sampled ;
+- `outdegree_distribution::UnivariateDistribution`: The degree distribution from which the outdegree sequence is sampled ;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function simple_dilayer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    indegree_distribution::UnivariateDistribution,
+    outdegree_distribution::UnivariateDistribution;
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+
+    return  Layer( 
+                    name, 
+                    vertices,
+                    indegree_distribution,
+                    outdegree_distribution,
+                    SimpleDiGraph{vertextype}(),
+                    weighttype
+    )
+    
+end
+
+## SimpleWeightedGraph
+"""
+    simple_weighted_layer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        default_edge_weight::Function = (src,dst) -> nothing,
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `SimpleWeightedGraph` from `SimpleWeightedGraphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function simple_weighted_layer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{<:MultilayerEdge};
+    default_edge_weight::Function = (src,dst) -> nothing,
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                SimpleWeightedGraph{vertextype, weighttype}(),
+                weighttype;
+                default_edge_weight = default_edge_weight
+    )
+
+end
+
+
+#= """
+    simple_weighted_layer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        default_edge_weight::Function = (src,dst) -> nothing,
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `SimpleWeightedGraph` from `SimpleWeightedGraphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function simple_weighted_layer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{Tuple{<:MultilayerVertex, <:MultilayerVertex }};
+    default_edge_weight::Function = (src,dst) -> nothing,
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+    weighted_edge_list = 
+
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                SimpleWeightedGraph{vertextype, weighttype}(),
+                weighttype;
+                default_edge_weight = default_edge_weight
+    )
+
+end =#
+
+
+"""
+    simple_weighted_layer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        degree_distribution::UnivariateDistribution;
+        default_edge_weight::Function = (src,dst) -> nothing,
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `SimpleWeightedGraph` from `SimpleWeightedGraphs.jl`. with a degree sequence sampled from `degree_distribution`. Realization is performed via the Havel-Hakimi algorithm.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `degree_distribution::UnivariateDistribution`: The degree distribution from which the degree sequence is sampled ;
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function simple_weighted_layer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    degree_distribution::UnivariateDistribution;
+    default_edge_weight::Function = (src,dst) -> nothing,
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+
+    return  Layer( 
+                    name, 
+                    vertices,
+                    degree_distribution,
+                    SimpleWeightedGraph{vertextype,weighttype}(),
+                    weighttype;
+                    default_edge_weight = default_edge_weight
+    )
+    
+end
+
+## SimpleWeightedDiGraph
+"""
+    simple_weighted_dilayer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        default_edge_weight::Function = (src,dst) -> nothing,
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `SimpleWeightedDiGraph` from `SimpleWeightedGraphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function simple_weighted_layer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{<:MultilayerEdge};
+    default_edge_weight::Function = (src,dst) -> nothing,
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                SimpleWeightedDiGraph{vertextype, weighttype}(),
+                weighttype;
+                default_edge_weight = default_edge_weight
+    )
+
+end
+
+
+"""
+    simple_weighted_dilayer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        indegree_distribution::UnivariateDistribution,
+        outdegree_distribution::UnivariateDistribution;
+        default_edge_weight::Function = (src,dst) -> nothing,
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `SimpleWeightedDiGraph` from `SimpleWeightedGraphs.jl`, with a indegree and outdegree sequences respectively sampled from `indegree_distribution` and `outdegree_distribution`. Realization is performed via the Kleitman-Wang algorithm.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `indegree_distribution::UnivariateDistribution`: The degree distribution from which the indegree sequence is sampled ;
+- `outdegree_distribution::UnivariateDistribution`: The degree distribution from which the outdegree sequence is sampled ;
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function simple_weighted_dilayer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    indegree_distribution::UnivariateDistribution,
+    outdegree_distribution::UnivariateDistribution;
+    default_edge_weight::Function = (src,dst) -> nothing,
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+
+    return  Layer( 
+                    name, 
+                    vertices,
+                    indegree_distribution,
+                    outdegree_distribution,
+                    SimpleWeightedDiGraph{vertextype,weighttype}(),
+                    weighttype;
+                    default_edge_weight = default_edge_weight
+    )
+    
+end
+
+
+## MetaGraph
+"""
+    meta_layer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `MetaGraph` from `MetaGraphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function meta_layer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{<:MultilayerEdge};
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                MetaGraph{vertextype,weighttype}(),
+                weighttype;
+                default_vertex_metadata = default_vertex_metadata,
+                default_edge_metadata = default_edge_metadata
+    )
+
+end
+
+
+"""
+    meta_layer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        degree_distribution::UnivariateDistribution;
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `MetaGraph` from `MetaGraphs.jl` with a degree sequence sampled from `degree_distribution`. Realization is performed via the Havel-Hakimi algorithm.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `degree_distribution::UnivariateDistribution`: The degree distribution from which the degree sequence is sampled ;
+
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+
+"""
+function meta_layer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    degree_distribution::UnivariateDistribution;
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+
+    return  Layer( 
+                    name, 
+                    vertices,
+                    degree_distribution,
+                    MetaGraph{vertextype,weighttype}(),
+                    weighttype;
+                    default_vertex_metadata = default_vertex_metadata,
+                    default_edge_metadata = default_edge_metadata
+    )
+    
+end
+
+## MetaDiGraph
+"""
+    metadigraph_layer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `MetaDiGraph` from `MetaGraphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function metadigraph_layer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{<:MultilayerEdge};
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                MetaDiGraph{vertextype,weighttype}(),
+                weighttype;
+                default_vertex_metadata = default_vertex_metadata,
+                default_edge_metadata = default_edge_metadata
+    )
+
+end
+
+
+"""
+    metadigraph_layer(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        indegree_distribution::UnivariateDistribution,
+        outdegree_distribution::UnivariateDistribution;
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `MetaDiGraph` from `MetaDiGraphs.jl` with a indegree and outdegree sequences respectively sampled from `indegree_distribution` and `outdegree_distribution`. Realization is performed via the Kleitman-Wang algorithm.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `indegree_distribution::UnivariateDistribution`: The degree distribution from which the indegree sequence is sampled ;
+- `outdegree_distribution::UnivariateDistribution`: The degree distribution from which the outdegree sequence is sampled ;
+
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+
+"""
+function metadigraph_layer(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    indegree_distribution::UnivariateDistribution,
+    outdegree_distribution::UnivariateDistribution;
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+
+
+    return  Layer( 
+                    name, 
+                    vertices,
+                    indegree_distribution::UnivariateDistribution,
+                    outdegree_distribution::UnivariateDistribution,
+                    MetaDiGraph{vertextype,weighttype}(),
+                    weighttype;
+                    default_vertex_metadata = default_vertex_metadata,
+                    default_edge_metadata = default_edge_metadata
+    )
+    
+end
+
+## ValGraph
+"""
+    layer_valgraph(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `ValGraph` from `SimpleValueGraphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function layer_valgraph(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{<:MultilayerEdge};
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+    vertexval_returned_type = Base.return_types(default_vertex_metadata)[1]
+    edgeval_returned_type = Base.return_types(default_edge_metadata)[1]
+
+    vertexval_types = if vertexval_returned_type <: Tuple
+        tuple(vertexval_returned_type.parameters...)
+    elseif vertexval_returned_type <: NamedTuple
+        returned_namedtuple_type = vertexval_returned_type.parameters
+
+        type_pars = tuple(returned_namedtuple_type[end].parameters...)
+
+        NamedTuple{returned_namedtuple_type[1]}(type_pars)
+    end
+
+    edgeval_types = if edgeval_returned_type <: Tuple
+        tuple(edgeval_returned_type.parameters...)
+    elseif edgeval_returned_type <: NamedTuple
+        returned_namedtuple_type = edgeval_returned_type.parameters
+
+        type_pars = tuple(returned_namedtuple_type[end].parameters...)
+
+        NamedTuple{returned_namedtuple_type[1]}(type_pars)
+    end
+
+    graph = ValGraph{vertextype}(SimpleGraph{vertextype}();
+                                vertexval_types =  vertexval_types,
+                                edgeval_types   = edgeval_types,
+                                vertexval_init = default_vertex_metadata,
+                                edgeval_init = default_edge_metadata)
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                graph,
+                weighttype;
+                default_vertex_metadata = default_vertex_metadata,
+                default_edge_metadata = default_edge_metadata
+    )
+
+end
+
+
+"""
+    layer_valgraph(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        degree_distribution::UnivariateDistribution;
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `ValGraph` from `SimpleValueGraphs.jl`. with a degree sequence sampled from `degree_distribution`. Realization is performed via the Havel-Hakimi algorithm.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `degree_distribution::UnivariateDistribution`: The degree distribution from which the degree sequence is sampled ;
+
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+
+"""
+function layer_valgraph(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    degree_distribution::UnivariateDistribution;
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+    vertexval_types = get_valtypes(default_vertex_metadata) 
+    edgeval_types   = get_valtypes(default_edge_metadata)  
+
+    graph = ValGraph{vertextype}(SimpleGraph{vertextype}();
+                                vertexval_types =  vertexval_types,
+                                edgeval_types   = edgeval_types,
+                                vertexval_init = default_vertex_metadata,
+                                edgeval_init = default_edge_metadata)
+
+
+
+    return  Layer( 
+                    name, 
+                    vertices,
+                    degree_distribution,
+                    graph,
+                    weighttype;
+                    default_vertex_metadata = default_vertex_metadata,
+                    default_edge_metadata = default_edge_metadata
+    )
+    
+end
+
+## ValOutDiGraph
+"""
+    layer_valoutdigraph(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `ValOutDiGraph` from `SimpleValueGraphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function layer_valoutdigraph(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{<:MultilayerEdge};
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+    vertexval_types = get_valtypes(default_vertex_metadata) 
+    edgeval_types   = get_valtypes(default_edge_metadata)  
+
+    graph = ValOutDiGraph{vertextype}(SimpleDiGraph{vertextype}();
+                                vertexval_types =  vertexval_types,
+                                edgeval_types   = edgeval_types,
+                                vertexval_init = default_vertex_metadata,
+                                edgeval_init = default_edge_metadata)
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                graph,
+                weighttype;
+                default_vertex_metadata = default_vertex_metadata,
+                default_edge_metadata = default_edge_metadata
+    )
+
+end
+
+
+"""
+    layer_valoutdigraph(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        indegree_distribution::UnivariateDistribution,
+        outdegree_distribution::UnivariateDistribution;
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `ValOutDiGraph` from `SimpleValueGraphs.jl` with a indegree and outdegree sequences respectively sampled from `indegree_distribution` and `outdegree_distribution`. Realization is performed via the Kleitman-Wang algorithm.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `indegree_distribution::UnivariateDistribution`: The degree distribution from which the indegree sequence is sampled ;
+- `outdegree_distribution::UnivariateDistribution`: The degree distribution from which the outdegree sequence is sampled ;
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`. Do not type this function's arguments;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`,  Do not type this function's arguments;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+
+"""
+function layer_valoutdigraph(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    indegree_distribution::UnivariateDistribution,
+    outdegree_distribution::UnivariateDistribution;
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+    vertexval_types = get_valtypes(default_vertex_metadata) 
+    edgeval_types   = get_valtypes(default_edge_metadata)  
+
+    graph = ValOutDiGraph{vertextype}(SimpleDiGraph{vertextype}();
+                                vertexval_types =  vertexval_types,
+                                edgeval_types   = edgeval_types,
+                                vertexval_init = default_vertex_metadata,
+                                edgeval_init = default_edge_metadata)
+
+
+
+    return  Layer( 
+                    name, 
+                    vertices,
+                    indegree_distribution,
+                    outdegree_distribution,
+                    graph,
+                    weighttype;
+                    default_vertex_metadata = default_vertex_metadata,
+                    default_edge_metadata = default_edge_metadata
+    )
+    
+end
+
+## ValDiGraph
+"""
+    layer_valdigraph(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        edge_list::Vector{<:MultilayerEdge};
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `ValDiGraph` from `SimpleValueGraphs.jl`.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `edge_list::Vector{ <: MultilayerEdge}`: The list of `MultilayerEdge`s;
+
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+"""
+function layer_valdigraph(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    edge_list::Vector{<:MultilayerEdge};
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+    vertexval_types = get_valtypes(default_vertex_metadata) 
+    edgeval_types   = get_valtypes(default_edge_metadata)  
+
+    graph = ValDiGraph{vertextype}(SimpleDiGraph{vertextype}();
+                                vertexval_types =  vertexval_types,
+                                edgeval_types   = edgeval_types,
+                                vertexval_init = default_vertex_metadata,
+                                edgeval_init = default_edge_metadata)
+
+    return Layer(name, 
+                vertices,
+                edge_list,
+                graph,
+                weighttype;
+                default_vertex_metadata = default_vertex_metadata,
+                default_edge_metadata = default_edge_metadata
+    )
+
+end
+
+
+"""
+    layer_valdigraph(
+        name::Symbol,
+        vertices::Vector{MultilayerVertex{nothing}},
+        indegree_distribution::UnivariateDistribution,
+        outdegree_distribution::UnivariateDistribution;
+        default_vertex_metadata::Function = mv -> NamedTuple(),
+        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+        vertextype::Type{T} = Int64,
+        weighttype::Type{U} = Float64
+    ) where {T<:Integer,U<:Real}
+
+Constructor for a `Layer` whose underlying graph is a `ValDiGraph` from `SimpleValueGraphs.jl` with a indegree and outdegree sequences respectively sampled from `indegree_distribution` and `outdegree_distribution`. Realization is performed via the Kleitman-Wang algorithm.
+
+# ARGUMENTS
+
+- `name::Symbol`: The name of the Layer;
+- `vertices::Vector{ <: MultilayerVertex}`: The `MultilayerVertex`s of the Layer;
+- `indegree_distribution::UnivariateDistribution`: The degree distribution from which the indegree sequence is sampled ;
+- `outdegree_distribution::UnivariateDistribution`: The degree distribution from which the outdegree sequence is sampled ;
+
+# KWARGS
+-` default_vertex_metadata::Function`: Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`. Do not type this function's arguments;
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`,  Do not type this function's arguments;
+- `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
+- `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+
+"""
+function layer_valdigraph(
+    name::Symbol,
+    vertices::Vector{MultilayerVertex{nothing}},
+    indegree_distribution::UnivariateDistribution,
+    outdegree_distribution::UnivariateDistribution;
+    default_vertex_metadata::Function = mv -> NamedTuple(),
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+    vertexval_types = get_valtypes(default_vertex_metadata) 
+    edgeval_types   = get_valtypes(default_edge_metadata)  
+
+    graph = ValDiGraph{vertextype}(SimpleDiGraph{vertextype}();
+                                vertexval_types =  vertexval_types,
+                                edgeval_types   = edgeval_types,
+                                vertexval_init = default_vertex_metadata,
+                                edgeval_init = default_edge_metadata)
+
+
+
+    return  Layer( 
+                    name, 
+                    vertices,
+                    indegree_distribution,
+                    outdegree_distribution,
+                    graph,
+                    weighttype;
+                    default_vertex_metadata = default_vertex_metadata,
+                    default_edge_metadata = default_edge_metadata
+    )
 end
 
 """
@@ -683,6 +1586,34 @@ end
 Remove vertex `v` from layer `layer`.
 """
 Graphs.rem_vertex!(layer::L, v::T) where {T,L<:Layer{T}} = rem_vertex!(layer.graph, v)
+
+
+"""
+    get_v(layer::Layer, V::MultilayerVertex{nothing})
+
+Return `v` associated with `V`, when `V` does not specify its layer. Only for `Layer`s. 
+"""
+function get_v(layer::Layer, V::MultilayerVertex{nothing})
+    # Convert V to a bare vertex
+    bare_V = get_bare_mv(V)
+    # Check if subgraph has this vertex
+    has_vertex(layer, bare_V) || return nothing
+    # Get the list of edges
+    return layer.v_V_associations(MV(node(V), name(layer)))
+end
+
+
+
+"""
+    has_edge( layer::Layer, s::MultilayerVertex{nothing}, d::MultilayerVertex{nothing})
+
+Return `true` if there is an edge between `s` and `d`, `false` otherwise.
+"""
+function Graphs.has_edge(
+    layer::Layer, s::MultilayerVertex{nothing}, d::MultilayerVertex{nothing}
+)
+    return has_edge(layer, get_v(layer, MV(node(s), name(layer))), get_v(layer, MV(node(d), name(layer))))
+end
 
 """
     add_edge!(layer::L, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...) where {L <: Layer} 
