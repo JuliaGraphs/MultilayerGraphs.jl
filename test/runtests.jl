@@ -144,43 +144,6 @@ _layer_valdigraph = layer_valdigraph(:layer_valdigraph, sample(mvs_metadata, _nv
 
 
 
-collect(edges(_layer_simpledigraph))
-
-
-
-
-collect(edges(_simple_weighted_layer))
-
-
-collect(edges(_simple_weighted_dilayer))
-
-
-
-collect(edges(_layer_metagraph))
-mv_vertices(_layer_metagraph)
-
-
-collect(edges(_layer_metagraph))
-mv_vertices(_layer_metagraph)
-
-
-
-collect(edges(_layer_valgraph))
-mv_vertices(_layer_valgraph)
-
-
-
-collect(edges(_layer_valoutdigraph))
-mv_vertices(_layer_valoutdigraph)
-
-
-
-
-collect(edges(_layer_valdigraph))
-mv_vertices(_layer_valdigraph)
-
-
-
 
 all_layers = [
     layer_sg,
