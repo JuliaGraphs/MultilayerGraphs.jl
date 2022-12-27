@@ -36,31 +36,23 @@ end
 
 Convert to `MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())`.
 """
-function MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex)
-    return MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())
-end
+MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex) =  MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())
+
 
 """
     MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U) where {U <: Real}
 
 Convert to `MultilayerEdge{U}(src, dst, weight, NamedTuple())`.
 """
-function MultilayerEdge(
-    src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U
-) where {U<:Real}
-    return MultilayerEdge{U}(src, dst, weight, NamedTuple())
-end
+MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U) where {U<:Real} =  MultilayerEdge{U}(src, dst, weight, NamedTuple())
+
 
 """
     MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple)
 
 Convert to `MultilayerEdge{Nothing}(src, dst, nothing, metadata)`.
 """
-function MultilayerEdge(
-    src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple
-)
-    return MultilayerEdge{Nothing}(src, dst, nothing, metadata)
-end
+MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple) =  MultilayerEdge{Nothing}(src, dst, nothing, metadata)
 
 """
     ME
@@ -112,9 +104,9 @@ function compare_multilayeredges(
     check_metadata::Bool=false,
 )
     # Check source
-    _check_src = lhs.src == rhs.src ? true : return false
+    lhs.src != rhs.src && return false
     # check destination
-    _check_dst = lhs.dst == rhs.dst ? true : return false
+    lhs.dst != rhs.dst && return false
     # Check weight
     _check_weight = false
     if check_weight

@@ -57,13 +57,13 @@ Constructor for `Layer`.
 # ARGUMENTS
 
 - `descriptor::LayerDescriptor{T}`;
-- `vertices::Vector{<: MultilayerVertex}`;
-- `edge_list::Vector{<:MultilayerEdge}`;
+- `vertices::Union{Vector{<:MultilayerVertex}, Vector{<:Node}}`;
+- `edge_list::Union{Vector{<:MultilayerEdge}, Vector{Tuple{MultilayerVertex, MultilayerVertex}}}`;
 """
 function Layer(
     descriptor::LayerDescriptor{T},
     vertices::Union{Vector{<:MultilayerVertex}, Vector{<:Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{Tuple{MultilayerVertex, MultilayerVertex}}}
+    edge_list::Union{Vector{<:MultilayerEdge}, Vector{Tuple{MultilayerVertex{nothing}, MultilayerVertex{nothing}}}}
 ) where {T<:Integer}
     # First check that the vertices are of the correct type
     if hasproperty(eltype(vertices), :parameters)
@@ -89,25 +89,24 @@ function Layer(
         check_consistency=false,
     )
     # Add the vertices one by one
-    @debug "" vertices isa Vector{MultilayerVertex{nothing}} vertices
-    if vertices isa Vector{MultilayerVertex}
+    if typeof(vertices) <: Vector{ <: MultilayerVertex}
         for mv in vertices
             add_vertex!(layer, mv)
         end
     else
         for node in vertices
-            add_vertex!(layer, MV(node, descriptor.default_vertex_metadata(MV(node))))
+            add_vertex!(layer, MV(node, metadata = descriptor.default_vertex_metadata(MV(node))))
         end
     end
     # Add the edges
-    if edge_list isa Vector{MultilayerEdge}
+    if typeof(edge_list) <: Vector{<:MultilayerEdge}
         for edge in edge_list
             add_edge!(layer, edge)
         end
     else
         for tup in edge_list
             src_mv,dst_mv = tup
-            add_edge!(layer, ME(src_mv, dst_mv, weight = descriptor.default_edge_weight(src_mv, dst_mv), metadata = descriptor.default_edge_metadata(src_mv, dst_mv) ))
+            add_edge!(layer, ME(src_mv, dst_mv, descriptor.default_edge_weight(src_mv, dst_mv), descriptor.default_edge_metadata(src_mv, dst_mv) ))
         end
     end
     return layer
@@ -130,7 +129,7 @@ Constructor for `Layer`.
 function Layer(
     name::Symbol,
     vertices::Vector{MultilayerVertex{nothing}},
-    edge_list::Vector{<:MultilayerEdge},
+    edge_list::Union{Vector{<:MultilayerEdge}, Vector{Tuple{MultilayerVertex, MultilayerVertex}}},
     null_graph::G,
     weighttype::Type{U};
     default_vertex_metadata::Function=mv -> NamedTuple(),
@@ -182,7 +181,7 @@ Return a random `Layer`.
 """
 function Layer(
     name::Symbol,
-    vertices::Vector{MultilayerVertex{nothing}},#Vector{MultilayerVertex{ <: Union{Val{name}, Val{nothing}}}},
+    vertices::Union{V, N},#Vector{MultilayerVertex{ <: Union{Val{name}, Val{nothing}}}},
     ne::Int64,
     null_graph::G,
     weighttype::Type{U};
@@ -190,7 +189,58 @@ function Layer(
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
     allow_self_loops::Bool=false,
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T}, V <: Vector{MultilayerVertex{nothing}}, N <: Vector{Node}}
+
+    _nv = length(vertices)
+    @assert(length(unique(vertices)) == _nv, "The argument `vertices` must be a unique list")
+
+    directed = is_directed(null_graph)
+    maxe = directed ? _nv*(_nv - 1) : _nv*(_nv - 1) ÷ 2 
+
+    @assert(ne <= maxe, "The number of required edges, $ne, is greater than the number of edges the provided graph supports i.e. $maxe" )
+
+    edge_list = NTuple{2, MultilayerVertex}[]  #MultilayerEdge
+    already_chosen = Dict{MultilayerVertex, Vector{MultilayerVertex}}()
+
+    max_links_per_vertex = directed ? _nv : _nv-1
+    for i in 1:ne
+        # Generate a random vertex
+        rand_vertex_1 =  rand(setdiff(vertices, [mv for mv in keys(already_chosen) if length(already_chosen[mv]) == max_links_per_vertex]))
+        if !haskey(already_chosen, rand_vertex_1)
+            already_chosen[rand_vertex_1] = Vector{MultilayerVertex}()
+        end
+
+        # Generate another random vertex
+        # If we don't allow self loops, keep generating until we get a vertex that isn't the same as the previous one.
+        rand_vertex_2 = if !allow_self_loops
+            rand(setdiff(vertices, vcat([rand_vertex_1], already_chosen[rand_vertex_1] )) )
+        else
+            rand(setdiff(vertices, vcat(already_chosen[rand_vertex_1] )))
+        end
+
+        push!(already_chosen[rand_vertex_1], rand_vertex_2)
+        # Add the edge to the edge list. Convert it to a MultilayerVertex if a list of Nodes was given as `vertices`
+        if @isdefined(V)
+            push!(
+                edge_list,
+                (rand_vertex_1, rand_vertex_2)
+            )
+        else
+            push!(
+                edge_list,
+                (MV(rand_vertex_1), MV(rand_vertex_2))
+            )
+        end
+#=         push!(
+            edge_list,
+            MultilayerEdge(
+                MV(rand_vertex_1.node, name),
+                MV(rand_vertex_2.node, name),
+                default_edge_weight(rand_vertex_1, rand_vertex_2),
+                default_edge_metadata(rand_vertex_1, rand_vertex_2),
+            ),
+        ) =#
+    end
 
     descriptor = LayerDescriptor(
         name,
@@ -201,34 +251,7 @@ function Layer(
         default_edge_metadata   = default_edge_metadata,
     )
 
-    edge_list = MultilayerEdge[]
-
-    for i in 1:ne
-        # Generate a random vertex
-        rand_vertex_1 = rand(vertices)
-        # Generate another random vertex
-        rand_vertex_2 = nothing
-        # If we don't allow self loops, keep generating until we get a vertex that isn't the same as the previous one.
-        if !allow_self_loops
-            while isnothing(rand_vertex_2) || rand_vertex_2.node == rand_vertex_1.node
-                rand_vertex_2 = rand(vertices)
-            end
-        else
-            rand_vertex_2 = rand(vertices)
-        end
-        # Add the edge to the edge list
-        push!(
-            edge_list,
-            MultilayerEdge(
-                MV(rand_vertex_1.node, name),
-                MV(rand_vertex_2.node, name),
-                default_edge_weight(rand_vertex_1, rand_vertex_2),
-                default_edge_metadata(rand_vertex_1, rand_vertex_2),
-            ),
-        )
-    end
-
-    edge_list = MultilayerEdge[rand() < 0.5 ? me : reverse(me) for me in edge_list]
+    edge_list = [rand() < 0.5 ? me : reverse(me) for me in edge_list]
     layer = Layer(descriptor, vertices, edge_list)
 
     return layer
@@ -791,7 +814,7 @@ Constructor for a `Layer` whose underlying graph is a `SimpleWeightedDiGraph` fr
 - `vertextype::Type{T} = Int64`: The type of the underlying integer labels associated to vertices.
 - `weighttype::Type{U} = Float64`: The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
 """
-function simple_weighted_layer(
+function simple_weighted_dilayer(
     name::Symbol,
     vertices::Vector{MultilayerVertex{nothing}},
     edge_list::Vector{<:MultilayerEdge};
