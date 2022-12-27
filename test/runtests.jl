@@ -32,6 +32,9 @@ layer_sg = Layer(
     SimpleGraph{vertextype}(),
     _weighttype,
 )
+_layer_simplegraph = layer_simplegraph(:layer_simplegraph, sample(mvs_layers, _nv, replace = false), Truncated(Normal(), 0, 10))
+
+
 layer_sdg = Layer(
     :layer_sdg,
     sample(mvs_layers, _nv; replace=false),
@@ -39,6 +42,7 @@ layer_sdg = Layer(
     SimpleDiGraph{vertextype}(),
     _weighttype,
 )
+_layer_simpledigraph = layer_simpledigraph(:layer_simpledigraph, sample(mvs_layers, _nv, replace = false), Truncated(Normal(), 0, 10), Truncated(Normal(), 0, 10))
 
 _nv = rand(min_vertices:max_vertices)
 _ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
@@ -50,6 +54,8 @@ layer_swg = Layer(
     _weighttype;
     default_edge_weight=(src, dst) -> rand(),
 )
+_layer_simpleweightedgraph = layer_simpleweightedgraph(:layer_simpleweightedgraph, sample(mvs_layers, _nv, replace = false), Truncated(Normal(), 0, 10), default_edge_weight = (src,dst) -> 3.0)
+
 layer_swdg = Layer(
     :layer_swdg,
     sample(mvs_layers, _nv; replace=false),
@@ -58,6 +64,7 @@ layer_swdg = Layer(
     _weighttype;
     default_edge_weight=(src, dst) -> rand(),
 )
+_layer_simpleweighteddigraph = layer_simpleweighteddigraph(:layer_simpleweighteddigraph, sample(mvs_layers, _nv, replace = false), Truncated(Normal(), 0, 10), Truncated(Normal(), 0, 10), default_edge_weight = (src,dst) -> 3.0)
 
 _nv = rand(min_vertices:max_vertices)
 _ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
@@ -70,6 +77,9 @@ layer_mg = Layer(
     _weighttype;
     default_edge_metadata=(src, dst) -> (from_to="from_$(src)_to_$(dst)",),
 )
+_layer_metagraph = layer_metagraph(:layer_metagraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10), default_vertex_metadata = mv -> (metamv = "metadata of $mv",), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
+
+
 layer_mdg = Layer(
     :layer_mdg,
     sample(mvs_metadata, _nv; replace=false),
@@ -78,6 +88,7 @@ layer_mdg = Layer(
     _weighttype;
     default_edge_metadata=(src, dst) -> (from_to="from_$(src)_to_$(dst)",),
 )
+_layer_metadigraph = layer_metadigraph(:layer_metadigraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10), Truncated(Normal(), 0, 10), default_vertex_metadata = mv -> (metamv = "metadata of $mv",), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
 
 _nv = rand(min_vertices:max_vertices)
 _ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
@@ -97,6 +108,7 @@ layer_vg = Layer(
     default_vertex_metadata=mv ->
         ("This metadata have been generated via the default_vertex_metadata method",),
 )
+_layer_valgraph = layer_valgraph(:layer_valgraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10), default_vertex_metadata = mv -> ("metadata of $mv",), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
 
 layer_vodg = Layer(
     :layer_vodg,
@@ -112,6 +124,7 @@ layer_vodg = Layer(
     _weighttype;
     default_edge_metadata=(src, dst) -> (a=rand(), b="from_$(src)_to_$(dst)"),
 )
+_layer_valoutdigraph = layer_valoutdigraph(:layer_valoutgraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10),Truncated(Normal(), 0, 10), default_vertex_metadata = mv -> ("metadata of $mv",), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
 
 layer_vdg = Layer(
     :layer_vdg,
@@ -127,7 +140,44 @@ layer_vdg = Layer(
     _weighttype;
     default_edge_metadata=(src, dst) -> (rand(), "from_$(src)_to_$(dst)"),
 )
+_layer_valdigraph = layer_valdigraph(:layer_valdigraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10), Truncated(Normal(), 0, 10),default_vertex_metadata = mv -> ("metadata of $mv",), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
 
+
+
+collect(edges(_layer_simpledigraph))
+
+
+
+
+collect(edges(_simple_weighted_layer))
+
+
+collect(edges(_simple_weighted_dilayer))
+
+
+
+collect(edges(_layer_metagraph))
+mv_vertices(_layer_metagraph)
+
+
+collect(edges(_layer_metagraph))
+mv_vertices(_layer_metagraph)
+
+
+
+collect(edges(_layer_valgraph))
+mv_vertices(_layer_valgraph)
+
+
+
+collect(edges(_layer_valoutdigraph))
+mv_vertices(_layer_valoutdigraph)
+
+
+
+
+collect(edges(_layer_valdigraph))
+mv_vertices(_layer_valdigraph)
 
 
 
