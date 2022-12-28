@@ -62,8 +62,8 @@ Constructor for `Layer`.
 """
 function Layer(
     descriptor::LayerDescriptor{T},
-    vertices::Union{Vector{MultilayerVertex{nothing}}, Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, <:MultilayerVertex}}}
+    vertices::Union{<:Vector{<:MultilayerVertex}, Vector{Node}},
+    edge_list::Union{Vector{<:MultilayerEdge}, Vector{Tuple{ MultilayerVertex{nothing}, MultilayerVertex{nothing}}}}
 ) where {T<:Integer}
     # First check that the vertices are of the correct type
     if hasproperty(eltype(vertices), :parameters)
@@ -199,7 +199,7 @@ function Layer(
 
     @assert(ne <= maxe, "The number of required edges, $ne, is greater than the number of edges the provided graph supports i.e. $maxe" )
 
-    edge_list = NTuple{2, MultilayerVertex{nothing}}[]  #MultilayerEdge
+    edge_list = NTuple{2, MultilayerVertex}[]  #MultilayerEdge
     already_chosen = Dict{MultilayerVertex, Vector{MultilayerVertex}}()
 
     max_links_per_vertex = directed ? _nv : _nv-1
@@ -243,7 +243,7 @@ function Layer(
         default_edge_metadata   = default_edge_metadata,
     )
 
-    edge_list = [rand() < 0.5 ? me : reverse(me) for me in edge_list]
+    edge_list = [rand() < 0.5 ? tup : reverse(tup) for tup in edge_list]
     layer = Layer(descriptor, vertices, edge_list)
 
     return layer
@@ -494,7 +494,7 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
 
     equivalent_graph = kleitman_wang_graph_generator(indegree_sequence, outdegree_sequence)
 
-    edge_list = NTuple{2, MultilayerVertex}[]
+    edge_list = NTuple{2, MultilayerVertex{nothing}}[]
 
     if @isdefined(V)
         for edge in edges(equivalent_graph)

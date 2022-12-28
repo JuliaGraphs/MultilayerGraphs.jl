@@ -135,7 +135,7 @@ end
 """
     get_v(subgraph::AbstractSubGraph, V::MultilayerVertex)
 
-Return `v` associated with `V`. 
+Return the integer label `v` associated to `MultilayerVertex` `V` within `subgraph`. Useful for indexing the weight matrix of `subgraph`. 
 """
 function get_v(subgraph::AbstractSubGraph, V::MultilayerVertex)
     # Convert V to a bare vertex

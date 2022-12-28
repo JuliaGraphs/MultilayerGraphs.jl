@@ -59,6 +59,7 @@ export
     mv_outneighbors,
     neighbors,
     mv_neighbors,
+    get_v,
     edgetype,
     has_edge,
     ne,

@@ -108,13 +108,7 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_edge!(layer, rand_mv_1, rand_mv_2, 3.14)
 @test has_edge(layer, rand_mv_1, rand_mv_2)
-@test layer.graph.weights[
-        layer.v_V_associations(rand_mv_1), layer.v_V_associations(rand_mv_2)
-    ] ==
-    layer.graph.weights[
-        layer.v_V_associations(rand_mv_2), layer.v_V_associations(rand_mv_1)
-    ] ==
-    3.14
+@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2) ] == Graphs.weights(layer)[get_v(layer, rand_mv_2), get_v(layer, rand_mv_1) ] == 3.14
 # Test uniform add_vertex!
 @test rem_vertex!(layer, rand_mv_1)
 @test !has_vertex(layer, rand_mv_1)
@@ -136,9 +130,7 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_edge!(layer, rand_mv_1, rand_mv_2, weight=3.14, metadata=())
 @test has_edge(layer, rand_mv_1, rand_mv_2)
 # Why do I have to switch the vertices? 
-@test layer.graph.weights[
-    layer.v_V_associations(rand_mv_2), layer.v_V_associations(rand_mv_1)
-] == 3.14
+@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2) ] == 3.14
 # test hybrid add_edge!
 rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_edge!(layer, rand_mv_1, rand_mv_2, 3.14)
