@@ -80,7 +80,7 @@ Graphs.dst(e::AbstractMultilayerEdge) = e.dst
 
 Return the weight of `e`.
 """
-weight(e::AbstractMultilayerEdge) = e.weight
+SimpleWeightedGraphs.weight(e::AbstractMultilayerEdge) = e.weight
 
 """
     metadata(e::AbstractMultilayerEdge)

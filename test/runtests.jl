@@ -55,6 +55,10 @@ layer_swg = Layer(
     default_edge_weight=(src, dst) -> rand(),
 )
 _layer_simpleweightedgraph = layer_simpleweightedgraph(:layer_simpleweightedgraph, sample(mvs_layers, _nv, replace = false), Truncated(Normal(), 0, 10), default_edge_weight = (src,dst) -> 3.0)
+# Test constructor with node vertices and  edge tuples
+node_vertices = sample(multilayer_nodes, _nv, replace = false)
+_layer_simpleweightedgraph_default = layer_simpleweightedgraph(:layer_simpleweightedgraph_default, node_vertices , [Tuple(MV.(rand(node_vertices,2))) for i in 1:_ne], default_edge_weight = (src,dst) -> 3.0)
+@test all(weight.(collect(edges(_layer_simpleweightedgraph_default))) .== 3.0)
 
 layer_swdg = Layer(
     :layer_swdg,
@@ -77,8 +81,12 @@ layer_mg = Layer(
     _weighttype;
     default_edge_metadata=(src, dst) -> (from_to="from_$(src)_to_$(dst)",),
 )
-_layer_metagraph = layer_metagraph(:layer_metagraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10), default_vertex_metadata = mv -> (metamv = "metadata of $mv",), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
-
+_layer_metagraph = layer_metagraph(:layer_metagraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10), default_vertex_metadata = mv -> (metamv =  5,), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
+# Test constructor with node vertices and tuple edges 
+node_vertices = sample(multilayer_nodes, _nv, replace = false)
+_layer_metagraph_default = layer_metagraph(:layer_metagraph_default, node_vertices,[Tuple(MV.(rand(node_vertices,2))) for i in 1:_ne], default_vertex_metadata = mv -> (metamv =  4,), default_edge_metadata = (src,dst) -> (metaedge = 5,))
+@test all(getproperty.(metadata.(mv_vertices(_layer_metagraph_default)), Ref(:metamv)) .== 4)
+@test all(getproperty.(metadata.(collect(edges(_layer_metagraph_default))), Ref(:metaedge)) .== 5)
 
 layer_mdg = Layer(
     :layer_mdg,
