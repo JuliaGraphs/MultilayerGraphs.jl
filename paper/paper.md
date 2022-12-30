@@ -101,6 +101,7 @@ Here I'm going to test a few citation styles:
 
 - @DeDomenico2013, @Kivela2014, @Bianconi2018
 - [@DeDomenico2013], [@Kivela2014], [@Bianconi2018]
+- [@DeDomenico2013; @Kivela2014; @Bianconi2018]
 
 
 # Figures
