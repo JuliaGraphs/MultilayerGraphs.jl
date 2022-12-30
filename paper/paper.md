@@ -97,6 +97,12 @@ For a quick reference, the following citation commands can be used:
 - `[@author:2001]` -> "(Author et al., 2001)"
 - `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
 
+Here I'm going to test a few citation styles: 
+
+- @DeDomenico2013, @Kivela2014, @Bianconi2018
+- [@DeDomenico2013], [@Kivela2014], [@Bianconi2018]
+
+
 # Figures
 
 Figures can be included like this:
