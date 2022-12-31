@@ -43,15 +43,13 @@ Formally, a multilayer graph can be defined as a triple $G=(V,E,L)$, where:
 
 Each layer $\ell$ in $L$ is a tuple $(V_\ell, E_\ell)$, where $V_\ell$ is a subset of $V$ that represents the vertices within that layer, and $E_\ell$ is a subset of $E$ that represents the edges within that layer.
 
-A multilayer graph may also be formally defined as a collection of individual graphs $G = (G_1, G_2, ..., G_n)$, where each graph represents a layer and the edges between the layers represent inter-layer connections. 
-
 [A FEW WORDS ABOUT THE MAIN FEATURES, POSSIBLY EXTRACTED FROM TUTORIAL / README]
 
 # Statement of Need
 
 Multiple theoretical frameworks have been proposed to formally incorporate all instances of multilayer graphs [@DeDomenico2013; @Kivela2014; @Boccaletti2014; @Aleta2019; @Bianconi2018; @Cozzo2018; @Artime2022; @DeDomenico2022]. 
 
-Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional and heterogeneous complex systems, including physical, chemical, biological, neuronal, socio-technical, ecological and economic networks [Baggio2016; @LazegaSnijders2016; @Dickison2016; @Timteo2018; Buldu2018; @Lim2019]. 
+Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional and heterogeneous complex systems, including physical, chemical, biological, neuronal, socio-technical, ecological and economic networks [@Baggio2016; @LazegaSnijders2016; @Dickison2016; @Timteo2018; @Buldu2018; @Lim2019]. 
 
 At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the [Julia language](https://julialang.org) apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022].
 
