@@ -36,6 +36,7 @@ bibliography: paper.bib
 A multilayer graph is a graph consisting of multiple standard subgraphs called *layers* which can be interconnected through bipartite graphs called *interlayers* composed of the vertex sets of two different layers and the edges between them. The vertices in each layer represent a single set of nodes, although not all nodes have to be represented in every layer. 
 
 Formally, a multilayer graph can be defined as a triple $G=(V,E,L)$, where:
+
 - $V$ is the set of vertices;
 - $E$ is the set of edges, pairs of nodes $(u, v)$ representing a connection, relationship or interaction between the nodes $u$ and $v$;
 - $L$ is a set of layers, which are subsets of $V$ and $E$ encoding the nodes and edges within each layer.
