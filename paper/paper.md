@@ -45,9 +45,9 @@ Each layer $\ell$ in $L$ is a tuple $(V_\ell, E_\ell)$, where $V_\ell$ is a subs
 
 A multilayer graph may also be formally defined as a collection of individual graphs $G = (G_1, G_2, ..., G_n)$, where each graph represents a layer and the edges between the layers represent inter-layer connections. 
 
-There are several special cases of multilayer graphs, and multiple theoretical frameworks have been proposed to formally incorporate all of them (see @Kivela2014). 
+Multiple theoretical frameworks have been proposed to formally incorporate all instances of multilayer graphs [@DeDomenico2013; @Kivela2014; @Boccaletti2014; @Aleta2019; @Bianconi2018; @Cozzo2018; @Artime2022; @DeDomenico2022]. 
 
-Common application of multilayer graphs are social network and epidemiological modeling.
+Multilayer graphs have been adopted to model the structure and dynamics of a wide range of high-dimensional and heterogeneous complex systems, including physical, chemical, biological, socio-technical and economic networks [@LazegaSnijders2016; @Dickison2016]. 
 
 # Statement of Need
 
