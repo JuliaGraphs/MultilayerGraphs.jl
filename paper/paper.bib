@@ -1,8 +1,6 @@
-REFERENCES 
+# PACKAGES 
 
-# Julia Language 
-
-## Julia Packages 
+## Julia 
 @misc{Graphs2021,
   author = {Fairbanks, James and Besan{\c{c}}on, Mathieu and Simon, Sch{\"o}lly and Hoffiman, J{\'u}lio and Eubank, Nick and Karpinski, Stefan},
   title = {JuliaGraphs/Graphs.jl: an optimized graphs package for the Julia programming language},
@@ -22,8 +20,135 @@ REFERENCES
   journal = {{SIMULATION}}
 }
 
-# Graphs 
-## Graph Realisation Algorithms 
+@software{Moroni_Monticone_MultilayerGraphs_2022,
+         abstract     = {A Julia package for the creation, manipulation and analysis of the structure, dynamics and functions of multilayer graphs.},
+         author       = {Moroni, Claudio and Monticone, Pietro},
+         doi          = {10.5281/zenodo.7009172},
+         institution  = {University of Turin (UniTO)},
+         keywords     = {Julia Language, Julia Package, Graph Theory, Applied Graph Theory, Network Theory, Network Science, Graphs, Multilayer Graphs, Multilevel Graphs, Hierarchical Graphs, Networks, Multilayer Networks, Multilevel Networks, Hierarchical Networks, Complexity, Complex Systems},
+         license      = {MIT},
+         organization = {Interdisciplinary Physics Team (InPhyT)},
+         title        = {MultilayerGraphs.jl: A Julia package for the creation, manipulation and analysis of the structure, dynamics and functions of multilayer graphs},
+         url          = {https://doi.org/10.5281/zenodo.7009172},
+         year         = {2022}
+         }
+
+## Python 
+
+## R 
+@article{Lazega2008,
+  doi = {10.1016/j.socnet.2008.02.001},
+  url = {https://doi.org/10.1016/j.socnet.2008.02.001},
+  year = {2008},
+  month = may,
+  publisher = {Elsevier {BV}},
+  volume = {30},
+  number = {2},
+  pages = {159--176},
+  author = {Emmanuel Lazega and Marie-Th{\'{e}}r{\`{e}}se Jourda and Lise Mounier and Rafaël Stofer},
+  title = {Catching up with big fish in the big pond? Multi-level network analysis through linked design},
+  journal = {Social Networks}
+}
+
+@article{DeDomenico2014,
+  doi = {10.1093/comnet/cnu038},
+  url = {https://doi.org/10.1093/comnet/cnu038},
+  year = {2014},
+  month = oct,
+  publisher = {Oxford University Press ({OUP})},
+  volume = {3},
+  number = {2},
+  pages = {159--176},
+  author = {De Domenico and Porter and Arenas},
+  title = {{MuxViz}: a tool for multilayer analysis and visualization of networks},
+  journal = {Journal of Complex Networks}
+}
+
+@article{Hammoud2018,
+  doi = {10.3390/genes9110519},
+  url = {https://doi.org/10.3390/genes9110519},
+  year = {2018},
+  month = oct,
+  publisher = {{MDPI} {AG}},
+  volume = {9},
+  number = {11},
+  pages = {519},
+  author = {Zaynab Hammoud and Frank Kramer},
+  title = {mully: An R Package to Create,  Modify and Visualize Multilayered Graphs},
+  journal = {Genes}
+}
+
+@article{Magnani2021,
+  doi = {10.18637/jss.v098.i08},
+  url = {https://doi.org/10.18637/jss.v098.i08},
+  year = {2021},
+  publisher = {Foundation for Open Access Statistic},
+  volume = {98},
+  number = {8},
+  author = {Matteo Magnani and Luca Rossi and Davide Vega},
+  title = {Analysis of Multiplex Social Networks with R},
+  journal = {Journal of Statistical Software}
+}
+
+# ARTICLES  
+## General 
+@article{DeDomenico2013,
+  doi = {10.1103/physrevx.3.041022},
+  url = {https://doi.org/10.1103/physrevx.3.041022},
+  year = {2013},
+  month = dec,
+  publisher = {American Physical Society ({APS})},
+  volume = {3},
+  number = {4},
+  author = {Manlio De Domenico and Albert Sol{\'{e}}-Ribalta and Emanuele Cozzo and Mikko Kivel\"{a} and Yamir Moreno and Mason A. Porter and Sergio G{\'{o}}mez and Alex Arenas},
+  title = {Mathematical Formulation of Multilayer Networks},
+  journal = {Physical Review X}
+}
+
+@article{Kivela2014,
+  doi = {10.1093/comnet/cnu016},
+  url = {https://doi.org/10.1093/comnet/cnu016},
+  year = {2014},
+  month = jul,
+  publisher = {Oxford University Press ({OUP})},
+  volume = {2},
+  number = {3},
+  pages = {203--271},
+  author = {M. Kivela and A. Arenas and M. Barthelemy and J. P. Gleeson and Y. Moreno and M. A. Porter},
+  title = {Multilayer networks},
+  journal = {Journal of Complex Networks}
+}
+
+@article{Boccaletti2014,
+  doi = {10.1016/j.physrep.2014.07.001},
+  url = {https://doi.org/10.1016/j.physrep.2014.07.001},
+  year = {2014},
+  month = nov,
+  publisher = {Elsevier {BV}},
+  volume = {544},
+  number = {1},
+  pages = {1--122},
+  author = {S. Boccaletti and G. Bianconi and R. Criado and C.I. del Genio and J. G{\'{o}}mez-Garde{\~{n}}es and M. Romance and I. Sendi{\~{n}}a-Nadal and Z. Wang and M. Zanin},
+  title = {The structure and dynamics of multilayer networks},
+  journal = {Physics Reports}
+}
+
+@article{Aleta2019,
+  doi = {10.1146/annurev-conmatphys-031218-013259},
+  url = {https://doi.org/10.1146/annurev-conmatphys-031218-013259},
+  year = {2019},
+  month = mar,
+  publisher = {Annual Reviews},
+  volume = {10},
+  number = {1},
+  pages = {45--62},
+  author = {Alberto Aleta and Yamir Moreno},
+  title = {Multilayer Networks in a Nutshell},
+  journal = {Annual Review of Condensed Matter Physics}
+}
+
+## Algorithms 
+### Graph Realisation 
 @article{Hakimi1962,
   doi = {10.1137/0110037},
   url = {https://doi.org/10.1137/0110037},
@@ -52,34 +177,8 @@ REFERENCES
   journal = {Discrete Mathematics}
 }
 
-## Multilayer Graph Theory 
-@article{DeDomenico2013,
-  doi = {10.1103/physrevx.3.041022},
-  url = {https://doi.org/10.1103/physrevx.3.041022},
-  year = {2013},
-  month = dec,
-  publisher = {American Physical Society ({APS})},
-  volume = {3},
-  number = {4},
-  author = {Manlio De Domenico and Albert Sol{\'{e}}-Ribalta and Emanuele Cozzo and Mikko Kivel\"{a} and Yamir Moreno and Mason A. Porter and Sergio G{\'{o}}mez and Alex Arenas},
-  title = {Mathematical Formulation of Multilayer Networks},
-  journal = {Physical Review X}
-}
-
-@article{Kivela2014,
-  doi = {10.1093/comnet/cnu016},
-  url = {https://doi.org/10.1093/comnet/cnu016},
-  year = {2014},
-  month = jul,
-  publisher = {Oxford University Press ({OUP})},
-  volume = {2},
-  number = {3},
-  pages = {203--271},
-  author = {M. Kivela and A. Arenas and M. Barthelemy and J. P. Gleeson and Y. Moreno and M. A. Porter},
-  title = {Multilayer networks},
-  journal = {Journal of Complex Networks}
-}
-
+# BOOKS
+## Theory
 @book{Bianconi2018,
   doi = {10.1093/oso/9780198753919.001.0001},
   url = {https://doi.org/10.1093/oso/9780198753919.001.0001},
@@ -90,7 +189,51 @@ REFERENCES
   title = {Multilayer Networks}
 }
 
-## Multilayer Graphs & Networks Scientific Applications 
-### Computational Epidemiology 
-### Computational Social Science 
-### Other Fields 
+@book{Cozzo2018,
+  doi = {10.1007/978-3-319-92255-3},
+  url = {https://doi.org/10.1007/978-3-319-92255-3},
+  year = {2018},
+  publisher = {Springer International Publishing},
+  author = {Emanuele Cozzo and Guilherme Ferraz de Arruda and Francisco Aparecido Rodrigues and Yamir Moreno},
+  title = {Multiplex Networks}
+}
+
+@book{Artime2022,
+  doi = {10.1017/9781009085809},
+  url = {https://doi.org/10.1017/9781009085809},
+  year = {2022},
+  month = aug,
+  publisher = {Cambridge University Press},
+  author = {Oriol Artime and Barbara Benigni and Giulia Bertagnolli and Valeria d{\textquotesingle}Andrea and Riccardo Gallotti and Arsham Ghavasieh and Sebastian Raimondo and Manlio De Domenico},
+  title = {Multilayer Network Science}
+}
+
+@book{DeDomenico2022,
+  doi = {10.1007/978-3-030-75718-2},
+  url = {https://doi.org/10.1007/978-3-030-75718-2},
+  year = {2022},
+  publisher = {Springer International Publishing},
+  author = {Manlio De Domenico},
+  title = {Multilayer Networks: Analysis and Visualization}
+}
+
+## Applications 
+### Social Science 
+@book{LazegaSnijders2016,
+  doi = {10.1007/978-3-319-24520-1},
+  url = {https://doi.org/10.1007/978-3-319-24520-1},
+  year = {2016},
+  publisher = {Springer International Publishing},
+  editor = {Emmanuel Lazega and Tom A.B. Snijders},
+  title = {Multilevel Network Analysis for the Social Sciences}
+}
+
+@book{Dickison2016,
+  doi = {10.1017/cbo9781139941907},
+  url = {https://doi.org/10.1017/cbo9781139941907},
+  year = {2016},
+  month = jul,
+  publisher = {Cambridge University Press},
+  author = {Mark E. Dickison and Matteo Magnani and Luca Rossi},
+  title = {Multilayer Social Networks}
+}
