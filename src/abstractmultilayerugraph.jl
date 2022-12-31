@@ -367,7 +367,7 @@ function get_subgraph(
         layer_1_multilayervertices,
         layer_2_multilayervertices,
         unique(edge_list),
-        descriptor,
+        descriptor
     )
 end
 

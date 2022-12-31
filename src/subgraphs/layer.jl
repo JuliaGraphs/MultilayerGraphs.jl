@@ -193,25 +193,35 @@ function Layer(
     @assert(ne <= maxe, "The number of required edges, $ne, is greater than the number of edges the provided graph supports i.e. $maxe" )
 
     edge_list = NTuple{2, MultilayerVertex}[]  #MultilayerEdge
-    already_chosen = Dict{MultilayerVertex, Vector{MultilayerVertex}}()
+    fadjlist = Dict{MultilayerVertex, Vector{MultilayerVertex}}()
 
-    max_links_per_vertex = directed ? _nv : _nv-1
+    max_links_per_vertex = _nv-1 # directed ? _nv - 1 : _nv-1
     for i in 1:ne
         # Generate a random vertex
-        rand_vertex_1 =  rand(setdiff(vertices, [mv for mv in keys(already_chosen) if length(already_chosen[mv]) == max_links_per_vertex]))
-        if !haskey(already_chosen, rand_vertex_1)
-            already_chosen[rand_vertex_1] = Vector{MultilayerVertex}()
+        rand_vertex_1 =  rand(setdiff(vertices, [mv for mv in keys(fadjlist) if length(fadjlist[mv]) == max_links_per_vertex]))
+
+        if !haskey(fadjlist, rand_vertex_1)
+            fadjlist[rand_vertex_1] = Vector{MultilayerVertex}()
         end
 
         # Generate another random vertex
         # If we don't allow self loops, keep generating until we get a vertex that isn't the same as the previous one.
         rand_vertex_2 = if !allow_self_loops
-            rand(setdiff(vertices, vcat([rand_vertex_1], already_chosen[rand_vertex_1] )) )
+            rand(setdiff(vertices, vcat([rand_vertex_1], fadjlist[rand_vertex_1] )) )
         else
-            rand(setdiff(vertices, vcat(already_chosen[rand_vertex_1] )))
+            rand(setdiff(vertices, vcat(fadjlist[rand_vertex_1] )))
         end
 
-        push!(already_chosen[rand_vertex_1], rand_vertex_2)
+
+
+        push!(fadjlist[rand_vertex_1], rand_vertex_2)
+        if !is_directed(null_graph)
+            if !haskey(fadjlist, rand_vertex_2)
+                fadjlist[rand_vertex_2] = Vector{MultilayerVertex}()
+            end
+            push!(fadjlist[rand_vertex_2],rand_vertex_1)
+        end
+
         # Add the edge to the edge list. Convert it to a MultilayerVertex if a list of Nodes was given as `vertices`
         if @isdefined(V)
             push!(

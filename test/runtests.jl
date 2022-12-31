@@ -165,12 +165,15 @@ all_layers = [
     layer_vdg,
 ];
 
-_nv = nv(layer_sg) + nv(layer_swg)
-_ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
+_nv_1 = nv(layer_sg)
+_nv_2=  nv(layer_swg)
+_ne = rand(1:(_nv_1 * _nv_2))
 interlayer_sg_swg = Interlayer(layer_sg, layer_swg, _ne, SimpleGraph{vertextype}())
+#_interlayer_simplegraph = interlayer_simplegrah(layer_sg, layer_swg, collect(edges(interlayer_sg_swg)))
 
-_nv = nv(layer_swg) + nv(layer_mg)
-_ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
+_nv_1 = nv(layer_swg)
+_nv_2=  nv(layer_mg)
+_ne = rand(1:(_nv_1 * _nv_2))
 interlayer_swg_mg = Interlayer(
     layer_swg,
     layer_mg,
@@ -179,8 +182,9 @@ interlayer_swg_mg = Interlayer(
     default_edge_weight=(x, y) -> rand(),
 )
 
-_nv = nv(layer_mg) + nv(layer_vg)
-_ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
+_nv_1 = nv(layer_mg)
+_nv_2=  nv(layer_vg)
+_ne = rand(1:(_nv_1 * _nv_2))
 interlayer_mg_vg = Interlayer(
     layer_mg,
     layer_vg,
@@ -203,12 +207,14 @@ interlayer_multiplex_sg_mg = multiplex_interlayer(
 
 interlayer_empty_sg_vg = empty_interlayer(layer_sg, layer_vg, SimpleGraph{vertextype}())
 
-_nv = nv(layer_sdg) + nv(layer_swdg)
-_ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
+_nv_1 = nv(layer_sdg)
+_nv_2=  nv(layer_swdg)
+_ne = rand(1:(2 * _nv_1 * _nv_2))
 interlayer_sdg_swdg = Interlayer(layer_sdg, layer_swdg, _ne, SimpleDiGraph{vertextype}())
 
-_nv = nv(layer_swdg) + nv(layer_mdg)
-_ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
+_nv_1 = nv(layer_swdg)
+_nv_2=  nv(layer_mdg)
+_ne = rand(1:(2 * _nv_1 * _nv_2))
 interlayer_swdg_mdg = Interlayer(
     layer_swdg,
     layer_mdg,
@@ -217,8 +223,9 @@ interlayer_swdg_mdg = Interlayer(
     default_edge_weight=(x, y) -> rand(),
 )
 
-_nv = nv(layer_mdg) + nv(layer_vodg)
-_ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
+_nv_1 = nv(layer_mdg)
+_nv_2=  nv(layer_vodg)
+_ne = rand(1:(2 * _nv_1 * _nv_2))
 interlayer_mdg_vodg = Interlayer(
     layer_mdg,
     layer_vodg,
@@ -228,8 +235,9 @@ interlayer_mdg_vodg = Interlayer(
     transfer_vertex_metadata=true,
 );
 
-_nv = nv(layer_vodg) + nv(layer_vdg)
-_ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
+_nv_1 = nv(layer_vodg)
+_nv_2=  nv(layer_vdg)
+_ne = rand(1:(2*_nv_1 * _nv_2))
 interlayer_vodg_vdg = Interlayer(
     layer_vodg,
     layer_vdg,
@@ -242,8 +250,9 @@ interlayer_vodg_vdg = Interlayer(
     default_edge_metadata=(x, y) -> (from_to="from_$(x)_to_$(y)",),
 );
 
-_nv = nv(layer_sdg) + nv(layer_mdg)
-_ne = rand(_nv:((_nv * (_nv - 1)) ÷ 2))
+_nv_1 = nv(layer_sdg)
+_nv_2=  nv(layer_mdg)
+_ne = rand(1:(2*_nv_1 * _nv_2))
 interlayer_sdg_mdg = Interlayer(
     layer_sdg,
     layer_mdg,

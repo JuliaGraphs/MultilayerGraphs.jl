@@ -90,6 +90,7 @@ export
     # interlayer.jl
     AbstractInterlayer,
     Interlayer,
+    interlayer_simplegrah,
     multiplex_interlayer,
     empty_interlayer,
     is_multiplex_interlayer,
