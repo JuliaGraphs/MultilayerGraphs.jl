@@ -51,7 +51,7 @@ Multiple theoretical frameworks have been proposed to formally incorporate all i
 
 Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional and heterogeneous complex systems, including physical, chemical, biological, neuronal, socio-technical, ecological and economic networks [@Baggio2016; @LazegaSnijders2016; @Dickison2016; @Timteo2018; @Buldu2018; @Lim2019]. 
 
-At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the [Julia language](https://julialang.org) apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022].
+We have chosen the [Julia language](https://julialang.org) for this software package because it is a modern, open-source, high-level, high-performance dynamic language for technical computing [@Bezanson2017]. At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the Julia language apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022]. 
 
 # Main Features 
 
@@ -105,10 +105,6 @@ Here is a list of software packages for the creation, manipulation, analysis and
 
 - [`MultiNetX`](https://github.com/nkoub/multinetx) implements methods to create undirected networks with weighted or unweighted links, to analyse the spectral properties of adjacency or Laplacian matrices and to visualise multilayer graphs and dynamical processes by coloring the nodes and links accordingly;
 - [`PyMNet`](https://github.com/bolozna/Multilayer-networks-library) implements data structures for multilayer graphs and multiplex graphs, methods to import/export, create, manipulate multilayer graphs and for the rule-based generation and lazy-evaluation of coupling edges and utilities to visualise multilayer graphs [@Kivela2014].
-
-## Julia 
-
-At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the [Julia language](https://julialang.org) apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022].
 
 # Acknowledgements
 
