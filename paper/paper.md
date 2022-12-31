@@ -47,7 +47,7 @@ A multilayer graph may also be formally defined as a collection of individual gr
 
 Multiple theoretical frameworks have been proposed to formally incorporate all instances of multilayer graphs [@DeDomenico2013; @Kivela2014; @Boccaletti2014; @Aleta2019; @Bianconi2018; @Cozzo2018; @Artime2022; @DeDomenico2022]. 
 
-Multilayer graphs have been adopted to model the structure and dynamics of a wide range of high-dimensional and heterogeneous complex systems, including physical, chemical, biological, socio-technical and economic networks [@LazegaSnijders2016; @Dickison2016]. 
+Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional and heterogeneous complex systems, including physical, chemical, biological, socio-technical, ecological and economic networks [Baggio2016; @LazegaSnijders2016; @Dickison2016]. 
 
 # Statement of Need
 
