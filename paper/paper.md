@@ -31,12 +31,22 @@ bibliography: paper.bib
 
 # Summary
 
+**MultilayerGraphs.jl** is a Julia package for the creation, manipulation and analysis of the structure, dynamics and functions of multilayer graphs extending Graphs.jl [@Graphs2021] and fully integrating with the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem.
 
+A multilayer graph is a graph consisting of multiple standard subgraphs called *layers* which can be interconnected through bipartite graphs called *interlayers* composed of the vertex sets of two different layers and the edges between them. The vertices in each layer represent a single set of nodes, although not all nodes have to be represented in every layer. 
 
-## To-Write
-- One or two sentences on the mathematical formulation of graphs (with LaTeX) and scientific applications citing the relevant scientific literature
-- One or two sentences on the mathematical formulation of multilayer graphs (with LaTeX) and scientific applications citing the relevant scientific literature.
-- Highlight the importance of multilayer graphs in the modern computational modelling of high-dimensional, non-linear and highly heterogeneous phenomena both in the natural and in the social sciences.
+Formally, a multilayer graph can be defined as a triple $G=(V,E,L)$, where:
+- $V$ is the set of vertices;
+- $E$ is the set of edges, pairs of nodes $(u, v)$ representing a connection, relationship or interaction between the nodes $u$ and $v$;
+- $L$ is a set of layers, which are subsets of $V$ and $E$ encoding the nodes and edges within each layer.
+
+Each layer $\ell$ in $L$ is a tuple $(V_\ell, E_\ell)$, where $V_\ell$ is a subset of $V$ that represents the vertices within that layer, and $E_\ell$ is a subset of $E$ that represents the edges within that layer.
+
+A multilayer graph may also be formally defined as a collection of individual graphs $G = (G_1, G_2, ..., G_n)$, where each graph represents a layer and the edges between the layers represent inter-layer connections. 
+
+There are several special cases of multilayer graphs, and multiple theoretical frameworks have been proposed to formally incorporate all of them (see @Kivela2014). 
+
+Common application of multilayer graphs are social network and epidemiological modeling.
 
 # Statement of Need
 
