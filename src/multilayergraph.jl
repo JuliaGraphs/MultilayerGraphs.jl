@@ -102,6 +102,7 @@ function Graphs.add_edge!(
         #=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
                 set_weight!(mg, src, dst, _weight)
                 set_metadata!(mg, src, dst, _metadata) =#
+        @debug "Edge already exists" me [edge for edge in edges(mg) if node(src(edge)) == Node("node_1") &&  node(dst(edge)) == Node("node_1")]
         return false
     end
 end

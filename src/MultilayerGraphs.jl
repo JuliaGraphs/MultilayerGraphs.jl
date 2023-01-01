@@ -72,6 +72,7 @@ export
     adjacency_matrix,
     weights,
     name,
+    graph,
     # layer.jl
     AbstractLayer,
     Layer,
@@ -162,7 +163,7 @@ export
     kleitman_wang_graph_generator
 # tensorfacoriazations.jl
 
-using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections
+using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections, PrettyTables
 using Distributions: Uniform
 using LinearAlgebra, Statistics, OMEinsum, TensorOperations, Distributions
 using DataStructures, SparseArrays
@@ -174,6 +175,7 @@ include("vertices/multilayervertex.jl")
 include("vertices/missingvertex.jl")
 include("multilayeredge.jl")
 include("halfedge.jl")
+include("subgraphs/abstractdescriptor.jl")
 include("subgraphs/layerdescriptor.jl")
 include("subgraphs/interlayerdescriptor.jl")
 include("subgraphs/abstractsubgraph.jl")

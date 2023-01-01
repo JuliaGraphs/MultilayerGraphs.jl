@@ -1724,3 +1724,17 @@ function Base.getproperty(layer::L, f::Symbol) where {L<:Layer}
         Base.getfield(layer.descriptor, f)
     end
 end
+
+# Console print utilities
+function to_string(x::Layer)
+    """
+    Layer\t$(name(x))
+    underlying_graph: $(typeof(graph(x)))
+    vertex_type: $(parameters[1])
+    weight_type: $(parameters[2]) 
+    nv = $(nv(x))
+    ne = $(ne(x))
+    """
+end
+Base.show(io::IO, x::Layer) = print(io, to_string(x))
+

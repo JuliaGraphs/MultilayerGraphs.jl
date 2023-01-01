@@ -148,7 +148,7 @@ layer_vdg = Layer(
     _weighttype;
     default_edge_metadata=(src, dst) -> (rand(), "from_$(src)_to_$(dst)"),
 )
-_layer_valdigraph = layer_valdigraph(:layer_valdigraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10), Truncated(Normal(), 0, 10),default_vertex_metadata = mv -> ("metadata of $mv",), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
+# _layer_valdigraph = layer_valdigraph(:layer_valdigraph, sample(mvs_metadata, _nv, replace = false), Truncated(Normal(), 0, 10), Truncated(Normal(), 0, 10),default_vertex_metadata = mv -> ("metadata of $mv",), default_edge_metadata = (src,dst) -> (metaedge = "metadata of edge from $src to $dst",))
 
 
 
@@ -291,13 +291,16 @@ all_interlayers = [
     interlayer_empty_sdg_vdg,
 ]
 
+@debug "runtests finished"
 @testset verbose = true "MultilayerGraphs" begin
     @testset "layer" begin
         include("layer.jl")
     end
+    @debug "layer finished"
     @testset "interlayer" begin
         include("interlayer.jl")
     end
+    @debug "interlayer finished"
     @testset "abstractmultilayerugraph" begin
         include("abstractmultilayerugraph.jl")
     end

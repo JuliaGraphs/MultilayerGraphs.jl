@@ -127,14 +127,16 @@ is_directed(subgraph::AbstractSubGraph)
 is_directed(::Type{S}) where {T,U,G,S <: AbstractSubGraph{T,U,G}}
 adjacency_matrix(subgraph::AbstractSubGraph)
 MultilayerGraphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
-name(subgraph::AbstractSubGraph)
- 
+
 is_multiplex_interlayer(interlayer::Interlayer)
 
 get_symmetric_interlayer(
     interlayer::In;
     symmetric_interlayer_name::String = String(interlayer.name) * "_rev"
 ) where {T,U,G,In<:Interlayer{T,U,G}}
+
+name(subgraph::AbstractSubGraph)
+graph(subgraph::AbstractSubGraph)
 ```
 
 ### [Multilayer-Specific Methods](@id msm_eu)

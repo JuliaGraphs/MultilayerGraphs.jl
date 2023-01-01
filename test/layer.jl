@@ -88,6 +88,8 @@ add_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_vertex!(layer, rand_mv_1)
 @test has_vertex(layer, rand_mv_1)
 
+@debug ""
+
 #= rand_mv_1 =  rand(mv_vertices(layer_swg))
 rand_mv_2 =  rand(mv_vertices(layer_swg)) =#
 layer = layer_swg
@@ -114,6 +116,7 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_vertex!(layer, rand_mv_1)
 @test has_vertex(layer, rand_mv_1)
 
+@debug ""
 
 layer = layer_swdg
 #= rand_mv_1 =  rand(mv_vertices(layer))

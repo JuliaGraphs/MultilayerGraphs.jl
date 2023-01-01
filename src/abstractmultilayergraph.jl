@@ -496,8 +496,8 @@ function _specify_interlayer!(
         new_interlayer.descriptor
 
     for edge in edges(new_interlayer)
-        success = add_edge!(mg, edge)
-        @assert success
+        @assert add_edge!(mg, edge)
+        # assert success
     end
 
     return true
@@ -1194,3 +1194,29 @@ function get_rich_mv(
     bare_V = mg.v_V_associations[i]
     return MV(bare_V.node, bare_V.layer, mg.v_metadata_dict[i])
 end
+
+# Console print utilities
+function to_string(x::AbstractMultilayerGraph)
+    layers_strings     = join(to_string.(x.layers), "\n\n")
+    interlater_strings = join(to_string.(values(x.interlayers)), "\n\n")
+    layers_names              = name.(x.layers)
+    layers_underlying_graphs  = typeof.(graph.(x.layers) 
+    layers_eltypes       = eltype(x.layers).parameters
+    layers_vertextypes   = repeat([layers_eltypes[1]], length(x.layers))
+    layers_weighttypes   = repeat([layers_eltypes[2]], length(x.layers))
+
+    interlayers_names = name.(values(x.layers))
+    """
+    $(typeof(x))
+
+    ### LAYERS
+
+    $layers_strings
+
+    ### INTERLAYERS
+
+    $interlater_strings
+
+    """
+end
+Base.show(io::IO, x::AbstractMultilayerGraph) = print(io, to_string(x))
