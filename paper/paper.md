@@ -1,5 +1,5 @@
 ---
-title: 'MultilayerGraphs.jl: A Julia Package for the Creation, Manipulation and Analysis of Multilayer Graphs'
+title: 'MultilayerGraphs.jl: Multilayer Network Science in Julia'
 tags:
   - Julia
   - Graphs
