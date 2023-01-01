@@ -24,7 +24,7 @@ Multiple theoretical frameworks have been proposed to formally subsume all insta
 
 Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks ([Cozzo et al. (2013)](https://doi.org/10.1103/physreve.88.050801); [Estrada and Gomez-Gardenes (2014)](https://doi.org/10.1103/physreve.89.042819); [Baggio et al. (2016)](https://doi.org/10.1073/pnas.1604401113); [DeDomenico et al. (2016)](https://doi.org/10.1038/nphys3865); [Amato et al. (2017)](https://doi.org/10.1038/s41598-017-06933-2); [DeDomenico (2017)](https://doi.org/10.1093/gigascience/gix004); [Timteo et al. (2018)](https://doi.org/10.1038/s41467-017-02658-y); [Aleta et al. (2020)](https://doi.org/10.1038/s41562-020-0931-9); [Aleta et al. (2022)](https://doi.org/10.1073/pnas.2112182119)). 
 
-MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as **nodes** (`Node`), **vertices** (`MultilayerVertex`), **layers** (`Layer`), **interlayer** (`Interlayer`), etc.
+MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as nodes (`Node`), vertices (`MultilayerVertex`), layers (`Layer`), interlayer (`Interlayer`), etc.
 
 The two main data structures are `MultilayerGraph` and `MultilayerDiGraph`: collections of layers connected through interlayers. 
 
@@ -36,7 +36,9 @@ The **layers** are implemented via the `Layer` struct composed of an underlying 
 
 The `Multilayer(Di)Graph` structs are weighted and endowed with the functionality to store both vertex-level and edge-level metadata by default so that at any moment the user may add or remove a `Layer` or specify an `Interlayer` and since different layers and interlayers could be better represented by graphs that are weighted or unweighted and with or without metadata, it was crucial for us to provide the most general and adaptable structure. A `Multilayer(Di)Graph` is instantiated by providing the ordered list of layers and the list of interlayers to the constructor. The latter are automatically specified, so there is no need to instantiate all of them. 
 
-For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the [tutorial](https://juliagraphs.org/MultilayerGraphs.jl/stable/#Tutorial) included in the package documentation.  
+Finally, MultilayerGraphs.jl has been integrated within the [JuliaDynamics](https://github.com/JuliaDynamics) ecosystem so that any `Multilayer(Di)Graph` can be an argument to the `GraphSpace` constructor in [Agents.jl](https://github.com/JuliaDynamics/Agents.jl). 
+
+For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the [tutorial](https://juliagraphs.org/MultilayerGraphs.jl/stable/#Tutorial) included in the package documentation. 
 
 ## Notes 
 
