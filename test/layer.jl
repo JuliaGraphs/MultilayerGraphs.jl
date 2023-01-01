@@ -37,7 +37,7 @@ function _get_srcmv_dstmv_layer(layer::Layer)
 
     return mvs, src_mv, dst_mv
 end
-
+@debug ""
 #= rand_mv_1 =  rand(mv_vertices(layer_sg))
 rand_mv_2 =  rand(mv_vertices(layer_sg)) =#
 

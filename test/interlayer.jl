@@ -7,7 +7,6 @@ edgetype.(all_interlayers)
 
 for interlayer in all_interlayers
     @test all(has_edge.(Ref(interlayer), edges(interlayer)))
-    println(which(has_vertex, typeof.((interlayer, mv_vertices(interlayer)[1]))))
     @test all(has_vertex.(Ref(interlayer), mv_vertices(interlayer)))
     @test all(has_vertex.(Ref(interlayer), mv_vertices(interlayer)))
     mv = rand(collect(mv_vertices(interlayer)))
@@ -16,6 +15,8 @@ for interlayer in all_interlayers
     adjacency_matrix(interlayer)
     # MultilayerGraphs.weights(interlayer)
 end
+
+@debug ""
 
 ne.(all_interlayers)
 nv.(all_interlayers)

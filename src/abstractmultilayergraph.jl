@@ -1197,26 +1197,28 @@ end
 
 # Console print utilities
 function to_string(x::AbstractMultilayerGraph)
-    layers_strings     = join(to_string.(x.layers), "\n\n")
-    interlater_strings = join(to_string.(values(x.interlayers)), "\n\n")
+    unionall_type = typeof(x).name.wrapper
+    parameters = typeof(x).parameters
+
     layers_names              = name.(x.layers)
-    layers_underlying_graphs  = typeof.(graph.(x.layers) 
-    layers_eltypes       = eltype(x.layers).parameters
-    layers_vertextypes   = repeat([layers_eltypes[1]], length(x.layers))
-    layers_weighttypes   = repeat([layers_eltypes[2]], length(x.layers))
+    layers_underlying_graphs  = typeof.(graph.(x.layers))
 
-    interlayers_names = name.(values(x.layers))
+    layers_table = pretty_table(String, hcat(layers_names, layers_underlying_graphs); title = "### LAYERS", header = (["NAME", "UNDERLYING GRAPH"]), alignment = :c, header_alignment = :c, header_crayon = crayon"yellow bold", hlines = :all)
+
+    interlayers_names = name.(values(x.interlayers))
+    interlayers_underlying_graphs  = typeof.(graph.(values(x.interlayers)))
+    interlayer_layer_1s = getproperty.(values(x.interlayers), Ref(:layer_1))
+    interlayer_layer_2s = getproperty.(values(x.interlayers), Ref(:layer_2))
+    interlayer_tranfers = getproperty.(values(x.interlayers), Ref(:transfer_vertex_metadata))
+
+    interlayers_table = pretty_table(String, hcat(interlayers_names, interlayer_layer_1s, interlayer_layer_2s, interlayers_underlying_graphs, interlayer_tranfers ); title = "### INTERLAYERS", header = (["NAME", "LAYER 1", "LAYER 2", "UNDERLYING GRAPH", "TRANSFER VERTEX METADATA"]), alignment = :c, header_alignment = :c, header_crayon = crayon"yellow bold", hlines = :all)
+
     """
-    $(typeof(x))
+    `$unionall_type` with vertex type `$(parameters[1])` and weight type `$(parameters[2])`.
 
-    ### LAYERS
+    $layers_table
 
-    $layers_strings
-
-    ### INTERLAYERS
-
-    $interlater_strings
-
+    $interlayers_table
     """
 end
 Base.show(io::IO, x::AbstractMultilayerGraph) = print(io, to_string(x))

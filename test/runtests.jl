@@ -169,7 +169,7 @@ _nv_1 = nv(layer_sg)
 _nv_2=  nv(layer_swg)
 _ne = rand(1:(_nv_1 * _nv_2))
 interlayer_sg_swg = Interlayer(layer_sg, layer_swg, _ne, SimpleGraph{vertextype}())
-#_interlayer_simplegraph = interlayer_simplegrah(layer_sg, layer_swg, collect(edges(interlayer_sg_swg)))
+_interlayer_simplegraph = interlayer_simplegrah(layer_sg, layer_swg, collect(edges(interlayer_sg_swg)))
 
 _nv_1 = nv(layer_swg)
 _nv_2=  nv(layer_mg)

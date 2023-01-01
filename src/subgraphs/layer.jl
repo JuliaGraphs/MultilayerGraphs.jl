@@ -1727,11 +1727,12 @@ end
 
 # Console print utilities
 function to_string(x::Layer)
+    parameters = typeof(x).parameters
     """
     Layer\t$(name(x))
     underlying_graph: $(typeof(graph(x)))
-    vertex_type: $(parameters[1])
-    weight_type: $(parameters[2]) 
+    vertex type: $(parameters[1])
+    weight type: $(parameters[2]) 
     nv = $(nv(x))
     ne = $(ne(x))
     """

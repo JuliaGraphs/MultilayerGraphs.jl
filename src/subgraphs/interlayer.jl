@@ -94,7 +94,7 @@ Internal constructor used with InterlayerDescriptor.
 function _Interlayer(
     layer_1_multilayervertices::Vector{<:MultilayerVertex},
     layer_2_multilayervertices::Vector{<:MultilayerVertex},
-    edge_list::Union{Vector{<:MultilayerEdge{ <: Union{U,Nothing}}}, Vector{Tuple{<:MultilayerVertex, <:MultilayerVertex}}}, # MultilayerVertex, {<: Union{U, Nothing}} 
+    edge_list::Union{<:Vector{<:MultilayerEdge{ <: Union{U,Nothing}}}, <:Vector{ <: Tuple{<:MultilayerVertex, <:MultilayerVertex}}}, # MultilayerVertex, {<: Union{U, Nothing}} 
     descriptor::InterlayerDescriptor{T,U,G},
 ) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
 
@@ -127,7 +127,7 @@ function _Interlayer(
         mv_vertices(layer_1), mv_vertices(layer_2), edge_list, descriptor
     ) =#
 
-    return Interlayer(mv_vertices(layer_1), mv_vertices(layer_2), edge_list, descriptor) # , graph, v_V_associations
+    return _Interlayer(mv_vertices(layer_1), mv_vertices(layer_2), edge_list, descriptor) # , graph, v_V_associations
 end
 
 """
@@ -186,8 +186,8 @@ function Interlayer(
     ) =#
 
     descriptor = InterlayerDescriptor(
-        interlayer_name(layer_1),
-        interlayer_name(layer_2),
+        name(layer_1),
+        name(layer_2),
         null_graph,
         U;
         default_edge_weight=default_edge_weight,
@@ -377,7 +377,7 @@ function Interlayer(
     )
 end
 
-"""
+#= """
     _Interlayer(
         layer_1_multilayervertices::Vector{MultilayerVertex{L1}},
         layer_2_multilayervertices::Vector{MultilayerVertex{L2}},
@@ -441,7 +441,7 @@ function _Interlayer(
     return _Interlayer(
         layer_1_multilayervertices, layer_2_multilayervertices, edge_list, descriptor
     )
-end
+end =#
 
 
 
@@ -488,6 +488,8 @@ multiplex_interlayer(
                                                                             transfer_vertex_metadata=transfer_vertex_metadata,
                                                                             interlayer_name = interlayer_name
 )
+
+
 
 """
     _multiplex_interlayer(
@@ -668,20 +670,19 @@ Constructor for Interlayer whose underlying graph is a `SimpleGraph` from `Graph
 function interlayer_simplegrah(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, Vector{NTuple{2, MultilayerVertex}}};
+    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
     vertextype::Type{<:Integer} = Int64,
     interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
 ) where {T<:Integer,U<:Real}
-
+#= 
     layer_1_multilayervertices = collect(mv_vertices(layer_1))
-    layer_2_multilayervertices = collect(mv_vertices(layer_2))
+    layer_2_multilayervertices = collect(mv_vertices(layer_2)) =#
 
-    return _Interlayer(
-        layer_1_multilayervertices,
-        layer_2_multilayervertices,
+    return Interlayer(
+        layer_1,
+        layer_2,
         SimpleGraph{vertextype}(),
-        edge_list,
-        U;
+        edge_list;
         interlayer_name = interlayer_name
     )
 end
@@ -988,14 +989,16 @@ end
 
 # Console print utilities
 function to_string(x::Interlayer)
+    parameters  = typeof(x).parameters
     """
-    $(typeof(x))
-    name: $(name(x))
+    Interlayer\t$(name(x))
     layer_1: $(x.layer_1)
     layer_2: $(x.layer_2)
-    underlying graph: $(x.graph)
-    nv = $(nv(x))
-    ne = $(ne(x))
+    underlying graph: $(typeof(x.graph))
+    vertex type : $(parameters[1]) 
+    weight type : $(parameters[2]) 
+    nv : $(nv(x))
+    ne : $(ne(x))
     """
 end
 Base.show(io::IO, x::Interlayer) = print(io, to_string(x))
