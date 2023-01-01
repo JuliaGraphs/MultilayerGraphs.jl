@@ -61,6 +61,20 @@ We have chosen the [Julia language](https://julialang.org) for this software pac
 - Extension of Graphs.jl [@Graphs2021], fully integrated within the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem
 - Integrated within the [JuliaDynamics](https://github.com/JuliaDynamics) ecosystem: in particular `Multilayer(Di)Graph`s can be utilised as an argument to `GraphSpace` in Agents.jl [@Datseris2022]. 
 
+Although, as we said above, MultilayerGraphs.jl is an integral part of the JuliaGraphs ecosystem extending Graphs.jl, due to the special nature of multilayer graphs it features a peculiar implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects an experienced practitioner would expect such as nodes (`Node`), vertices (`MultilayerVertex`), layers (`Layer`), interlayer (`Interlayer`), etc. 
+
+The two main data structures are `MultilayerGraph` and `MultilayerDiGraph`: collections of layers interacting through interlayers. 
+
+The vertices of a multilayer graph are representations of one set of distinct objects called `Node`s. Each layer may represent all the node set or just a subset of it. The vertices of `Multilayer(Di)Graph` are implemented via the `MultilayerVertex` custom type. Each `MultilayerVertex` encodes information about the node it represents, the layer it belongs to and its metadata. 
+
+Both the intra-layer and inter-layer edges are embedded in the `MultilayerEdge` struct, whose arguments are the two connected multilayer vertices, the edge weight and its metadata. It's important to highlight that `Multilayer(Di)Graph`s are weighted and able to store metadata by default (i.e. they have been assigned the `IsWeighted` and `IsMeta` traits from [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl)). 
+
+The layers are implemented via the `Layer` struct composed of an underlying graph and a mapping from its integer-labelled vertices to the collection of `MultilayerVertex`s the layer represents Interlayers are similarly implemented via the `Interlayer` mutable struct, and they are generally constructed by providing the two connected layers, the (multilayer) edge list between them and a graph. 
+
+This usage of underlying graphs allows for an easier debugging procedure during construction and a more intuitive analysis afterwards allowing the package to leverage all the features of the JuliaGraphs ecosystem so that it can be effectively considered as a real proving ground of its internal consistency.  
+
+
+
 # Installation and Usage 
 
 To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pressing `]` in the Julia REPL and then run the following command:
@@ -71,7 +85,7 @@ pkg> add MultilayerGraphs
 
 In the following code chunks we synthetically illustrate how to define, handle and analyse a `MultilayerGraph` in order to showcase some of the main features outlined in the previous section.
 
-First of all we need to import the necessary dependencies and set a few constants: 
+First of all we need to import the necessary dependencies and set a few relevant constants: 
 
 ```julia
 using Revise
