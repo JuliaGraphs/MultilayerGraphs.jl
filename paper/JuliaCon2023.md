@@ -49,7 +49,7 @@ At the best of our knowledge there are currently no software packages dedicated 
 See the relevant [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues). 
 
 ### Publication
-We [are are going to submit / have submitted] a [paper] to [JOSS](https://joss.theoj.org) presenting MultilayerGraphs.jl. 
+We [are are going to submit / have submitted] a [paper](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/JOSS/paper/paper.pdf) to [JOSS](https://joss.theoj.org) presenting MultilayerGraphs.jl. 
 
 MultilayerGraphs.jl has been published on the following open access websites: 
 - [GitHub](https://github.com/JuliaGraphs/MultilayerGraphs.jl);
