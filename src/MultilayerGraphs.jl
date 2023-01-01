@@ -91,7 +91,12 @@ export
     # interlayer.jl
     AbstractInterlayer,
     Interlayer,
-    interlayer_simplegrah,
+    interlayer_simplegraph,
+    interlayer_simpleweightedgraph,
+    interlayer_metagraph,
+    interlayer_valgraph,
+    interlayer_simpledigraph,
+    interlayer_simpleweighteddigraph,
     multiplex_interlayer,
     empty_interlayer,
     is_multiplex_interlayer,

@@ -55,7 +55,7 @@ layer_swg = Layer(
     default_edge_weight=(src, dst) -> rand(),
 )
 _layer_simpleweightedgraph = layer_simpleweightedgraph(:layer_simpleweightedgraph, sample(mvs_layers, _nv, replace = false), Truncated(Normal(), 0, 10), default_edge_weight = (src,dst) -> 3.0)
-# Test constructor with node vertices and  edge tuples
+# Test constructor with node vertices and edge tuples
 node_vertices = sample(multilayer_nodes, _nv, replace = false)
 _layer_simpleweightedgraph_default = layer_simpleweightedgraph(:layer_simpleweightedgraph_default, node_vertices , [Tuple(MV.(rand(node_vertices,2))) for i in 1:_ne], default_edge_weight = (src,dst) -> 3.0)
 @test all(weight.(collect(edges(_layer_simpleweightedgraph_default))) .== 3.0)
@@ -181,6 +181,9 @@ interlayer_swg_mg = Interlayer(
     SimpleWeightedGraph{vertextype,_weighttype}();
     default_edge_weight=(x, y) -> rand(),
 )
+# Test simplified constructor with edge tuples
+_interlayer_simpleweightedgraph = interlayer_simpleweightedgraph(layer_swg, layer_mg, [(src(edge), dst(edge)) for edge in edges(interlayer_swg_mg)], default_edge_weight = (src,dst) -> 4.0)
+@test all(weight.(edges(_interlayer_simpleweightedgraph)) .== 4.0)
 
 _nv_1 = nv(layer_mg)
 _nv_2=  nv(layer_vg)
@@ -222,6 +225,9 @@ interlayer_swdg_mdg = Interlayer(
     SimpleWeightedDiGraph{vertextype,_weighttype}();
     default_edge_weight=(x, y) -> rand(),
 )
+# Test simplified constructor with edge tuples
+_interlayer_simpleweighteddigraph = interlayer_simpleweighteddigraph(layer_swdg, layer_mdg, [(src(edge), dst(edge)) for edge in edges(interlayer_swdg_mdg)], default_edge_weight = (src,dst) -> 4.0)
+@test all(weight.(edges(_interlayer_simpleweighteddigraph)) .== 4.0)
 
 _nv_1 = nv(layer_mdg)
 _nv_2=  nv(layer_vodg)
