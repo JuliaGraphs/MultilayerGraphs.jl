@@ -47,9 +47,9 @@ Each layer $\ell$ in $L$ is a tuple $(V_\ell, E_\ell)$, where $V_\ell$ is a subs
 
 # Statement of Need
 
-Multiple theoretical frameworks have been proposed to formally incorporate all instances of multilayer graphs [@DeDomenico2013; @Kivela2014; @Boccaletti2014; @Aleta2019; @Bianconi2018; @Cozzo2018; @Artime2022; @DeDomenico2022]. 
+Multiple theoretical frameworks have been proposed to formally integrate all instances of multilayer graphs [@DeDomenico2013; @Kivela2014; @Boccaletti2014; @Aleta2019; @Bianconi2018; @Cozzo2018; @Artime2022; @DeDomenico2022]. 
 
-Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional and heterogeneous complex systems, including physical, chemical, biological, neuronal, socio-technical, ecological and economic networks [@Baggio2016; @LazegaSnijders2016; @Dickison2016; @Timteo2018; @Buldu2018; @Lim2019]. 
+Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems, including physical, chemical, biological, neuronal, socio-technical, ecological and economic networks [@Baggio2016; @LazegaSnijders2016; @Dickison2016; @Timteo2018; @Buldu2018; @Lim2019]. 
 
 We have chosen the [Julia language](https://julialang.org) for this software package because it is a modern, open-source, high-level, high-performance dynamic language for technical computing [@Bezanson2017]. At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the Julia language apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022]. 
 
@@ -78,7 +78,7 @@ Once  a `Multilayer(Di)Graph` has been instantiated, its layers and interlayers 
 
 # Installation and Usage 
 
-To install MultilayerGraphs.jl it's sufficient to activate the `pkg` mode by pressing `]` in the Julia REPL and then run the following command:
+To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pressing `]` in the Julia REPL and then run the following command:
 
 ```nothing
 pkg> add MultilayerGraphs
