@@ -24,7 +24,7 @@ Multilayer graphs have been adopted to model the structure and dynamics of a wid
 
 MultilayerGraphs.jl is integrated within the **JuliaGraphs** ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) with several multilayer-specific methods and metrics including the multilayer eigenvector centrality, the multilayer modularity and the Von Newman entropy. 
 
-The package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as nodes (`Node`), vertices (`MultilayerVertex`), layers (`Layer`), interlayer (`Interlayer`), etc.
+The package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as nodes (`Node`), vertices (`MultilayerVertex`), layers (`Layer`), interlayers (`Interlayer`), etc.
 
 The two main data structures are `MultilayerGraph` and `MultilayerDiGraph`: collections of layers connected through interlayers. 
 
