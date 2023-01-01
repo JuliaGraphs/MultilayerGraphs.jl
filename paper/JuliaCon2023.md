@@ -40,9 +40,14 @@ For a more comprehensive exploration of the package features and functionalities
 
 ## Notes 
 
+### Statement of Need 
 At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the Julia language apart from MultilayerGraphs.jl itself.
 
-We're are going to submit / have submitted a JOSS paper presenting MultilayerGraphs.jl. 
+### Future Developments 
+See the relevant [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues). 
+
+### Publication
+We [are are going to submit / have submitted] a [paper] to [JOSS](https://joss.theoj.org) presenting MultilayerGraphs.jl. 
 
 MultilayerGraphs.jl has been published on the following open access websites: 
 - [GitHub](https://github.com/JuliaGraphs/MultilayerGraphs.jl);
