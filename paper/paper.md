@@ -69,9 +69,40 @@ To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pr
 pkg> add MultilayerGraphs
 ```
 
-[HERE WE SHOULD INSERT A FEW LINES OF CODE SHOWACASING THE MAIN FEATURES WRITTEN ABOVE]
+In the following code chunks we synthetically illustrate how to define, handle and analyse a `MultilayerGraph` in order to showcase some of the main features outlined in the previous section.
 
-In the package documentation you can find a comprehensive [tutorial](https://juliagraphs.org/MultilayerGraphs.jl/stable/#Tutorial) that illustrates all its main features and functionalities.
+First of all we need to import the necessary dependencies and set a few constants: 
+
+```julia
+using Revise
+using StatsBase, Distributions
+using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
+using MultilayerGraphs
+
+const vertextype   = Int64
+const _weighttype  = Float64
+const min_vertices = 5
+const max_vertices = 7
+const min_edges    = 1
+const max_edges    = max_vertices*(max_vertices-1)
+const n_nodes      = max_vertices
+```
+
+[...] 
+
+Then we define a multilayer graph by specifying its layers and interlayers: 
+
+```julia
+multilayergraph = MultilayerGraph(  layers, 
+                                    interlayers;  
+                                    default_interlayers_null_graph = SimpleGraph{vertextype}(), 
+                                    default_interlayers_structure = "multiplex" 
+)
+```
+
+[...] 
+
+For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the [tutorial](https://juliagraphs.org/MultilayerGraphs.jl/stable/#Tutorial) included in the package documentation.  
 
 # Related Packages 
 
