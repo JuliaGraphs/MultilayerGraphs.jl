@@ -43,7 +43,9 @@ Formally, a multilayer graph can be defined as a triple $G=(V,E,L)$, where:
 
 Each layer $\ell$ in $L$ is a tuple $(V_\ell, E_\ell)$, where $V_\ell$ is a subset of $V$ that represents the vertices within that layer, and $E_\ell$ is a subset of $E$ that represents the edges within that layer.
 
-MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending Graphs.jl [@Graphs2021] so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features a peculiar implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects an experienced practitioner would expect such as nodes (`Node`), vertices (`MultilayerVertex`), layers (`Layer`), interlayer (`Interlayer`), etc. Additionally we have developed several multilayer-specific methods and metrics including the *global clustering coefficient*, the *overlay clustering coefficient*, the *multilayer eigenvector centrality*, the *multilayer modularity* and the *Von Neumann entropy*.
+MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending Graphs.jl [@Graphs2021] so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features a peculiar implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects an experienced practitioner would expect such as nodes (`Node`), vertices (`MultilayerVertex`), layers (`Layer`), interlayer (`Interlayer`), etc.
+
+Additionally MultilayerGraphs.jl features multilayer-specific methods and metrics including the *global clustering coefficient*, the *overlay clustering coefficient*, the *multilayer eigenvector centrality*, the *multilayer modularity* and the *Von Neumann entropy*.
 
 # Statement of Need
 
