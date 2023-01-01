@@ -1,26 +1,6 @@
 # Summary
 
-A multilayer graph is, loosely speaking, a collection of "layers" (represented by regular graphs) 
-that also allows for links between the vertices of different layers. The bipartite graphs constituted 
-by the two sets of vertices of two different layers and the edges between them are called "interlayers". 
-The vertices in each layer represent a single set of nodes, although not all nodes have to be represented in every layer. 
-There are multiple special cases of multilayer graphs, and multiple frameworks have been proposed to explain them all (see @Kivela2014). 
-Common application of multilayer graphs are social network and epidemiological modeling.
-
-From muxViz: "Multilayer networks are a class of models widely adopted to represent empirical complex system, including biomolecular networks (eg, interactomes, metabolomes), neuronal networks (eg, connectomes), information and communication networks, social/socio-technical/socio-ecological networks, economic and financial networks, urban and transportation networks."
-
-From mully: "Network theory has been used for many years in the modelling and analysis of complex systems, as epidemiology, biology and biomedicine. As the data evolves and become more heterogeneous and complex, monoplex networks become an oversimplification of the corresponding systems. This imposes a need to go beyond traditional networks into a richer framework capable of hosting objects and relations of different scales and attributes called Multilayered Network."
-
 # Statement of Need
-
-The Julia graph ecosystem, which gravitates around the {Graph.jl}[@Graphs2021] package, was lacking an implementation of general multilayer graphs, particularly one that was simultaneously integrated with the main agent-based modeling library, {Agents.jl}[@Agents.jl]. 
-Great care has been devoted to seamlessly integrate the package with the existing ecosystem, filling gaps in the latter where necessary:
-- [Implementation of `isdigraphical` and fix of `isgraphical`](https://github.com/JuliaGraphs/Graphs.jl/pull/186);
-- [Implementation of Havel-Hakimi and Kleitman-Wang algorithm for simple graph realization](https://github.com/JuliaGraphs/Graphs.jl/pull/202));
-- [Better integration of Agents.jl with the graph ecosystem](https://github.com/JuliaDynamics/Agents.jl/pull/693);
-- [Feedback on the state of the graph ecosystem](https://github.com/JuliaGraphs/Graphs.jl/issues/165).
-
-This resulted in the creation of two API sets: one meant for the end-user, and the other for the developer.
 
 # Main Features 
 
