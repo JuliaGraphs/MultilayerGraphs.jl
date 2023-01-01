@@ -36,9 +36,9 @@ The **layers** are implemented via the `Layer` struct composed of an underlying 
 
 The `Multilayer(Di)Graph` structs are weighted and endowed with the functionality to store both vertex-level and edge-level metadata by default so that at any moment the user may add or remove a `Layer` or specify an `Interlayer` and since different layers and interlayers could be better represented by graphs that are weighted or unweighted and with or without metadata, it was crucial for us to provide the most general and adaptable structure. A `Multilayer(Di)Graph` is instantiated by providing the ordered list of layers and the list of interlayers to the constructor. The latter are automatically specified, so there is no need to instantiate all of them. 
 
-Finally, MultilayerGraphs.jl has been integrated within the [JuliaDynamics](https://github.com/JuliaDynamics) ecosystem so that any `Multilayer(Di)Graph` can be an argument to the `GraphSpace` constructor in [Agents.jl](https://github.com/JuliaDynamics/Agents.jl). 
+Finally, MultilayerGraphs.jl has been integrated within the **JuliaDynamics** ecosystem so that any `Multilayer(Di)Graph` can be taken as an argument to the `GraphSpace` constructor in [Agents.jl](https://github.com/JuliaDynamics/Agents.jl). 
 
-For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the [tutorial](https://juliagraphs.org/MultilayerGraphs.jl/stable/#Tutorial) included in the package documentation. 
+For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the [tutorial](https://juliagraphs.org/MultilayerGraphs.jl/stable/#Tutorial) included in the package documentation.
 
 ## Notes 
 
