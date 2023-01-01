@@ -68,4 +68,3 @@ Social preview or logo.
 ## Additional Speaker 
 
 Claudio's email address (the same used for GitHub?). 
-
