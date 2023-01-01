@@ -12,8 +12,6 @@ Lightning talk (10 minutes)
 
 **MultilayerGraphs.jl** is a Julia package for the creation, manipulation and analysis of multilayer graphs, which have been adopted to model of a wide range of complex systems from bio-chemical to socio-technical networks.
 
-It is integrated within the **JuliaGraphs** ecosystem extending **Graphs.jl** with several multilayer-specific methods and metrics including the multilayer eigenvector centrality, the multilayer modularity and the Von Newman entropy. 
-
 ## Description 
 
 [**MultilayerGraphs.jl**](https://github.com/JuliaGraphs/MultilayerGraphs.jl) is a Julia package for the creation, manipulation and analysis of the structure, dynamics and functions of multilayer graphs. 
@@ -24,7 +22,9 @@ Multiple theoretical frameworks have been proposed to formally subsume all insta
 
 Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks ([Cozzo et al. (2013)](https://doi.org/10.1103/physreve.88.050801); [Estrada and Gomez-Gardenes (2014)](https://doi.org/10.1103/physreve.89.042819); [Baggio et al. (2016)](https://doi.org/10.1073/pnas.1604401113); [DeDomenico et al. (2016)](https://doi.org/10.1038/nphys3865); [Amato et al. (2017)](https://doi.org/10.1038/s41598-017-06933-2); [DeDomenico (2017)](https://doi.org/10.1093/gigascience/gix004); [Timteo et al. (2018)](https://doi.org/10.1038/s41467-017-02658-y); [Aleta et al. (2020)](https://doi.org/10.1038/s41562-020-0931-9); [Aleta et al. (2022)](https://doi.org/10.1073/pnas.2112182119)). 
 
-MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as nodes (`Node`), vertices (`MultilayerVertex`), layers (`Layer`), interlayer (`Interlayer`), etc.
+MultilayerGraphs.jl is integrated within the **JuliaGraphs** ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) with several multilayer-specific methods and metrics including the multilayer eigenvector centrality, the multilayer modularity and the Von Newman entropy. 
+
+The package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as nodes (`Node`), vertices (`MultilayerVertex`), layers (`Layer`), interlayer (`Interlayer`), etc.
 
 The two main data structures are `MultilayerGraph` and `MultilayerDiGraph`: collections of layers connected through interlayers. 
 
@@ -43,12 +43,15 @@ For a more comprehensive exploration of the package features and functionalities
 ## Notes 
 
 ### Statement of Need 
+
 At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the Julia language apart from MultilayerGraphs.jl itself.
 
 ### Future Developments 
+
 See the relevant [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues). 
 
 ### Publication
+
 We [are are going to submit / have submitted] a [paper](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/JOSS/paper/paper.pdf) to [JOSS](https://joss.theoj.org) presenting MultilayerGraphs.jl. 
 
 MultilayerGraphs.jl has been published on the following open access websites: 
