@@ -1188,7 +1188,7 @@ function get_rich_mv(
 ) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     if perform_checks
         haskey(mg.v_V_associations, i) ||
-            throw(ErrorException("$i is not a vertex of the multilayer graph"))
+            throw(ErrorException("$i is not a vertex of the multilayer graph."))
     end
 
     bare_V = mg.v_V_associations[i]

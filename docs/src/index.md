@@ -120,7 +120,7 @@ multilayervertices_meta[1]
 MV(Node("node_1"), :nothing, ("I'm node node_1",))
 ```
 
-Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in (accessible via the [`layer`](@ref) function, here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex (accessible via the [`metadata`](@ref) function, no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples). For a complete list of methods applicable to `MultilayerVertices`, plese refer to the [Vertices](@ref vertices_eu) of the API.
+Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in (accessible via the [`layer`](@ref) function, here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex (accessible via the [`metadata`](@ref) function, no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples). For a complete list of methods applicable to `MultilayerVertices`, please refer to the [Vertices](@ref vertices_eu) of the API.
 
 ### Layers
 
@@ -142,7 +142,7 @@ Layer(
 
 A `Layer` is considered "weighted" if its underlying graph (`null_graph` argument) has been given the `IsWeighted` trait (traits throughout this package are implemented via [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl), just like Graphs.jl does). Since one may at any moment add a new weighted `Layer` to a `MultilayerGraph` (see below for details), the latter is always considered a "weighted graph", so it is given the `IsWeighted` trait. Thus, all `Layer`s and `Interlayer`s (collectively named "subgraphs" hereafter) must specify their `weighttype` as the last argument of their constructor, so the user may debug their weight matrices ([`weights(subgraph::AbstractSubGraph)`](@ref)) immediately after construction. As better specified below, all subgraphs that are meant to be part of the same `MultilayerGraph` must have the same `weighttype`. Moreover, also the vertex type `T` (i.e. the internal representation of vertices) should be the same.
 
-Before instantiating `Layer`s, we define an utility function to ease randomization:
+Before instantiating `Layer`s, we define an utility function to ease randomisation:
 
 ```julia
 # Utility function that returns a random number of vertices and edges each time it is called:
@@ -228,7 +228,7 @@ layers = [layer_sg, layer_swg, layer_mg, layer_vg]
 
 The API that inspects and modifies `Layer`s will be shown below together with that of `Interlayer`s, since they are usually the same.  There are of course other constructors that you may discover by reading the [API](@ref subgraphs_eu). They include:
 
-1. Constructors that exempt the user from having to explictly specify the `null_graph`, at the cost of some flexibility;
+1. Constructors that exempt the user from having to explicitly specify the `null_graph`, at the cost of some flexibility;
 2. Constructors that allow for a configuration model-like specifications.
 
 ### Interlayers
@@ -321,7 +321,7 @@ interlayer_empty_sg_vg = empty_interlayer(  layer_sg,
 interlayers = [interlayer_sg_swg, interlayer_swg_mg, interlayer_mg_vg, interlayer_multiplex_sg_mg, interlayer_empty_sg_vg]
 ```
 
-There are of course other constructors that you may discover by reading the [API](@ref subgraphs_eu). They include constructors that exempt the user from having to explictly specify the `null_graph`, at the cost of some flexibility;
+There are of course other constructors that you may discover by reading the [API](@ref subgraphs_eu). They include constructors that exempt the user from having to explicitly specify the `null_graph`, at the cost of some flexibility;
 
 Next, we explore the API associated to modify and analyze `Layer`s and `Interlayer`s.
 
@@ -649,7 +649,7 @@ It is used as:
 
 ```julia
 # The configuration model-like constructor will be responsible for creating the edges, so we need to provide it with empty layers and interlayers.
-# To create empty layers and interlayers, we will empty the above subgraphs, and, for compatobility reasons, we'll remove the ones having a `SimpleWeightedGraph`s. These lines are not necessary to comprehend the tutorial, they may be skipped. Just know that the variables `empty_layers` and `empty_interlayers` are two lists of, respectively, empty layers and interlayers that do not have `SimpleWeightedGraph`s as their underlying graphs
+# To create empty layers and interlayers, we will empty the above subgraphs, and, for compatibility reasons, we'll remove the ones having a `SimpleWeightedGraph`s. These lines are not necessary to comprehend the tutorial, they may be skipped. Just know that the variables `empty_layers` and `empty_interlayers` are two lists of, respectively, empty layers and interlayers that do not have `SimpleWeightedGraph`s as their underlying graphs
 
 empty_layers =  deepcopy([layer for layer in layers if !(layer.graph isa SimpleWeightedGraphs.AbstractSimpleWeightedGraph)])
 

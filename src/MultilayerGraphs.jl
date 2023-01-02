@@ -14,7 +14,7 @@
 
 # The δ_Ω implementation could be moved to a separate file.
 
-# The usage of mutable `MissingVertex`s (although limited to SupraWeightMatrix) points to the fact that Bijections (at least as they are used right now) are not the best way to represent integer label-MultilayerVertex associations. We my implement our own container object or use the exixtsing ons differently.
+# The usage of mutable `MissingVertex`s (although limited to SupraWeightMatrix) points to the fact that Bijections (at least as they are used right now) are not the best way to represent integer label-MultilayerVertex associations. We my implement our own container object or use the existing ons differently.
 
 # We need a quick Multilayer(Di)Graph constructor of the form Multilayer(Di)Graph(nn, nl; nv = rand(0:nn*nl), ne = rand(0:nv*(nv-1)) kwargs...) where kwargs may be used to further specify it.
 

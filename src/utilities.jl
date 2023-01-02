@@ -655,8 +655,8 @@ Returns a simple directed graph with given finite in-degree and out-degree seque
 4. Repeat from 1. until all indegree-outdegree pairs are of the form (0.0).
 
 ## References
-- [Wikipedia](https://en.wikipedia.org/wiki/Kleitman%E2%80%93Wang_algorithms)
-- [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X)
+- [Wikipedia](https://en.wikipedia.org/wiki/Kleitman%E2%80%93Wang_algorithms);
+- [Kleitman and Wang (1973)](https://doi.org/10.1016/0012-365X(73)90037-X).
 """
 function kleitman_wang_graph_generator(
     indegree_sequence::AbstractVector{<:Integer},
@@ -724,7 +724,7 @@ end
 """
     sample_graphical_degree_sequence(degree_distribution::UnivariateDistribution, n::Integer)
 
-Sample a graphical degree sequence for a graph with `n` vertices from `degree_distribution`
+Sample a graphical degree sequence for a graph with `n` vertices from `degree_distribution`.
 """
 function sample_graphical_degree_sequence(
     degree_distribution::UnivariateDistribution, n::Integer

@@ -25,7 +25,7 @@ is_weighted(g::G) where {G<:Type{<:AbstractGraph}} = istrait(IsWeighted{g})
 """
     IsMeta{X}
 
-Trait that discerns between graphs that sport edge and vertex  metadata.
+Trait that discerns between graphs that sport edge and vertex metadata.
 """
 @traitdef IsMeta{X}
 
