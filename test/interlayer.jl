@@ -21,25 +21,34 @@ end
 ne.(all_interlayers)
 nv.(all_interlayers)
 
+
 function _get_srcmv_dstmv_interlayer(interlayer::Interlayer)
     mvs = MultilayerGraphs.get_bare_mv.(collect(mv_vertices(interlayer)))
 
-    src_mv = nothing
-    _collection = []
-
-    while isempty(_collection)
-        src_mv = rand(mvs)
-        _collection = setdiff(
-            Set(mvs),
-            Set(
-                vcat(
-                    MultilayerGraphs.get_bare_mv.(mv_outneighbors(interlayer, src_mv)),
-                    src_mv,
-                    MultilayerGraphs.get_bare_mv.(mv_vertices(eval(src_mv.layer))),
-                ),
+    src_mv_idx = findfirst(mv -> !isempty(setdiff(
+        Set(mvs),
+        Set(
+            vcat(
+                MultilayerGraphs.get_bare_mv.(mv_outneighbors(interlayer, mv)),
+                mv,
+                MultilayerGraphs.get_bare_mv.(mv_vertices(eval(mv.layer))),
             ),
-        )
-    end
+        ),
+    )), mvs)
+
+    src_mv = mvs[src_mv_idx]
+
+    _collection = setdiff(
+        Set(mvs),
+        Set(
+            vcat(
+                MultilayerGraphs.get_bare_mv.(mv_outneighbors(interlayer, src_mv)),
+                src_mv,
+                MultilayerGraphs.get_bare_mv.(mv_vertices(eval(src_mv.layer))),
+            ),
+        ),
+    )
+
 
     dst_mv = MultilayerGraphs.get_bare_mv(rand(_collection))
 

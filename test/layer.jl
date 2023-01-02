@@ -20,18 +20,22 @@ is_directed.(all_layers)
 function _get_srcmv_dstmv_layer(layer::Layer)
     mvs = MultilayerGraphs.get_bare_mv.(collect(mv_vertices(layer)))
 
-    src_mv = nothing
-    _collection = []
+    src_mv_idx = findfirst(mv -> !isempty(setdiff(
+        Set(mvs),
+        Set(
+            vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, mv)), mv)
+        ),
+    )), mvs)
 
-    while isempty(_collection)
-        src_mv = rand(mvs)
-        _collection = setdiff(
-            Set(mvs),
-            Set(
-                vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, src_mv)), src_mv)
-            ),
-        )
-    end
+    src_mv = mvs[src_mv_idx]
+
+    _collection = setdiff(
+        Set(mvs),
+        Set(
+            vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, src_mv)), src_mv)
+        ),
+    )
+
 
     dst_mv = MultilayerGraphs.get_bare_mv(rand(_collection))
 

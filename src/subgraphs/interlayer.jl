@@ -682,6 +682,44 @@ function interlayer_simplegraph(
 end
 
 
+"""
+    interlayer_simplegraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges whose underlying graph is a `SimpleGraph` from `Graphs.jl`, with vertex type `T` and weight type `U`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_simplegraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        SimpleGraph{T}(),
+        interlayer_name = interlayer_name
+    )
+end
+
+
 
 """
     interlayer_simpledigraph(
@@ -716,6 +754,44 @@ function interlayer_simpledigraph(
         layer_2,
         SimpleDiGraph{T}(),
         edge_list;
+        interlayer_name = interlayer_name
+    )
+end
+
+
+"""
+    interlayer_simpledigraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges whose underlying graph is a `SimpleDiGraph` from `Graphs.jl`, with vertex type `T` and weight type `U`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_simpledigraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        SimpleDiGraph{T}(),
         interlayer_name = interlayer_name
     )
 end
@@ -763,6 +839,48 @@ end
 
 
 """
+    interlayer_simpleweightedgraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        default_edge_weight::Function=(x, y) -> nothing,
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges whose underlying graph is a `SimpleWeightedGraph` from `SimpleWeightedGraphs.jl`, with vertex type `T` and weight type `U`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_simpleweightedgraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    default_edge_weight::Function=(x, y) -> nothing,
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        SimpleWeightedGraph{T,U}(),
+        default_edge_weight = default_edge_weight,
+        interlayer_name = interlayer_name
+    )
+end
+
+
+"""
     interlayer_simpleweighteddigraph(
         layer_1::Layer{T,U},
         layer_2::Layer{T,U},
@@ -785,7 +903,7 @@ Constructor for Interlayer whose underlying graph is a `SimpleWeightedDiGraph` f
 - `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
 
 """
-function interlayer_simpleweightedigraph(
+function interlayer_simpleweighteddigraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
     edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
@@ -798,6 +916,47 @@ function interlayer_simpleweightedigraph(
         layer_2,
         SimpleWeightedGraph{T,U}(),
         edge_list;
+        default_edge_weight = default_edge_weight,
+        interlayer_name = interlayer_name
+    )
+end
+
+"""
+    interlayer_simpleweighteddigraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        default_edge_weight::Function=(x, y) -> nothing,
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges underlying graph is a `SimpleWeightedDiGraph` from `SimpleWeightedGraphs.jl`, with vertex type `T` and weight type `U`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_simpleweighteddigraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    default_edge_weight::Function=(x, y) -> nothing,
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        SimpleWeightedDiGraph{T,U}(),
         default_edge_weight = default_edge_weight,
         interlayer_name = interlayer_name
     )
@@ -849,6 +1008,52 @@ function interlayer_metagraph(
     )
 end
 
+
+"""
+    interlayer_metagraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        default_edge_metadata::Function=(x, y) -> NamedTuple(),
+        transfer_vertex_metadata::Bool=false,
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges whose underlying graph is a `MetaGraph` from `MetaGraphs.jl`, with vertex type `T` and weight type `U`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors;
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_metagraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    default_edge_metadata::Function=(x, y) -> NamedTuple(),
+    transfer_vertex_metadata::Bool=false,
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        MetaGraph{T,U}(),
+        default_edge_metadata = default_edge_metadata,
+        transfer_vertex_metadata = transfer_vertex_metadata,
+        interlayer_name = interlayer_name
+    )
+end
+
 """
     interlayer_metadigraph(
         layer_1::Layer{T,U},
@@ -879,6 +1084,7 @@ function interlayer_metadigraph(
     layer_2::Layer{T,U},
     edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
+    transfer_vertex_metadata::Bool=false,
     interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
 ) where {T<:Integer,U<:Real}
 
@@ -887,6 +1093,52 @@ function interlayer_metadigraph(
         layer_2,
         MetaDiGraph{T,U}(),
         edge_list;
+        default_edge_metadata = default_edge_metadata,
+        transfer_vertex_metadata = transfer_vertex_metadata,
+        interlayer_name = interlayer_name
+    )
+end
+
+
+"""
+    interlayer_metadigraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        default_edge_metadata::Function=(x, y) -> NamedTuple(),
+        transfer_vertex_metadata::Bool=false,
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges whose underlying graph is a `MetaDiGraph` from `MetaGraphs.jl`, with vertex type `T` and weight type `U`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors;
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_metadigraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    default_edge_metadata::Function=(x, y) -> NamedTuple(),
+    transfer_vertex_metadata::Bool=false,
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        MetaDiGraph{T,U}(),
         default_edge_metadata = default_edge_metadata,
         transfer_vertex_metadata = transfer_vertex_metadata,
         interlayer_name = interlayer_name
@@ -943,6 +1195,54 @@ end
 
 
 """
+    interlayer_valgraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        default_edge_metadata::Function=(x, y) -> NamedTuple()
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges whose underlying graph is a `ValGraph` from `SimpleValueGraphs.jl`, with vertex type `T`. By default, `transfer_vertex_metadata` is set to `false`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_valgraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    default_edge_metadata::Function=(x, y) -> NamedTuple(),
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    edgeval_types   = get_valtypes(default_edge_metadata)  
+
+    graph = ValGraph{T}(SimpleGraph{T}();
+                                edgeval_types   = edgeval_types,
+                                edgeval_init = default_edge_metadata)
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        graph,
+        default_edge_metadata = default_edge_metadata,
+        interlayer_name = interlayer_name
+    )
+end
+
+
+"""
     interlayer_valoutdigraph(
         layer_1::Layer{T,U},
         layer_2::Layer{T,U},
@@ -975,7 +1275,7 @@ function interlayer_valoutdigraph(
 
     edgeval_types   = get_valtypes(default_edge_metadata)  
 
-    graph = ValOutDiGraph{vertextype}(SimpleGraph{vertextype}();
+    graph = ValOutDiGraph{T}(SimpleDiGraph{T}();
                                 edgeval_types   = edgeval_types,
                                 edgeval_init = default_edge_metadata)
 
@@ -984,6 +1284,54 @@ function interlayer_valoutdigraph(
         layer_2,
         graph,
         edge_list;
+        default_edge_metadata = default_edge_metadata,
+        interlayer_name = interlayer_name
+    )
+end
+
+
+"""
+    interlayer_valoutdigraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        default_edge_metadata::Function=(x, y) -> NamedTuple()
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges whose underlying graph is a `ValOutDiGraph` from `SimpleValueGraphs.jl`, with vertex type `T`. By default, `transfer_vertex_metadata` is set to `false`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_valoutdigraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    default_edge_metadata::Function=(x, y) -> NamedTuple(),
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    edgeval_types   = get_valtypes(default_edge_metadata)  
+
+    graph = ValOutDiGraph{T}(SimpleDiGraph{T}();
+                                edgeval_types   = edgeval_types,
+                                edgeval_init = default_edge_metadata)
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        graph,
         default_edge_metadata = default_edge_metadata,
         interlayer_name = interlayer_name
     )
@@ -1013,7 +1361,7 @@ Constructor for Interlayer whose underlying graph is a `ValDiGraph` from `Simple
 - `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
 
 """
-function interlayer_valoutdigraph(
+function interlayer_valdigraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
     edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
@@ -1023,7 +1371,7 @@ function interlayer_valoutdigraph(
 
     edgeval_types   = get_valtypes(default_edge_metadata)  
 
-    graph = ValDiGraph{vertextype}(SimpleGraph{vertextype}();
+    graph = ValDiGraph{T}(SimpleDiGraph{T}();
                                 edgeval_types   = edgeval_types,
                                 edgeval_init = default_edge_metadata)
 
@@ -1032,6 +1380,54 @@ function interlayer_valoutdigraph(
         layer_2,
         graph,
         edge_list;
+        default_edge_metadata = default_edge_metadata,
+        interlayer_name = interlayer_name
+    )
+end
+
+
+"""
+    interlayer_valdigraph(
+        layer_1::Layer{T,U},
+        layer_2::Layer{T,U},
+        ne::Int64;
+        default_edge_metadata::Function=(x, y) -> NamedTuple()
+        interlayer_name::Symbol
+    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+
+Return a random Interlayer with `ne` edges whose underlying graph is a `ValDiGraph` from `SimpleValueGraphs.jl`, with vertex type `T`. By default, `transfer_vertex_metadata` is set to `false`.
+
+# ARGUMENTS
+
+- `layer_1::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `layer_2::Layer{T,U}`: one of the two layers connected by the Interlayer;
+- `ne::Int64`: The number of edges of the Interlayer;
+
+# KWARGS
+
+- `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+- `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
+
+"""
+function interlayer_valdigraph(
+    layer_1::Layer{T,U},
+    layer_2::Layer{T,U},
+    ne::Int64;
+    default_edge_metadata::Function=(x, y) -> NamedTuple(),
+    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+) where {T<:Integer,U<:Real}
+
+    edgeval_types   = get_valtypes(default_edge_metadata)  
+
+    graph = ValDiGraph{T}(SimpleDiGraph{T}();
+                                edgeval_types   = edgeval_types,
+                                edgeval_init = default_edge_metadata)
+
+    return Interlayer(
+        layer_1,
+        layer_2,
+        ne,
+        graph,
         default_edge_metadata = default_edge_metadata,
         interlayer_name = interlayer_name
     )
