@@ -20,20 +20,25 @@ end
 ne.(all_interlayers)
 nv.(all_interlayers)
 
-
 function _get_srcmv_dstmv_interlayer(interlayer::Interlayer)
     mvs = MultilayerGraphs.get_bare_mv.(collect(mv_vertices(interlayer)))
 
-    src_mv_idx = findfirst(mv -> !isempty(setdiff(
-        Set(mvs),
-        Set(
-            vcat(
-                MultilayerGraphs.get_bare_mv.(mv_outneighbors(interlayer, mv)),
-                mv,
-                MultilayerGraphs.get_bare_mv.(mv_vertices(eval(mv.layer))),
+    src_mv_idx = findfirst(
+        mv ->
+            !isempty(
+                setdiff(
+                    Set(mvs),
+                    Set(
+                        vcat(
+                            MultilayerGraphs.get_bare_mv.(mv_outneighbors(interlayer, mv)),
+                            mv,
+                            MultilayerGraphs.get_bare_mv.(mv_vertices(eval(mv.layer))),
+                        ),
+                    ),
+                ),
             ),
-        ),
-    )), mvs)
+        mvs,
+    )
 
     src_mv = mvs[src_mv_idx]
 
@@ -141,7 +146,7 @@ missing_edge = ME(src_mv, dst_mv, rand())
     MultilayerGraphs.get_v(interlayer, src_mv), MultilayerGraphs.get_v(interlayer, dst_mv)
 ] != 0.0
 
-interlayer = interlayer_mdg_vodg 
+interlayer = interlayer_mdg_vodg
 mvs, src_mv, dst_mv = _get_srcmv_dstmv_interlayer(interlayer)
 missing_edge = ME(src_mv, dst_mv, (weight=rand(),))
 # test uniform add_edge!

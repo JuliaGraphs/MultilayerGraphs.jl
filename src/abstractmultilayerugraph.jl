@@ -274,7 +274,6 @@ function get_subgraph(
 
     _vertices = get_rich_mv.(Ref(mg), vs)
 
-
     edge_list = MultilayerEdge{U}[]
 
     for (src_v, halfedges_from_src) in zip(vs, getindex.(Ref(mg.fadjlist), vs))
@@ -367,7 +366,7 @@ function get_subgraph(
         layer_1_multilayervertices,
         layer_2_multilayervertices,
         unique(edge_list),
-        descriptor
+        descriptor,
     )
 end
 

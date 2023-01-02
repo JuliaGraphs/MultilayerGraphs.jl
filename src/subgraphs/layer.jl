@@ -48,7 +48,6 @@ mutable struct Layer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <: AbstractLayer{T,
     end
 end
 
-
 """
     Layer(
         descriptor::LayerDescriptor{T}, 
@@ -65,11 +64,11 @@ Constructor for `Layer`.
 """
 function Layer(
     descriptor::LayerDescriptor{T},
-    vertices::Union{<:Vector{<:MultilayerVertex}, Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2, MultilayerVertex{nothing}}}}
+    vertices::Union{<:Vector{<:MultilayerVertex},Vector{Node}},
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}},
 ) where {T<:Integer}
     # First check that the vertices are of the correct type
-    if typeof(vertices) <: Vector{<:MultilayerVertex}  
+    if typeof(vertices) <: Vector{<:MultilayerVertex}
         par = eltype(vertices).parameters[1]
         (isnothing(par) || par == descriptor.name) || throw(
             ErrorException(
@@ -85,13 +84,13 @@ function Layer(
         check_consistency=false,
     )
     # Add the vertices one by one
-    if typeof(vertices) <: Vector{ <: MultilayerVertex}
+    if typeof(vertices) <: Vector{<:MultilayerVertex}
         for mv in vertices
             add_vertex!(layer, mv)
         end
     else
         for node in vertices
-            add_vertex!(layer, MV(node,  descriptor.default_vertex_metadata(MV(node))))
+            add_vertex!(layer, MV(node, descriptor.default_vertex_metadata(MV(node))))
         end
     end
     # Add the edges
@@ -101,13 +100,20 @@ function Layer(
         end
     else
         for tup in edge_list
-            src_mv,dst_mv = tup
-            add_edge!(layer, ME(src_mv, dst_mv, descriptor.default_edge_weight(src_mv, dst_mv), descriptor.default_edge_metadata(src_mv, dst_mv) ))
+            src_mv, dst_mv = tup
+            add_edge!(
+                layer,
+                ME(
+                    src_mv,
+                    dst_mv,
+                    descriptor.default_edge_weight(src_mv, dst_mv),
+                    descriptor.default_edge_metadata(src_mv, dst_mv),
+                ),
+            )
         end
     end
     return layer
 end
-
 
 """
     Layer(
@@ -132,8 +138,8 @@ Constructor for `Layer`.
 """
 function Layer(
     name::Symbol,
-    vertices::Union{Vector{MultilayerVertex{nothing}}, Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}},
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}},
     null_graph::G,
     weighttype::Type{U};
     default_vertex_metadata::Function=mv -> NamedTuple(),
@@ -151,8 +157,6 @@ function Layer(
 
     return Layer(descriptor, vertices, edge_list)
 end
-
-
 
 """
     Layer(
@@ -193,27 +197,37 @@ function Layer(
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
     allow_self_loops::Bool=false,
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T},  V<: MultilayerVertex{nothing}, N <: Node} #V <: Vector{MultilayerVertex{nothing}}, N <: Vector{Node}}
-
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T},V<:MultilayerVertex{nothing},N<:Node} #V <: Vector{MultilayerVertex{nothing}}, N <: Vector{Node}}
     _nv = length(vertices)
-    @assert(length(unique(vertices)) == _nv, "The argument `vertices` must be a unique list")
+    @assert(
+        length(unique(vertices)) == _nv, "The argument `vertices` must be a unique list"
+    )
 
     directed = is_directed(null_graph)
-    maxe = directed ? _nv*(_nv - 1) : _nv*(_nv - 1) ÷ 2 
+    maxe = directed ? _nv * (_nv - 1) : _nv * (_nv - 1) ÷ 2
 
-    @assert(ne <= maxe, "The number of required edges, $ne, is greater than the number of edges the provided graph supports i.e. $maxe" )
+    @assert(
+        ne <= maxe,
+        "The number of required edges, $ne, is greater than the number of edges the provided graph supports i.e. $maxe"
+    )
 
-    vertex_type = @isdefined(V) ? MultilayerVertex : Node   
+    vertex_type = @isdefined(V) ? MultilayerVertex : Node
 
-    edge_list = NTuple{2, MultilayerVertex}[]  #MultilayerEdge
-    fadjlist = Dict{vertex_type, Vector{vertex_type}}()
+    edge_list = NTuple{2,MultilayerVertex}[]  #MultilayerEdge
+    fadjlist = Dict{vertex_type,Vector{vertex_type}}()
 
-
-
-    max_links_per_vertex = _nv-1 # directed ? _nv - 1 : _nv-1
+    max_links_per_vertex = _nv - 1 # directed ? _nv - 1 : _nv-1
     for i in 1:ne
         # Generate a random vertex
-        rand_vertex_1 =  rand(setdiff(vertices, [mv for mv in keys(fadjlist) if length(fadjlist[mv]) == max_links_per_vertex]))
+        rand_vertex_1 = rand(
+            setdiff(
+                vertices,
+                [
+                    mv for
+                    mv in keys(fadjlist) if length(fadjlist[mv]) == max_links_per_vertex
+                ],
+            ),
+        )
 
         if !haskey(fadjlist, rand_vertex_1)
             fadjlist[rand_vertex_1] = vertex_type[]
@@ -222,43 +236,34 @@ function Layer(
         # Generate another random vertex
         # If we don't allow self loops, keep generating until we get a vertex that isn't the same as the previous one.
         rand_vertex_2 = if !allow_self_loops
-            rand(setdiff(vertices, vcat([rand_vertex_1], fadjlist[rand_vertex_1] )) )
+            rand(setdiff(vertices, vcat([rand_vertex_1], fadjlist[rand_vertex_1])))
         else
-            rand(setdiff(vertices, vcat(fadjlist[rand_vertex_1] )))
+            rand(setdiff(vertices, vcat(fadjlist[rand_vertex_1])))
         end
-
-
 
         push!(fadjlist[rand_vertex_1], rand_vertex_2)
         if !is_directed(null_graph)
             if !haskey(fadjlist, rand_vertex_2)
                 fadjlist[rand_vertex_2] = vertex_type[]
             end
-            push!(fadjlist[rand_vertex_2],rand_vertex_1)
+            push!(fadjlist[rand_vertex_2], rand_vertex_1)
         end
 
         # Add the edge to the edge list. Convert it to a MultilayerVertex if a list of Nodes was given as `vertices`
         if @isdefined(V)
-            push!(
-                edge_list,
-                (rand_vertex_1, rand_vertex_2)
-            )
+            push!(edge_list, (rand_vertex_1, rand_vertex_2))
         else
-            push!(
-                edge_list,
-                (MV(rand_vertex_1), MV(rand_vertex_2))
-            )
+            push!(edge_list, (MV(rand_vertex_1), MV(rand_vertex_2)))
         end
-
     end
 
     descriptor = LayerDescriptor(
         name,
         null_graph,
         weighttype;
-        default_vertex_metadata = default_vertex_metadata,
-        default_edge_weight     = default_edge_weight,
-        default_edge_metadata   = default_edge_metadata,
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
     )
 
     edge_list = [rand() < 0.5 ? tup : reverse(tup) for tup in edge_list]
@@ -266,7 +271,6 @@ function Layer(
 
     return layer
 end
-
 
 """
     Layer(
@@ -301,12 +305,13 @@ Returns an undirected `Layer` whose degree sequence is sampled from `degree_dist
     degree_distribution::UnivariateDistribution,
     null_graph::G,
     weighttype::Type{U};
-    default_vertex_metadata::Function  = mv -> NamedTuple(),
-    default_edge_weight::Function      = (src, dst) -> nothing,
-    default_edge_metadata::Function    = (src, dst) -> NamedTuple(),
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T}; !IsDirected{G}}
-
-    degree_sequence = sample_graphical_degree_sequence(degree_distribution,length(vertices))
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_weight::Function=(src, dst) -> nothing,
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T};!IsDirected{G}}
+    degree_sequence = sample_graphical_degree_sequence(
+        degree_distribution, length(vertices)
+    )
 
     return Layer(
         name,
@@ -314,15 +319,11 @@ Returns an undirected `Layer` whose degree sequence is sampled from `degree_dist
         degree_sequence,
         null_graph,
         weighttype;
-        default_vertex_metadata  = default_vertex_metadata,
-        default_edge_weight      = default_edge_weight,
-        default_edge_metadata    = default_edge_metadata
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
     )
-
 end
-
-
-
 
 """
     Layer(
@@ -360,47 +361,44 @@ Returns an undirected `Layer` with given `degree_sequence` realized using the Ha
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T}, V <: Vector{MultilayerVertex{nothing}}, N <: Vector{Node}  ; !IsDirected{G}}
-
+) where {
+    T<:Integer,
+    U<:Real,
+    G<:AbstractGraph{T},
+    V<:Vector{MultilayerVertex{nothing}},
+    N<:Vector{Node};!IsDirected{G},
+}
     descriptor = LayerDescriptor(
         name,
         null_graph,
         weighttype;
-        default_vertex_metadata = default_vertex_metadata,
-        default_edge_weight     = default_edge_weight,
-        default_edge_metadata   = default_edge_metadata,
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
     )
 
     equivalent_graph = havel_hakimi_graph_generator(degree_sequence)
 
-    edge_list = NTuple{2, MultilayerVertex{nothing}}[]
+    edge_list = NTuple{2,MultilayerVertex{nothing}}[]
 
     if @isdefined(V)
         for edge in edges(equivalent_graph)
             src_mv = vertices[src(edge)]
             dst_mv = vertices[dst(edge)]
-            push!(
-                edge_list,
-                (src_mv, dst_mv)
-            )
+            push!(edge_list, (src_mv, dst_mv))
         end
     else
         for edge in edges(equivalent_graph)
             src_mv = MV(vertices[src(edge)])
             dst_mv = MV(vertices[dst(edge)])
-            push!(
-                edge_list,
-                (src_mv, dst_mv)
-            )
+            push!(edge_list, (src_mv, dst_mv))
         end
     end
-
 
     layer = Layer(descriptor, vertices, edge_list)
 
     return layer
 end
-
 
 """
     Layer(
@@ -438,12 +436,13 @@ Returns a directed `Layer` whose indegree and oudegree sequences are sampled fro
     outdegree_distribution::UnivariateDistribution,
     null_graph::G,
     weighttype::Type{U};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_weight::Function     = (src, dst) -> nothing,
-    default_edge_metadata::Function   = (src, dst) -> NamedTuple(),
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T}; IsDirected{G}}
-
-    indegree_sequence,outdegree_sequence = sample_digraphical_degree_sequences(indegree_distribution, outdegree_distribution, length(vertices))
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_weight::Function=(src, dst) -> nothing,
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T};IsDirected{G}}
+    indegree_sequence, outdegree_sequence = sample_digraphical_degree_sequences(
+        indegree_distribution, outdegree_distribution, length(vertices)
+    )
 
     return Layer(
         name,
@@ -452,13 +451,11 @@ Returns a directed `Layer` whose indegree and oudegree sequences are sampled fro
         outdegree_sequence,
         null_graph,
         weighttype;
-        default_vertex_metadata  = default_vertex_metadata,
-        default_edge_weight      = default_edge_weight,
-        default_edge_metadata    = default_edge_metadata
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
     )
-    
 end
-
 
 """
     Layer(
@@ -496,41 +493,40 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
     outdegree_sequence::Vector{<:Integer},
     null_graph::G,
     weighttype::Type{U};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_weight::Function     = (src, dst) -> nothing,
-    default_edge_metadata::Function   = (src, dst) -> NamedTuple(),
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T}, V <: Vector{MultilayerVertex{nothing}}, N <: Vector{Node} ; IsDirected{G}}
-
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_weight::Function=(src, dst) -> nothing,
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+) where {
+    T<:Integer,
+    U<:Real,
+    G<:AbstractGraph{T},
+    V<:Vector{MultilayerVertex{nothing}},
+    N<:Vector{Node};IsDirected{G},
+}
     descriptor = LayerDescriptor(
         name,
         null_graph,
         weighttype;
-        default_vertex_metadata = default_vertex_metadata,
-        default_edge_weight     = default_edge_weight,
-        default_edge_metadata   = default_edge_metadata,
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
     )
 
     equivalent_graph = kleitman_wang_graph_generator(indegree_sequence, outdegree_sequence)
 
-    edge_list = NTuple{2, MultilayerVertex{nothing}}[]
+    edge_list = NTuple{2,MultilayerVertex{nothing}}[]
 
     if @isdefined(V)
         for edge in edges(equivalent_graph)
             src_mv = vertices[src(edge)]
             dst_mv = vertices[dst(edge)]
-            push!(
-                edge_list,
-                (src_mv, dst_mv)
-            )
+            push!(edge_list, (src_mv, dst_mv))
         end
     else
         for edge in edges(equivalent_graph)
             src_mv = MV(vertices[src(edge)])
             dst_mv = MV(vertices[dst(edge)])
-            push!(
-                edge_list,
-                (src_mv, dst_mv)
-            )
+            push!(edge_list, (src_mv, dst_mv))
         end
     end
 
@@ -538,9 +534,6 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
 
     return layer
 end
-
-
-
 
 # Quick constructors
 #####
@@ -566,21 +559,12 @@ Constructor for a `Layer` whose underlying graph is a `SimpleGraph` from `Graphs
 function layer_simplegraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                SimpleGraph{vertextype}(),
-                weighttype
-    )
-
+    return Layer(name, vertices, edge_list, SimpleGraph{vertextype}(), weighttype)
 end
-
 
 """
     layer_simplegraph(
@@ -605,22 +589,11 @@ function layer_simplegraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     degree_distribution::UnivariateDistribution;
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    degree_distribution,
-                    SimpleGraph{vertextype}(),
-                    weighttype
-    )
-    
+    return Layer(name, vertices, degree_distribution, SimpleGraph{vertextype}(), weighttype)
 end
-
 
 """
     layer_simplegraph(
@@ -645,20 +618,10 @@ function layer_simplegraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    SimpleGraph{vertextype}(),
-                    weighttype
-    )
-    
+    return Layer(name, vertices, ne, SimpleGraph{vertextype}(), weighttype)
 end
 
 ## SimpleDiGraph
@@ -684,21 +647,12 @@ Constructor for a `Layer` whose underlying graph is a `SimpleDiGraph` from `Grap
 function layer_simpledigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                SimpleDiGraph{vertextype}(),
-                weighttype
-    )
-
+    return Layer(name, vertices, edge_list, SimpleDiGraph{vertextype}(), weighttype)
 end
-
 
 """
     layer_simpledigraph(
@@ -726,23 +680,18 @@ function layer_simpledigraph(
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     indegree_distribution::UnivariateDistribution,
     outdegree_distribution::UnivariateDistribution;
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    indegree_distribution,
-                    outdegree_distribution,
-                    SimpleDiGraph{vertextype}(),
-                    weighttype
+    return Layer(
+        name,
+        vertices,
+        indegree_distribution,
+        outdegree_distribution,
+        SimpleDiGraph{vertextype}(),
+        weighttype,
     )
-    
 end
-
 
 """
     layer_simpledigraph(
@@ -767,20 +716,10 @@ function layer_simpledigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    SimpleDiGraph{vertextype}(),
-                    weighttype
-    )
-    
+    return Layer(name, vertices, ne, SimpleDiGraph{vertextype}(), weighttype)
 end
 
 ## SimpleWeightedGraph
@@ -808,23 +747,20 @@ Constructor for a `Layer` whose underlying graph is a `SimpleWeightedGraph` from
 function layer_simpleweightedgraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    default_edge_weight::Function = (src,dst) -> nothing,
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    default_edge_weight::Function=(src, dst) -> nothing,
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                SimpleWeightedGraph{vertextype, weighttype}(),
-                weighttype;
-                default_edge_weight = default_edge_weight
+    return Layer(
+        name,
+        vertices,
+        edge_list,
+        SimpleWeightedGraph{vertextype,weighttype}(),
+        weighttype;
+        default_edge_weight=default_edge_weight,
     )
-
 end
-
 
 """
     layer_simpleweightedgraph(
@@ -851,22 +787,18 @@ function layer_simpleweightedgraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     degree_distribution::UnivariateDistribution;
-    default_edge_weight::Function = (src,dst) -> nothing,
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_edge_weight::Function=(src, dst) -> nothing,
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    degree_distribution,
-                    SimpleWeightedGraph{vertextype,weighttype}(),
-                    weighttype;
-                    default_edge_weight = default_edge_weight
+    return Layer(
+        name,
+        vertices,
+        degree_distribution,
+        SimpleWeightedGraph{vertextype,weighttype}(),
+        weighttype;
+        default_edge_weight=default_edge_weight,
     )
-    
 end
 
 """
@@ -894,24 +826,19 @@ function layer_simpleweightedgraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    default_edge_weight::Function = (src,dst) -> nothing,
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_edge_weight::Function=(src, dst) -> nothing,
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    SimpleWeightedGraph{vertextype,weighttype}(),
-                    weighttype;
-                    default_edge_weight = default_edge_weight
+    return Layer(
+        name,
+        vertices,
+        ne,
+        SimpleWeightedGraph{vertextype,weighttype}(),
+        weighttype;
+        default_edge_weight=default_edge_weight,
     )
-    
 end
-
 
 ## SimpleWeightedDiGraph
 """
@@ -938,23 +865,20 @@ Constructor for a `Layer` whose underlying graph is a `SimpleWeightedDiGraph` fr
 function layer_simpleweighteddigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    default_edge_weight::Function = (src,dst) -> nothing,
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    default_edge_weight::Function=(src, dst) -> nothing,
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                SimpleWeightedDiGraph{vertextype, weighttype}(),
-                weighttype;
-                default_edge_weight = default_edge_weight
+    return Layer(
+        name,
+        vertices,
+        edge_list,
+        SimpleWeightedDiGraph{vertextype,weighttype}(),
+        weighttype;
+        default_edge_weight=default_edge_weight,
     )
-
 end
-
 
 """
     layer_simpleweighteddigraph(
@@ -984,25 +908,20 @@ function layer_simpleweighteddigraph(
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     indegree_distribution::UnivariateDistribution,
     outdegree_distribution::UnivariateDistribution;
-    default_edge_weight::Function = (src,dst) -> nothing,
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_edge_weight::Function=(src, dst) -> nothing,
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    indegree_distribution,
-                    outdegree_distribution,
-                    SimpleWeightedDiGraph{vertextype,weighttype}(),
-                    weighttype;
-                    default_edge_weight = default_edge_weight
+    return Layer(
+        name,
+        vertices,
+        indegree_distribution,
+        outdegree_distribution,
+        SimpleWeightedDiGraph{vertextype,weighttype}(),
+        weighttype;
+        default_edge_weight=default_edge_weight,
     )
-    
 end
-
 
 """
     layer_simpleweighteddigraph(
@@ -1028,24 +947,19 @@ function layer_simpleweighteddigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    default_edge_weight::Function = (src,dst) -> nothing,
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_edge_weight::Function=(src, dst) -> nothing,
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    SimpleWeightedDiGraph{vertextype,weighttype}(),
-                    weighttype;
-                    default_edge_weight = default_edge_weight
+    return Layer(
+        name,
+        vertices,
+        ne,
+        SimpleWeightedDiGraph{vertextype,weighttype}(),
+        weighttype;
+        default_edge_weight=default_edge_weight,
     )
-    
 end
-
 
 ## MetaGraph
 """
@@ -1077,25 +991,22 @@ Constructor for a `Layer` whose underlying graph is a `MetaGraph` from `MetaGrap
 function layer_metagraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                MetaGraph{vertextype,weighttype}(),
-                weighttype;
-                default_vertex_metadata = default_vertex_metadata,
-                default_edge_metadata = default_edge_metadata
+    return Layer(
+        name,
+        vertices,
+        edge_list,
+        MetaGraph{vertextype,weighttype}(),
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
     )
-
 end
-
 
 """
     layer_metagraph(
@@ -1128,26 +1039,21 @@ function layer_metagraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     degree_distribution::UnivariateDistribution;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    degree_distribution,
-                    MetaGraph{vertextype,weighttype}(),
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    return Layer(
+        name,
+        vertices,
+        degree_distribution,
+        MetaGraph{vertextype,weighttype}(),
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
     )
-    
 end
-
 
 """
     layer_metagraph(
@@ -1180,24 +1086,20 @@ function layer_metagraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    MetaGraph{vertextype,weighttype}(),
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    return Layer(
+        name,
+        vertices,
+        ne,
+        MetaGraph{vertextype,weighttype}(),
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
     )
-    
 end
 
 ## MetaDiGraph
@@ -1230,25 +1132,22 @@ Constructor for a `Layer` whose underlying graph is a `MetaDiGraph` from `MetaGr
 function layer_metadigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                MetaDiGraph{vertextype,weighttype}(),
-                weighttype;
-                default_vertex_metadata = default_vertex_metadata,
-                default_edge_metadata = default_edge_metadata
+    return Layer(
+        name,
+        vertices,
+        edge_list,
+        MetaDiGraph{vertextype,weighttype}(),
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
     )
-
 end
-
 
 """
     layer_metadigraph(
@@ -1284,27 +1183,22 @@ function layer_metadigraph(
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     indegree_distribution::UnivariateDistribution,
     outdegree_distribution::UnivariateDistribution;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    indegree_distribution::UnivariateDistribution,
-                    outdegree_distribution::UnivariateDistribution,
-                    MetaDiGraph{vertextype,weighttype}(),
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    return Layer(
+        name,
+        vertices,
+        indegree_distribution::UnivariateDistribution,
+        outdegree_distribution::UnivariateDistribution,
+        MetaDiGraph{vertextype,weighttype}(),
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
     )
-    
 end
-
 
 """
     layer_metadigraph(
@@ -1337,24 +1231,20 @@ function layer_metadigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    MetaDiGraph{vertextype,weighttype}(),
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    return Layer(
+        name,
+        vertices,
+        ne,
+        MetaDiGraph{vertextype,weighttype}(),
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
     )
-    
 end
 
 ## ValGraph
@@ -1387,13 +1277,12 @@ Constructor for a `Layer` whose underlying graph is a `ValGraph` from `SimpleVal
 function layer_valgraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
-
     vertexval_returned_type = Base.return_types(default_vertex_metadata)[1]
     edgeval_returned_type = Base.return_types(default_edge_metadata)[1]
 
@@ -1417,23 +1306,24 @@ function layer_valgraph(
         NamedTuple{returned_namedtuple_type[1]}(type_pars)
     end
 
-    graph = ValGraph{vertextype}(SimpleGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                graph,
-                weighttype;
-                default_vertex_metadata = default_vertex_metadata,
-                default_edge_metadata = default_edge_metadata
+    graph = ValGraph{vertextype}(
+        SimpleGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
     )
 
+    return Layer(
+        name,
+        vertices,
+        edge_list,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
+    )
 end
-
 
 """
     layer_valgraph(
@@ -1466,33 +1356,31 @@ function layer_valgraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     degree_distribution::UnivariateDistribution;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
+    vertexval_types = get_valtypes(default_vertex_metadata)
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    vertexval_types = get_valtypes(default_vertex_metadata) 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValGraph{vertextype}(SimpleGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    degree_distribution,
-                    graph,
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    graph = ValGraph{vertextype}(
+        SimpleGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
     )
-    
+
+    return Layer(
+        name,
+        vertices,
+        degree_distribution,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
+    )
 end
 
 """
@@ -1526,33 +1414,31 @@ function layer_valgraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
+    vertexval_types = get_valtypes(default_vertex_metadata)
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    vertexval_types = get_valtypes(default_vertex_metadata) 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValGraph{vertextype}(SimpleGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    graph,
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    graph = ValGraph{vertextype}(
+        SimpleGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
     )
-    
+
+    return Layer(
+        name,
+        vertices,
+        ne,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
+    )
 end
 
 ## ValOutDiGraph
@@ -1585,33 +1471,33 @@ Constructor for a `Layer` whose underlying graph is a `ValOutDiGraph` from `Simp
 function layer_valoutdigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
+    vertexval_types = get_valtypes(default_vertex_metadata)
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    vertexval_types = get_valtypes(default_vertex_metadata) 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValOutDiGraph{vertextype}(SimpleDiGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                graph,
-                weighttype;
-                default_vertex_metadata = default_vertex_metadata,
-                default_edge_metadata = default_edge_metadata
+    graph = ValOutDiGraph{vertextype}(
+        SimpleDiGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
     )
 
+    return Layer(
+        name,
+        vertices,
+        edge_list,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
+    )
 end
-
 
 """
     layer_valoutdigraph(
@@ -1646,36 +1532,33 @@ function layer_valoutdigraph(
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     indegree_distribution::UnivariateDistribution,
     outdegree_distribution::UnivariateDistribution;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
+    vertexval_types = get_valtypes(default_vertex_metadata)
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    vertexval_types = get_valtypes(default_vertex_metadata) 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValOutDiGraph{vertextype}(SimpleDiGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    indegree_distribution,
-                    outdegree_distribution,
-                    graph,
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    graph = ValOutDiGraph{vertextype}(
+        SimpleDiGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
     )
-    
-end
 
+    return Layer(
+        name,
+        vertices,
+        indegree_distribution,
+        outdegree_distribution,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
+    )
+end
 
 """
     layer_valoutdigraph(
@@ -1707,33 +1590,31 @@ function layer_valoutdigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
+    vertexval_types = get_valtypes(default_vertex_metadata)
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    vertexval_types = get_valtypes(default_vertex_metadata) 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValOutDiGraph{vertextype}(SimpleDiGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    graph,
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    graph = ValOutDiGraph{vertextype}(
+        SimpleDiGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
     )
-    
+
+    return Layer(
+        name,
+        vertices,
+        ne,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
+    )
 end
 
 ## ValDiGraph
@@ -1766,33 +1647,33 @@ Constructor for a `Layer` whose underlying graph is a `ValDiGraph` from `SimpleV
 function layer_valdigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}};
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
+    vertexval_types = get_valtypes(default_vertex_metadata)
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    vertexval_types = get_valtypes(default_vertex_metadata) 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValDiGraph{vertextype}(SimpleDiGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-    return Layer(name, 
-                vertices,
-                edge_list,
-                graph,
-                weighttype;
-                default_vertex_metadata = default_vertex_metadata,
-                default_edge_metadata = default_edge_metadata
+    graph = ValDiGraph{vertextype}(
+        SimpleDiGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
     )
 
+    return Layer(
+        name,
+        vertices,
+        edge_list,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
+    )
 end
-
 
 """
     layer_valdigraph(
@@ -1827,36 +1708,33 @@ function layer_valdigraph(
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     indegree_distribution::UnivariateDistribution,
     outdegree_distribution::UnivariateDistribution;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
+    vertexval_types = get_valtypes(default_vertex_metadata)
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    vertexval_types = get_valtypes(default_vertex_metadata) 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
+    graph = ValDiGraph{vertextype}(
+        SimpleDiGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
+    )
 
-    graph = ValDiGraph{vertextype}(SimpleDiGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    indegree_distribution,
-                    outdegree_distribution,
-                    graph,
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    return Layer(
+        name,
+        vertices,
+        indegree_distribution,
+        outdegree_distribution,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
     )
 end
-
-
 
 """
     layer_valdigraph(
@@ -1888,34 +1766,32 @@ function layer_valdigraph(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64;
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    vertextype::Type{T}=Int64,
+    weighttype::Type{U}=Float64,
 ) where {T<:Integer,U<:Real}
+    vertexval_types = get_valtypes(default_vertex_metadata)
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    vertexval_types = get_valtypes(default_vertex_metadata) 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
+    graph = ValDiGraph{vertextype}(
+        SimpleDiGraph{vertextype}();
+        vertexval_types=vertexval_types,
+        edgeval_types=edgeval_types,
+        vertexval_init=default_vertex_metadata,
+        edgeval_init=default_edge_metadata,
+    )
 
-    graph = ValDiGraph{vertextype}(SimpleDiGraph{vertextype}();
-                                vertexval_types =  vertexval_types,
-                                edgeval_types   = edgeval_types,
-                                vertexval_init = default_vertex_metadata,
-                                edgeval_init = default_edge_metadata)
-
-
-
-    return  Layer( 
-                    name, 
-                    vertices,
-                    ne,
-                    graph,
-                    weighttype;
-                    default_vertex_metadata = default_vertex_metadata,
-                    default_edge_metadata = default_edge_metadata
+    return Layer(
+        name,
+        vertices,
+        ne,
+        graph,
+        weighttype;
+        default_vertex_metadata=default_vertex_metadata,
+        default_edge_metadata=default_edge_metadata,
     )
 end
-
 
 """
     has_node(layer::Layer, n::Node)
@@ -2059,7 +1935,6 @@ Remove vertex `v` from layer `layer`.
 """
 Graphs.rem_vertex!(layer::L, v::T) where {T,L<:Layer{T}} = rem_vertex!(layer.graph, v)
 
-
 """
     get_v(layer::Layer, V::MultilayerVertex{nothing})
 
@@ -2074,8 +1949,6 @@ function get_v(layer::Layer, V::MultilayerVertex{nothing})
     return layer.v_V_associations(MV(node(V), name(layer)))
 end
 
-
-
 """
     has_edge( layer::Layer, s::MultilayerVertex{nothing}, d::MultilayerVertex{nothing})
 
@@ -2084,7 +1957,11 @@ Return `true` if there is an edge between `s` and `d`, `false` otherwise.
 function Graphs.has_edge(
     layer::Layer, s::MultilayerVertex{nothing}, d::MultilayerVertex{nothing}
 )
-    return has_edge(layer, get_v(layer, MV(node(s), name(layer))), get_v(layer, MV(node(d), name(layer))))
+    return has_edge(
+        layer,
+        get_v(layer, MV(node(s), name(layer))),
+        get_v(layer, MV(node(d), name(layer))),
+    )
 end
 
 """
@@ -2195,14 +2072,13 @@ end
 # Console print utilities
 function to_string(x::Layer)
     parameters = typeof(x).parameters
-    """
-    Layer\t$(name(x))
-    underlying_graph: $(typeof(graph(x)))
-    vertex type: $(parameters[1])
-    weight type: $(parameters[2]) 
-    nv = $(nv(x))
-    ne = $(ne(x))
-    """
+    return """
+           Layer\t$(name(x))
+           underlying_graph: $(typeof(graph(x)))
+           vertex type: $(parameters[1])
+           weight type: $(parameters[2]) 
+           nv = $(nv(x))
+           ne = $(ne(x))
+           """
 end
 Base.show(io::IO, x::Layer) = print(io, to_string(x))
-

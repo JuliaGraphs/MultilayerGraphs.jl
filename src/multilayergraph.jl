@@ -102,7 +102,10 @@ function Graphs.add_edge!(
         #=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
                 set_weight!(mg, src, dst, _weight)
                 set_metadata!(mg, src, dst, _metadata) =#
-        @debug "Edge already exists" me [edge for edge in edges(mg) if node(src(edge)) == Node("node_1") &&  node(dst(edge)) == Node("node_1")]
+        @debug "Edge already exists" me [
+            edge for edge in edges(mg) if
+            node(src(edge)) == Node("node_1") && node(dst(edge)) == Node("node_1")
+        ]
         return false
     end
 end
@@ -177,7 +180,6 @@ function MultilayerGraph(
         ),
     )
 
-
     empty_multilayergraph = MultilayerGraph(
         empty_layers,
         empty_interlayers;
@@ -187,7 +189,7 @@ function MultilayerGraph(
 
     n = nv(empty_multilayergraph)
 
-    degree_sequence = sample_graphical_degree_sequence(degree_distribution,n)
+    degree_sequence = sample_graphical_degree_sequence(degree_distribution, n)
 
     return MultilayerGraph(
         empty_multilayergraph, degree_sequence; allow_self_loops=false, perform_checks=false

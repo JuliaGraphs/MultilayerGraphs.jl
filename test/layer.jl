@@ -20,20 +20,24 @@ is_directed.(all_layers)
 function _get_srcmv_dstmv_layer(layer::Layer)
     mvs = MultilayerGraphs.get_bare_mv.(collect(mv_vertices(layer)))
 
-    src_mv_idx = findfirst(mv -> !isempty(setdiff(
-        Set(mvs),
-        Set(
-            vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, mv)), mv)
-        ),
-    )), mvs)
+    src_mv_idx = findfirst(
+        mv ->
+            !isempty(
+                setdiff(
+                    Set(mvs),
+                    Set(
+                        vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, mv)), mv)
+                    ),
+                ),
+            ),
+        mvs,
+    )
 
     src_mv = mvs[src_mv_idx]
 
     _collection = setdiff(
         Set(mvs),
-        Set(
-            vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, src_mv)), src_mv)
-        ),
+        Set(vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, src_mv)), src_mv)),
     )
 
     dst_mv = MultilayerGraphs.get_bare_mv(rand(_collection))
@@ -65,7 +69,6 @@ add_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_vertex!(layer, rand_mv_1)
 @test has_vertex(layer, rand_mv_1)
 
-
 layer = layer_sdg
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
 # test uniform add_edge!
@@ -90,7 +93,6 @@ add_edge!(layer, rand_mv_1, rand_mv_2)
 
 @debug ""
 
-
 layer = layer_swg
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
 # test uniform add_edge!
@@ -98,12 +100,16 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test !has_edge(layer, rand_mv_1, rand_mv_2)
 @test add_edge!(layer, rand_mv_1, rand_mv_2; weight=3.14, metadata=())
 @test has_edge(layer, rand_mv_1, rand_mv_2)
-@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2) ] == Graphs.weights(layer)[get_v(layer, rand_mv_2), get_v(layer, rand_mv_1) ] == 3.14 
+@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2)] ==
+    Graphs.weights(layer)[get_v(layer, rand_mv_2), get_v(layer, rand_mv_1)] ==
+    3.14
 # test hybrid add_edge!
 @test rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_edge!(layer, rand_mv_1, rand_mv_2, 3.14)
 @test has_edge(layer, rand_mv_1, rand_mv_2)
-@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2) ] == Graphs.weights(layer)[get_v(layer, rand_mv_2), get_v(layer, rand_mv_1) ] == 3.14
+@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2)] ==
+    Graphs.weights(layer)[get_v(layer, rand_mv_2), get_v(layer, rand_mv_1)] ==
+    3.14
 # Test uniform add_vertex!
 @test rem_vertex!(layer, rand_mv_1)
 @test !has_vertex(layer, rand_mv_1)
@@ -125,13 +131,13 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_edge!(layer, rand_mv_1, rand_mv_2, weight=3.14, metadata=())
 @test has_edge(layer, rand_mv_1, rand_mv_2)
 # Why do I have to switch the vertices? 
-@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2) ] == 3.14
+@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2)] == 3.14
 # test hybrid add_edge!
 rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_edge!(layer, rand_mv_1, rand_mv_2, 3.14)
 @test has_edge(layer, rand_mv_1, rand_mv_2)
 # Why do I have to switch the vertices? 
-@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2) ] == 3.14 
+@test Graphs.weights(layer)[get_v(layer, rand_mv_1), get_v(layer, rand_mv_2)] == 3.14
 # Test uniform add_vertex!
 @test rem_vertex!(layer, rand_mv_1)
 @test !has_vertex(layer, rand_mv_1)

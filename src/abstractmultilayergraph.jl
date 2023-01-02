@@ -1200,25 +1200,52 @@ function to_string(x::AbstractMultilayerGraph)
     unionall_type = typeof(x).name.wrapper
     parameters = typeof(x).parameters
 
-    layers_names              = name.(x.layers)
-    layers_underlying_graphs  = typeof.(graph.(x.layers))
+    layers_names = name.(x.layers)
+    layers_underlying_graphs = typeof.(graph.(x.layers))
 
-    layers_table = pretty_table(String, hcat(layers_names, layers_underlying_graphs); title = "### LAYERS", header = (["NAME", "UNDERLYING GRAPH"]), alignment = :c, header_alignment = :c, header_crayon = crayon"yellow bold", hlines = :all)
+    layers_table = pretty_table(
+        String,
+        hcat(layers_names, layers_underlying_graphs);
+        title="### LAYERS",
+        header=(["NAME", "UNDERLYING GRAPH"]),
+        alignment=:c,
+        header_alignment=:c,
+        header_crayon=crayon"yellow bold",
+        hlines=:all,
+    )
 
     interlayers_names = name.(values(x.interlayers))
-    interlayers_underlying_graphs  = typeof.(graph.(values(x.interlayers)))
+    interlayers_underlying_graphs = typeof.(graph.(values(x.interlayers)))
     interlayer_layer_1s = getproperty.(values(x.interlayers), Ref(:layer_1))
     interlayer_layer_2s = getproperty.(values(x.interlayers), Ref(:layer_2))
-    interlayer_tranfers = getproperty.(values(x.interlayers), Ref(:transfer_vertex_metadata))
+    interlayer_tranfers =
+        getproperty.(values(x.interlayers), Ref(:transfer_vertex_metadata))
 
-    interlayers_table = pretty_table(String, hcat(interlayers_names, interlayer_layer_1s, interlayer_layer_2s, interlayers_underlying_graphs, interlayer_tranfers ); title = "### INTERLAYERS", header = (["NAME", "LAYER 1", "LAYER 2", "UNDERLYING GRAPH", "TRANSFER VERTEX METADATA"]), alignment = :c, header_alignment = :c, header_crayon = crayon"yellow bold", hlines = :all)
+    interlayers_table = pretty_table(
+        String,
+        hcat(
+            interlayers_names,
+            interlayer_layer_1s,
+            interlayer_layer_2s,
+            interlayers_underlying_graphs,
+            interlayer_tranfers,
+        );
+        title="### INTERLAYERS",
+        header=([
+            "NAME", "LAYER 1", "LAYER 2", "UNDERLYING GRAPH", "TRANSFER VERTEX METADATA"
+        ]),
+        alignment=:c,
+        header_alignment=:c,
+        header_crayon=crayon"yellow bold",
+        hlines=:all,
+    )
 
-    """
-    `$unionall_type` with vertex type `$(parameters[1])` and weight type `$(parameters[2])`.
+    return """
+           `$unionall_type` with vertex type `$(parameters[1])` and weight type `$(parameters[2])`.
 
-    $layers_table
+           $layers_table
 
-    $interlayers_table
-    """
+           $interlayers_table
+           """
 end
 Base.show(io::IO, x::AbstractMultilayerGraph) = print(io, to_string(x))

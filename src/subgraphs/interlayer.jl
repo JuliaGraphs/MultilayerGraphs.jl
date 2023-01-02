@@ -26,7 +26,6 @@ mutable struct Interlayer{T<:Integer,U<:Real,G<:AbstractGraph{T}} <:
     v_V_associations::Bijection{T,<:MultilayerVertex}
 end
 
-
 # Old inner constructor that has been removed in favor of the current inner constructor since not all graph packages implement == for the concrete graphs they define
 """
     _Interlayer(
@@ -42,10 +41,12 @@ Internal constructor used with InterlayerDescriptor.
 function _Interlayer(
     layer_1_multilayervertices::Vector{<:MultilayerVertex},
     layer_2_multilayervertices::Vector{<:MultilayerVertex},
-    edge_list::Union{<:Vector{<:MultilayerEdge{ <: Union{U,Nothing}}}, <:Vector{ <: Tuple{<:MultilayerVertex, <:MultilayerVertex}}},
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    },
     descriptor::InterlayerDescriptor{T,U,G},
 ) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
-
     graph, v_V_associations = _compute_interlayer_graph(
         layer_1_multilayervertices, layer_2_multilayervertices, edge_list, descriptor
     )
@@ -67,11 +68,12 @@ Internal constructor used with InterlayerDescriptor.
 function _Interlayer(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{ <: Union{U,Nothing}}}, <:Vector{ <: Tuple{<:MultilayerVertex, <:MultilayerVertex}}},
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    },
     descriptor::InterlayerDescriptor{T,U,G},
 ) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
-
-
     return _Interlayer(mv_vertices(layer_1), mv_vertices(layer_2), edge_list, descriptor)
 end
 
@@ -108,13 +110,15 @@ function Interlayer(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
     null_graph::G,
-    edge_list::Union{<:Vector{<:MultilayerEdge{ <: Union{U,Nothing}}}, <:Vector{ <: Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
     default_edge_weight::Function=(x, y) -> nothing,
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
     transfer_vertex_metadata::Bool=false,
     interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
-
     descriptor = InterlayerDescriptor(
         name(layer_1),
         name(layer_2),
@@ -123,14 +127,11 @@ function Interlayer(
         default_edge_weight=default_edge_weight,
         default_edge_metadata=default_edge_metadata,
         transfer_vertex_metadata=transfer_vertex_metadata,
-        name = interlayer_name,
+        name=interlayer_name,
     )
 
-    return _Interlayer(layer_1, layer_2, edge_list ,descriptor)
-
-
+    return _Interlayer(layer_1, layer_2, edge_list, descriptor)
 end
-
 
 """
     Interlayer(
@@ -169,14 +170,16 @@ function Interlayer(
     interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
     transfer_vertex_metadata::Bool=false,
 ) where {T<:Integer,U<:Union{Nothing,<:Real},G<:AbstractGraph{T}}
-
     nv_1 = nv(layer_1)
     nv_2 = nv(layer_2)
 
     directed = is_directed(null_graph)
-    maxe = directed ? 2* nv_1 * nv_2 : nv_1 * nv_2 
+    maxe = directed ? 2 * nv_1 * nv_2 : nv_1 * nv_2
 
-    @assert(ne <= maxe, "The number of required edges, $ne, is greater than the number of edges the provided graph supports i.e. $maxe" )
+    @assert(
+        ne <= maxe,
+        "The number of required edges, $ne, is greater than the number of edges the provided graph supports i.e. $maxe"
+    )
 
     layer_1_name = name(layer_1)
     layer_2_name = name(layer_2)
@@ -185,44 +188,48 @@ function Interlayer(
     layer_2_multilayervertices = collect(mv_vertices(layer_2))
     all_vertices = vcat(layer_1_multilayervertices, layer_2_multilayervertices)
 
-
-
-
-
-    edge_list =  NTuple{2, MultilayerVertex}[]
-    fadjlist = Dict{MultilayerVertex, Vector{MultilayerVertex}}() 
-
-
+    edge_list = NTuple{2,MultilayerVertex}[]
+    fadjlist = Dict{MultilayerVertex,Vector{MultilayerVertex}}()
 
     for i in 1:ne
-
-        rand_vertex_1 = rand(setdiff(all_vertices, [mv for (mv,_list) in collect(fadjlist) if (layer(mv) == layer_1_name && length(_list) == nv_2) || (layer(mv) == layer_2_name && length(_list) == nv_1) ] )) 
+        rand_vertex_1 = rand(
+            setdiff(
+                all_vertices,
+                [
+                    mv for (mv, _list) in collect(fadjlist) if
+                    (layer(mv) == layer_1_name && length(_list) == nv_2) ||
+                    (layer(mv) == layer_2_name && length(_list) == nv_1)
+                ],
+            ),
+        )
 
         if !haskey(fadjlist, rand_vertex_1)
             fadjlist[rand_vertex_1] = MultilayerVertex{layer_2_name}[]
         end
 
-        
-        rand_vertex_2 = layer(rand_vertex_1) == layer_1_name ? rand(setdiff(layer_2_multilayervertices, fadjlist[rand_vertex_1])) : rand(setdiff(layer_1_multilayervertices, fadjlist[rand_vertex_1])) # rand(layer_2_multilayervertices)
+        rand_vertex_2 = if layer(rand_vertex_1) == layer_1_name
+            rand(setdiff(layer_2_multilayervertices, fadjlist[rand_vertex_1])) # rand(layer_2_multilayervertices)
+        else
+            rand(setdiff(layer_1_multilayervertices, fadjlist[rand_vertex_1])) # rand(layer_2_multilayervertices)
+        end # rand(layer_2_multilayervertices)
 
-        
-        
-
-     
         push!(fadjlist[rand_vertex_1], rand_vertex_2)
 
         if !is_directed(null_graph)
             if !haskey(fadjlist, rand_vertex_2)
                 fadjlist[rand_vertex_2] = MultilayerVertex{layer_1_name}[]
-            end    
+            end
             push!(fadjlist[rand_vertex_2], rand_vertex_1)
         end
 
-       
         push!(edge_list, (rand_vertex_1, rand_vertex_2))
     end
 
-    edge_list = istrait(IsDirected{G}) ? [rand() < 0.5 ? tup : reverse(tup) for tup in edge_list] : edge_list#MultilayerEdge
+    edge_list = if istrait(IsDirected{G})
+        [rand() < 0.5 ? tup : reverse(tup) for tup in edge_list]#MultilayerEdge
+    else
+        edge_list#MultilayerEdge
+    end#MultilayerEdge
 
     descriptor = InterlayerDescriptor(
         name(layer_1),
@@ -232,16 +239,13 @@ function Interlayer(
         default_edge_weight=default_edge_weight,
         default_edge_metadata=default_edge_metadata,
         transfer_vertex_metadata=transfer_vertex_metadata,
-        name = interlayer_name,
+        name=interlayer_name,
     )
 
     return _Interlayer(
         layer_1_multilayervertices, layer_2_multilayervertices, edge_list, descriptor
     )
 end
-
-
-
 
 """
     multiplex_interlayer(
@@ -268,26 +272,26 @@ Return an `Interlayer{T,U,G}` that has edges only between vertices that represen
 - `interlayer_name::Symbol`: The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
 - `transfer_vertex_metadata::Bool`:if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors;
 """
-multiplex_interlayer(
+function multiplex_interlayer(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
     null_graph::G;
     default_edge_weight::Function=(x, y) -> nothing,
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
     transfer_vertex_metadata::Bool=false,
-    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T}} = _multiplex_interlayer(
-                                                                            mv_vertices(layer_1),
-                                                                            mv_vertices(layer_2),
-                                                                            null_graph,
-                                                                            U;
-                                                                            default_edge_weight=default_edge_weight,
-                                                                            default_edge_metadata=default_edge_metadata,
-                                                                            transfer_vertex_metadata=transfer_vertex_metadata,
-                                                                            interlayer_name = interlayer_name
-)
-
-
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
+    return _multiplex_interlayer(
+        mv_vertices(layer_1),
+        mv_vertices(layer_2),
+        null_graph,
+        U;
+        default_edge_weight=default_edge_weight,
+        default_edge_metadata=default_edge_metadata,
+        transfer_vertex_metadata=transfer_vertex_metadata,
+        interlayer_name=interlayer_name,
+    )
+end
 
 """
     _multiplex_interlayer(
@@ -347,7 +351,7 @@ function _multiplex_interlayer(
         default_edge_weight=default_edge_weight,
         default_edge_metadata=default_edge_metadata,
         transfer_vertex_metadata=transfer_vertex_metadata,
-        name = interlayer_name,
+        name=interlayer_name,
     )
 
     return _Interlayer(
@@ -398,7 +402,7 @@ function empty_interlayer(
         default_edge_weight=default_edge_weight,
         default_edge_metadata=default_edge_metadata,
         transfer_vertex_metadata=transfer_vertex_metadata,
-        interlayer_name = interlayer_name,
+        interlayer_name=interlayer_name,
     )
 end
 
@@ -433,14 +437,13 @@ function _empty_interlayer(
         default_edge_weight=default_edge_weight,
         default_edge_metadata=default_edge_metadata,
         transfer_vertex_metadata=transfer_vertex_metadata,
-        name = interlayer_name,
+        name=interlayer_name,
     )
 
     return _Interlayer(
         layer_1_multilayervertices, layer_2_multilayervertices, edge_list, descriptor
     )
 end
-
 
 """
     interlayer_simplegraph(
@@ -466,19 +469,16 @@ Constructor for Interlayer whose underlying graph is a `SimpleGraph` from `Graph
 function interlayer_simplegraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
-        layer_1,
-        layer_2,
-        SimpleGraph{T}(),
-        edge_list;
-        interlayer_name = interlayer_name
+        layer_1, layer_2, SimpleGraph{T}(), edge_list; interlayer_name=interlayer_name
     )
 end
-
 
 """
     interlayer_simplegraph(
@@ -505,19 +505,12 @@ function interlayer_simplegraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
     ne::Int64;
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
-        layer_1,
-        layer_2,
-        ne,
-        SimpleGraph{T}(),
-        interlayer_name = interlayer_name
+        layer_1, layer_2, ne, SimpleGraph{T}(); interlayer_name=interlayer_name
     )
 end
-
-
 
 """
     interlayer_simpledigraph(
@@ -543,19 +536,16 @@ Constructor for Interlayer whose underlying graph is a `SimpleDiGraph` from `Gra
 function interlayer_simpledigraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
-        layer_1,
-        layer_2,
-        SimpleDiGraph{T}(),
-        edge_list;
-        interlayer_name = interlayer_name
+        layer_1, layer_2, SimpleDiGraph{T}(), edge_list; interlayer_name=interlayer_name
     )
 end
-
 
 """
     interlayer_simpledigraph(
@@ -582,15 +572,10 @@ function interlayer_simpledigraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
     ne::Int64;
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
-        layer_1,
-        layer_2,
-        ne,
-        SimpleDiGraph{T}(),
-        interlayer_name = interlayer_name
+        layer_1, layer_2, ne, SimpleDiGraph{T}(); interlayer_name=interlayer_name
     )
 end
 
@@ -620,21 +605,22 @@ Constructor for Interlayer whose underlying graph is a `SimpleWeightedGraph` fro
 function interlayer_simpleweightedgraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
     default_edge_weight::Function=(x, y) -> nothing,
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
         layer_1,
         layer_2,
         SimpleWeightedGraph{T,U}(),
         edge_list;
-        default_edge_weight = default_edge_weight,
-        interlayer_name = interlayer_name
+        default_edge_weight=default_edge_weight,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_simpleweightedgraph(
@@ -664,19 +650,17 @@ function interlayer_simpleweightedgraph(
     layer_2::Layer{T,U},
     ne::Int64;
     default_edge_weight::Function=(x, y) -> nothing,
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
         layer_1,
         layer_2,
         ne,
-        SimpleWeightedGraph{T,U}(),
-        default_edge_weight = default_edge_weight,
-        interlayer_name = interlayer_name
+        SimpleWeightedGraph{T,U}();
+        default_edge_weight=default_edge_weight,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_simpleweighteddigraph(
@@ -704,18 +688,20 @@ Constructor for Interlayer whose underlying graph is a `SimpleWeightedDiGraph` f
 function interlayer_simpleweighteddigraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
     default_edge_weight::Function=(x, y) -> nothing,
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
         layer_1,
         layer_2,
         SimpleWeightedGraph{T,U}(),
         edge_list;
-        default_edge_weight = default_edge_weight,
-        interlayer_name = interlayer_name
+        default_edge_weight=default_edge_weight,
+        interlayer_name=interlayer_name,
     )
 end
 
@@ -747,19 +733,17 @@ function interlayer_simpleweighteddigraph(
     layer_2::Layer{T,U},
     ne::Int64;
     default_edge_weight::Function=(x, y) -> nothing,
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
         layer_1,
         layer_2,
         ne,
-        SimpleWeightedDiGraph{T,U}(),
-        default_edge_weight = default_edge_weight,
-        interlayer_name = interlayer_name
+        SimpleWeightedDiGraph{T,U}();
+        default_edge_weight=default_edge_weight,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_metagraph(
@@ -789,23 +773,24 @@ Constructor for Interlayer whose underlying graph is a `MetaGraph` from `MetaGra
 function interlayer_metagraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
     transfer_vertex_metadata::Bool=false,
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
         layer_1,
         layer_2,
         MetaGraph{T,U}(),
         edge_list;
-        default_edge_metadata = default_edge_metadata,
-        transfer_vertex_metadata = transfer_vertex_metadata,
-        interlayer_name = interlayer_name
+        default_edge_metadata=default_edge_metadata,
+        transfer_vertex_metadata=transfer_vertex_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_metagraph(
@@ -838,17 +823,16 @@ function interlayer_metagraph(
     ne::Int64;
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
     transfer_vertex_metadata::Bool=false,
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
         layer_1,
         layer_2,
         ne,
-        MetaGraph{T,U}(),
-        default_edge_metadata = default_edge_metadata,
-        transfer_vertex_metadata = transfer_vertex_metadata,
-        interlayer_name = interlayer_name
+        MetaGraph{T,U}();
+        default_edge_metadata=default_edge_metadata,
+        transfer_vertex_metadata=transfer_vertex_metadata,
+        interlayer_name=interlayer_name,
     )
 end
 
@@ -880,23 +864,24 @@ Constructor for Interlayer whose underlying graph is a `MetaDiGraph` from `MetaG
 function interlayer_metadigraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
     transfer_vertex_metadata::Bool=false,
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
         layer_1,
         layer_2,
         MetaDiGraph{T,U}(),
         edge_list;
-        default_edge_metadata = default_edge_metadata,
-        transfer_vertex_metadata = transfer_vertex_metadata,
-        interlayer_name = interlayer_name
+        default_edge_metadata=default_edge_metadata,
+        transfer_vertex_metadata=transfer_vertex_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_metadigraph(
@@ -929,20 +914,18 @@ function interlayer_metadigraph(
     ne::Int64;
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
     transfer_vertex_metadata::Bool=false,
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
-
     return Interlayer(
         layer_1,
         layer_2,
         ne,
-        MetaDiGraph{T,U}(),
-        default_edge_metadata = default_edge_metadata,
-        transfer_vertex_metadata = transfer_vertex_metadata,
-        interlayer_name = interlayer_name
+        MetaDiGraph{T,U}();
+        default_edge_metadata=default_edge_metadata,
+        transfer_vertex_metadata=transfer_vertex_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_valgraph(
@@ -970,27 +953,28 @@ Constructor for Interlayer whose underlying graph is a `ValGraph` from `SimpleVa
 function interlayer_valgraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValGraph{T}(SimpleGraph{T}();
-                                edgeval_types   = edgeval_types,
-                                edgeval_init = default_edge_metadata)
+    graph = ValGraph{T}(
+        SimpleGraph{T}(); edgeval_types=edgeval_types, edgeval_init=default_edge_metadata
+    )
 
     return Interlayer(
         layer_1,
         layer_2,
         graph,
         edge_list;
-        default_edge_metadata = default_edge_metadata,
-        interlayer_name = interlayer_name
+        default_edge_metadata=default_edge_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_valgraph(
@@ -1020,25 +1004,23 @@ function interlayer_valgraph(
     layer_2::Layer{T,U},
     ne::Int64;
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValGraph{T}(SimpleGraph{T}();
-                                edgeval_types   = edgeval_types,
-                                edgeval_init = default_edge_metadata)
+    graph = ValGraph{T}(
+        SimpleGraph{T}(); edgeval_types=edgeval_types, edgeval_init=default_edge_metadata
+    )
 
     return Interlayer(
         layer_1,
         layer_2,
         ne,
-        graph,
-        default_edge_metadata = default_edge_metadata,
-        interlayer_name = interlayer_name
+        graph;
+        default_edge_metadata=default_edge_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_valoutdigraph(
@@ -1066,27 +1048,28 @@ Constructor for Interlayer whose underlying graph is a `ValOutDiGraph` from `Sim
 function interlayer_valoutdigraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValOutDiGraph{T}(SimpleDiGraph{T}();
-                                edgeval_types   = edgeval_types,
-                                edgeval_init = default_edge_metadata)
+    graph = ValOutDiGraph{T}(
+        SimpleDiGraph{T}(); edgeval_types=edgeval_types, edgeval_init=default_edge_metadata
+    )
 
     return Interlayer(
         layer_1,
         layer_2,
         graph,
         edge_list;
-        default_edge_metadata = default_edge_metadata,
-        interlayer_name = interlayer_name
+        default_edge_metadata=default_edge_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_valoutdigraph(
@@ -1116,25 +1099,23 @@ function interlayer_valoutdigraph(
     layer_2::Layer{T,U},
     ne::Int64;
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValOutDiGraph{T}(SimpleDiGraph{T}();
-                                edgeval_types   = edgeval_types,
-                                edgeval_init = default_edge_metadata)
+    graph = ValOutDiGraph{T}(
+        SimpleDiGraph{T}(); edgeval_types=edgeval_types, edgeval_init=default_edge_metadata
+    )
 
     return Interlayer(
         layer_1,
         layer_2,
         ne,
-        graph,
-        default_edge_metadata = default_edge_metadata,
-        interlayer_name = interlayer_name
+        graph;
+        default_edge_metadata=default_edge_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_valdigraph(
@@ -1162,27 +1143,28 @@ Constructor for Interlayer whose underlying graph is a `ValDiGraph` from `Simple
 function interlayer_valdigraph(
     layer_1::Layer{T,U},
     layer_2::Layer{T,U},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{ <:Tuple{<:MultilayerVertex, <:MultilayerVertex}}};
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    };
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValDiGraph{T}(SimpleDiGraph{T}();
-                                edgeval_types   = edgeval_types,
-                                edgeval_init = default_edge_metadata)
+    graph = ValDiGraph{T}(
+        SimpleDiGraph{T}(); edgeval_types=edgeval_types, edgeval_init=default_edge_metadata
+    )
 
     return Interlayer(
         layer_1,
         layer_2,
         graph,
         edge_list;
-        default_edge_metadata = default_edge_metadata,
-        interlayer_name = interlayer_name
+        default_edge_metadata=default_edge_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
 
 """
     interlayer_valdigraph(
@@ -1212,27 +1194,23 @@ function interlayer_valdigraph(
     layer_2::Layer{T,U},
     ne::Int64;
     default_edge_metadata::Function=(x, y) -> NamedTuple(),
-    interlayer_name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)")
+    interlayer_name::Symbol=Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
 ) where {T<:Integer,U<:Real}
+    edgeval_types = get_valtypes(default_edge_metadata)
 
-    edgeval_types   = get_valtypes(default_edge_metadata)  
-
-    graph = ValDiGraph{T}(SimpleDiGraph{T}();
-                                edgeval_types   = edgeval_types,
-                                edgeval_init = default_edge_metadata)
+    graph = ValDiGraph{T}(
+        SimpleDiGraph{T}(); edgeval_types=edgeval_types, edgeval_init=default_edge_metadata
+    )
 
     return Interlayer(
         layer_1,
         layer_2,
         ne,
-        graph,
-        default_edge_metadata = default_edge_metadata,
-        interlayer_name = interlayer_name
+        graph;
+        default_edge_metadata=default_edge_metadata,
+        interlayer_name=interlayer_name,
     )
 end
-
-
-
 
 """
     is_interlayer_bipartite(graph::G, v_V_associations::Bijection{T, MultilayerVertex}) where {T, G <: AbstractGraph{T}}
@@ -1459,7 +1437,10 @@ Compute the interlayer between the layer's vertex array `mvs_layer_1` and the la
 function _compute_interlayer_graph(
     mvs_layer_1::Vector{MultilayerVertex{L1}},
     mvs_layer_2::Vector{MultilayerVertex{L2}},
-    edge_list::Union{<:Vector{<:MultilayerEdge{<:Union{U, Nothing}}}, <:Vector{<:Tuple{<:MultilayerVertex, <:MultilayerVertex}}},
+    edge_list::Union{
+        <:Vector{<:MultilayerEdge{<:Union{U,Nothing}}},
+        <:Vector{<:Tuple{<:MultilayerVertex,<:MultilayerVertex}},
+    },
     descriptor::InterlayerDescriptor{T,U,G},
 ) where {L1,L2,T,U,G<:AbstractGraph{T}}
     (L1 != L2) || throw(
@@ -1501,10 +1482,16 @@ function _compute_interlayer_graph(
         end
     else
         for tup in edge_list
-            src_mv,dst_mv = tup
+            src_mv, dst_mv = tup
             _src = v_V_associations(get_bare_mv(src_mv))
             _dst = v_V_associations(get_bare_mv(dst_mv))
-            _add_edge!(graph, _src, _dst; weight =  descriptor.default_edge_weight(src_mv, dst_mv), metadata = descriptor.default_edge_metadata(src_mv, dst_mv))
+            _add_edge!(
+                graph,
+                _src,
+                _dst;
+                weight=descriptor.default_edge_weight(src_mv, dst_mv),
+                metadata=descriptor.default_edge_metadata(src_mv, dst_mv),
+            )
         end
     end
     return graph, v_V_associations
@@ -1530,19 +1517,18 @@ function recompute_interlayer!(
     return interlayer.v_V_associations = v_V_associations
 end
 
-
 # Console print utilities
 function to_string(x::Interlayer)
-    parameters  = typeof(x).parameters
-    """
-    Interlayer\t$(name(x))
-    layer_1: $(x.layer_1)
-    layer_2: $(x.layer_2)
-    underlying graph: $(typeof(x.graph))
-    vertex type : $(parameters[1]) 
-    weight type : $(parameters[2]) 
-    nv : $(nv(x))
-    ne : $(ne(x))
-    """
+    parameters = typeof(x).parameters
+    return """
+           Interlayer\t$(name(x))
+           layer_1: $(x.layer_1)
+           layer_2: $(x.layer_2)
+           underlying graph: $(typeof(x.graph))
+           vertex type : $(parameters[1]) 
+           weight type : $(parameters[2]) 
+           nv : $(nv(x))
+           ne : $(ne(x))
+           """
 end
 Base.show(io::IO, x::Interlayer) = print(io, to_string(x))

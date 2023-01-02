@@ -171,7 +171,9 @@ function MultilayerDiGraph(
 
     n = nv(empty_multilayerdigraph)
 
-    indegree_sequence,outdegree_sequence = sample_digraphical_degree_sequences(indegree_distribution,outdegree_distribution,n)
+    indegree_sequence, outdegree_sequence = sample_digraphical_degree_sequences(
+        indegree_distribution, outdegree_distribution, n
+    )
 
     return MultilayerDiGraph(
         empty_multilayerdigraph,

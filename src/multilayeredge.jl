@@ -36,23 +36,31 @@ end
 
 Convert to `MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())`.
 """
-MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex) =  MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())
-
+function MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex)
+    return MultilayerEdge{Nothing}(src, dst, nothing, NamedTuple())
+end
 
 """
     MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U) where {U <: Real}
 
 Convert to `MultilayerEdge{U}(src, dst, weight, NamedTuple())`.
 """
-MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U) where {U<:Real} =  MultilayerEdge{U}(src, dst, weight, NamedTuple())
-
+function MultilayerEdge(
+    src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, weight::U
+) where {U<:Real}
+    return MultilayerEdge{U}(src, dst, weight, NamedTuple())
+end
 
 """
     MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple)
 
 Convert to `MultilayerEdge{Nothing}(src, dst, nothing, metadata)`.
 """
-MultilayerEdge(src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple) =  MultilayerEdge{Nothing}(src, dst, nothing, metadata)
+function MultilayerEdge(
+    src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple
+)
+    return MultilayerEdge{Nothing}(src, dst, nothing, metadata)
+end
 
 """
     ME
