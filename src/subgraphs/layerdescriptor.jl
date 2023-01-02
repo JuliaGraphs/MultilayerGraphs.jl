@@ -3,7 +3,8 @@
 
 Abstract type representing a `Layer` descriptor object.
 """
-abstract type AbstractLayerDescriptor{T<:Integer,U<:Real,G<:AbstractGraph{T}} end
+abstract type AbstractLayerDescriptor{T<:Integer,U<:Real,G<:AbstractGraph{T}} <:
+              AbstractDescriptor{T,U,G} end
 
 """
     struct LayerDescriptor{T,U,G} <: AbstractLayerDescriptor{T,U,G}
@@ -48,3 +49,15 @@ struct LayerDescriptor{T,U,G} <: AbstractLayerDescriptor{T,U,G}
         )
     end
 end
+
+# Console print utilities
+function to_string(x::LayerDescriptor)
+    parameters = typeof(x).parameters
+    return """
+           Layer\t$(name(x))
+           underlying_graph: $(typeof(graph(x)))
+           vertex_type: $(parameters[1])
+           weight_type: $(parameters[2]) 
+           """
+end
+Base.show(io::IO, x::LayerDescriptor) = print(io, to_string(x))

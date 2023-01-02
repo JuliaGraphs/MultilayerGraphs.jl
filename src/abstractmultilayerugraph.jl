@@ -272,13 +272,9 @@ function get_subgraph(
         v for (v, mv) in collect(mg.v_V_associations) if mv.layer == descriptor.name
     ])
 
-    _vertices = get_rich_mv.(Ref(mg), vs)#MultilayerVertex{descriptor.name}[]
+    _vertices = get_rich_mv.(Ref(mg), vs)
 
-    #=     for (v,mv) in zip(vs, getindex.(Ref(mg.v_V_associations),vs))
-            push!(_vertices, get_rich_mv(mg, v)) #MV(mv.node, mv.layer, mg.v_metadata_dict[v] )
-        end
-     =#
-    edge_list = MultilayerEdge{U}[]#MultilayerEdge{U}[MultilayerEdge(src, vertex(halfedge),  weight(halfedge), metadata(halfedge)) for (src,halfedge) in zip(_vertices,mg.fadjlist[vs]) if vertex(halfedge).layer == descriptor.name && get_v(mg, vertex(halfedge)) >= get_v(mg,src) ]
+    edge_list = MultilayerEdge{U}[]
 
     for (src_v, halfedges_from_src) in zip(vs, getindex.(Ref(mg.fadjlist), vs))
         src_bare_V = mg.v_V_associations[src_v]

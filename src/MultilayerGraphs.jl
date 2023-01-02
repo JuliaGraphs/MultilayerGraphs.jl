@@ -14,7 +14,7 @@
 
 # The δ_Ω implementation could be moved to a separate file.
 
-# The usage of mutable `MissingVertex`s (although limited to SupraWeightMatrix) points to the fact that Bijections (at least as they are used right now) are not the best way to represent integer label-MultilayerVertex associations. We my implement our own container object or use the exixtsing ons differently.
+# The usage of mutable `MissingVertex`s (although limited to SupraWeightMatrix) points to the fact that Bijections (at least as they are used right now) are not the best way to represent integer label-MultilayerVertex associations. We my implement our own container object or use the existing ons differently.
 
 # We need a quick Multilayer(Di)Graph constructor of the form Multilayer(Di)Graph(nn, nl; nv = rand(0:nn*nl), ne = rand(0:nv*(nv-1)) kwargs...) where kwargs may be used to further specify it.
 
@@ -59,6 +59,7 @@ export
     mv_outneighbors,
     neighbors,
     mv_neighbors,
+    get_v,
     edgetype,
     has_edge,
     ne,
@@ -71,15 +72,34 @@ export
     adjacency_matrix,
     weights,
     name,
+    graph,
     # layer.jl
     AbstractLayer,
     Layer,
+    layer_simplegraph,
+    layer_simpledigraph,
+    layer_simpleweightedgraph,
+    layer_simpleweighteddigraph,
+    layer_metadigraph,
+    layer_valgraph,
+    layer_valoutdigraph,
+    layer_valdigraph,
+    layer_metagraph,
     has_node,
     add_vertex!,
     rem_vertex!,
     # interlayer.jl
     AbstractInterlayer,
     Interlayer,
+    interlayer_simplegraph,
+    interlayer_simpleweightedgraph,
+    interlayer_metagraph,
+    interlayer_valgraph,
+    interlayer_simpledigraph,
+    interlayer_simpleweighteddigraph,
+    interlayer_metadigraph,
+    interlayer_valoutdigraph,
+    interlayer_valdigraph,
     multiplex_interlayer,
     empty_interlayer,
     is_multiplex_interlayer,
@@ -151,7 +171,7 @@ export
     kleitman_wang_graph_generator
 # tensorfacoriazations.jl
 
-using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections
+using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections, PrettyTables
 using Distributions: Uniform
 using LinearAlgebra, Statistics, OMEinsum, TensorOperations, Distributions
 using DataStructures, SparseArrays
@@ -163,6 +183,7 @@ include("vertices/multilayervertex.jl")
 include("vertices/missingvertex.jl")
 include("multilayeredge.jl")
 include("halfedge.jl")
+include("subgraphs/abstractdescriptor.jl")
 include("subgraphs/layerdescriptor.jl")
 include("subgraphs/interlayerdescriptor.jl")
 include("subgraphs/abstractsubgraph.jl")

@@ -29,9 +29,9 @@ Construct a MultilayerGraph with layers given by `layers`. The interlayers will 
 # ARGUMENTS
 
 - `layers::Vector{<:Layer{T,U}}`: The (ordered) list of layers the multilayer graph will have;
-- `specified_interlayers::Vector{<:Interlayer{T,U}}`: The list of interlayers specified by the user. Note that the user does not need to specify all interlayers, as the unspecified ones will be automatically constructed using the indications given by the `default_interlayers_null_graph` and `default_interlayers_structure` keywords.;
-- `default_interlayers_null_graph::H = SimpleGraph{T}()`: Sets the underlying graph for the interlayers that are to be automatically specified. Defaults to `SimpleGraph{T}()`. See the `Layer` constructors for more information.;
-- `default_interlayers_structure::String = "multiplex"`: Sets the structure of the interlayers that are to be automatically specified. May be "multiplex" for diagonally coupled interlayers, or "empty" for empty interlayers (no edges).  "multiplex". See the `Interlayer` constructors for more information.;
+- `specified_interlayers::Vector{<:Interlayer{T,U}}`: The list of interlayers specified by the user. Note that the user does not need to specify all interlayers, as the unspecified ones will be automatically constructed using the indications given by the `default_interlayers_null_graph` and `default_interlayers_structure` keywords;
+- `default_interlayers_null_graph::H = SimpleGraph{T}()`: Sets the underlying graph for the interlayers that are to be automatically specified. Defaults to `SimpleGraph{T}()`. See the `Layer` constructors for more information;
+- `default_interlayers_structure::String = "multiplex"`: Sets the structure of the interlayers that are to be automatically specified. May be "multiplex" for diagonally coupled interlayers, or "empty" for empty interlayers (no edges).  "multiplex". See the `Interlayer` constructors for more information.
 """
 function MultilayerGraph(
     layers::Vector{<:Layer{T,U}},
@@ -102,6 +102,10 @@ function Graphs.add_edge!(
         #=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
                 set_weight!(mg, src, dst, _weight)
                 set_metadata!(mg, src, dst, _metadata) =#
+        @debug "Edge already exists" me [
+            edge for edge in edges(mg) if
+            node(src(edge)) == Node("node_1") && node(dst(edge)) == Node("node_1")
+        ]
         return false
     end
 end
@@ -176,12 +180,6 @@ function MultilayerGraph(
         ),
     )
 
-    minimum(support(degree_distribution)) >= 0 || throw(
-        ErrorException(
-            "The `degree_distribution` must have positive support. Found $(support(degree_distribution)).",
-        ),
-    )
-
     empty_multilayergraph = MultilayerGraph(
         empty_layers,
         empty_interlayers;
@@ -191,19 +189,8 @@ function MultilayerGraph(
 
     n = nv(empty_multilayergraph)
 
-    degree_sequence = nothing
-    acceptable = false
+    degree_sequence = sample_graphical_degree_sequence(degree_distribution, n)
 
-    while !acceptable
-        degree_sequence =
-            round.(Ref(Int), rand(degree_distribution, nv(empty_multilayergraph)))
-
-        acceptable = all(0 .<= degree_sequence .< n)
-
-        if acceptable
-            acceptable = isgraphical(degree_sequence)
-        end
-    end
     return MultilayerGraph(
         empty_multilayergraph, degree_sequence; allow_self_loops=false, perform_checks=false
     )
