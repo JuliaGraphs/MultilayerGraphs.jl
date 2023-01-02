@@ -881,7 +881,8 @@ Read a complete list of analytical methods exclusive to multilayer graphs in the
 - [Implement projected monoplex and overlay graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/35);
 - [Implement more default multilayer graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/36) (e.g. multiplex graphs);
 - [Implement configuration models / graph generators for interlayers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/46);
-- [Relax the requirement of same `T` and `U` for all `Layer`s and `Interlayer`s that are meant to constitute a `Multilayer(Di)Graph`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/53).
+- [Relax the requirement of same `T` and `U` for all `Layer`s and `Interlayer`s that are meant to constitute a `Multilayer(Di)Graph`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/53);
+- [Implement multilayer graph data visualisation functionalities (or a new package)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54).
 
 ## How to Contribute
 

@@ -90,14 +90,7 @@ Interlayer(
     transfer_vertex_metadata::Bool = false
 ) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
 
-layer_simplegraph(
-    name::Symbol,
-    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
-    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
-    vertextype::Type{T} = Int64,
-    weighttype::Type{U} = Float64
-) where {T<:Integer,U<:Real}
-
+interlayer_simplegraph
 interlayer_simpleweightedgraph
 interlayer_metagraph
 interlayer_valgraph
