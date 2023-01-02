@@ -36,14 +36,11 @@ function _get_srcmv_dstmv_layer(layer::Layer)
         ),
     )
 
-
     dst_mv = MultilayerGraphs.get_bare_mv(rand(_collection))
 
     return mvs, src_mv, dst_mv
 end
 @debug ""
-#= rand_mv_1 =  rand(mv_vertices(layer_sg))
-rand_mv_2 =  rand(mv_vertices(layer_sg)) =#
 
 layer = layer_sg
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
@@ -68,8 +65,7 @@ add_edge!(layer, rand_mv_1, rand_mv_2)
 @test add_vertex!(layer, rand_mv_1)
 @test has_vertex(layer, rand_mv_1)
 
-#= rand_mv_1 =  rand(mv_vertices(layer_sdg))
-rand_mv_2 =  rand(mv_vertices(layer_sdg)) =#
+
 layer = layer_sdg
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
 # test uniform add_edge!
@@ -94,8 +90,7 @@ add_edge!(layer, rand_mv_1, rand_mv_2)
 
 @debug ""
 
-#= rand_mv_1 =  rand(mv_vertices(layer_swg))
-rand_mv_2 =  rand(mv_vertices(layer_swg)) =#
+
 layer = layer_swg
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
 # test uniform add_edge!
@@ -123,8 +118,6 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
 @debug ""
 
 layer = layer_swdg
-#= rand_mv_1 =  rand(mv_vertices(layer))
-rand_mv_2 =  rand(mv_vertices(layer)) =#
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
 # test uniform add_edge!
 rem_edge!(layer, rand_mv_1, rand_mv_2)
@@ -151,8 +144,6 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test has_vertex(layer, rand_mv_1)
 
 layer = layer_mg
-#= rand_mv_1 =  rand(mv_vertices(layer))
-rand_mv_2 =  rand(mv_vertices(layer)) =#
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
 # test uniform add_edge!
 rem_edge!(layer, rand_mv_1, rand_mv_2)
@@ -161,8 +152,6 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
     layer, rand_mv_1, rand_mv_2, weight=nothing, metadata=(weight=4, property_1="hello")
 )
 @test has_edge(layer, rand_mv_1, rand_mv_2)
-#= @test get_prop(layer.graph, get_v(layer,rand_mv_1), get_v(layer, rand_mv_2), :weight  ) == 4
-@test get_prop(layer.graph, get_v(layer,rand_mv_1), get_v(layer, rand_mv_2), :property_1  ) == "hello" =#
 @test get_prop(layer, rand_mv_1, rand_mv_2, :weight) == 4
 @test get_prop(layer, rand_mv_1, rand_mv_2, :property_1) == "hello"
 # test hybrid add_edge!
@@ -187,8 +176,6 @@ set_prop!(layer, rand_mv_1, rand_mv_2, :property_1, "world")
 @test get_metadata(layer, rand_mv_1).age == 28
 
 layer = layer_vg
-#= rand_mv_1 =  rand(mv_vertices(layer))
-rand_mv_2 =  rand(mv_vertices(layer)) =#
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
 # test uniform add_edge!
 rem_edge!(layer, rand_mv_1, rand_mv_2)
@@ -219,8 +206,6 @@ rem_edge!(layer, rand_mv_1, rand_mv_2)
 @test_broken add_vertex!(layer, rand_mv_1; metadata=(age=28,))
 
 layer = layer_vodg
-#= rand_mv_1 =  rand(mv_vertices(layer))
-rand_mv_2 =  rand(mv_vertices(layer)) =#
 _, rand_mv_1, rand_mv_2 = _get_srcmv_dstmv_layer(layer)
 # test uniform add_edge!
 rem_edge!(layer, rand_mv_1, rand_mv_2)

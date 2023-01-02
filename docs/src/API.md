@@ -50,6 +50,16 @@ Layer(
     allow_self_loops::Bool = false
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
+layer_simplegraph
+layer_simpledigraph
+layer_simpleweightedgraph
+layer_simpleweighteddigraph
+layer_metadigraph
+layer_valgraph
+layer_valoutdigraph
+layer_valdigraph
+layer_metagraph
+
 has_node(layer::Layer, n::Node)
 add_vertex!(layer::Layer, mv::MultilayerVertex)
 add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, L <: Layer{T}} 
@@ -79,6 +89,23 @@ Interlayer(
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
     transfer_vertex_metadata::Bool = false
 ) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+
+layer_simplegraph(
+    name::Symbol,
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
+    edge_list::Union{Vector{<:MultilayerEdge}, Vector{NTuple{2, MultilayerVertex{nothing}}}};
+    vertextype::Type{T} = Int64,
+    weighttype::Type{U} = Float64
+) where {T<:Integer,U<:Real}
+
+interlayer_simpleweightedgraph
+interlayer_metagraph
+interlayer_valgraph
+interlayer_simpledigraph
+interlayer_simpleweighteddigraph
+interlayer_metadigraph
+interlayer_valoutdigraph
+interlayer_valdigraph
 
 
 multiplex_interlayer(
