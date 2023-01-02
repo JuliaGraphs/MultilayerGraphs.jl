@@ -275,7 +275,7 @@ all_layers = [
 
 _nv_1 = nv(layer_sg)
 _nv_2 = nv(layer_swg)
-_ne = rand(1:(_nv_1 * _nv_2))
+_ne = rand(1:(_nv_1 * _nv_2) - 1)
 interlayer_sg_swg = Interlayer(layer_sg, layer_swg, _ne, SimpleGraph{vertextype}())
 _interlayer_simplegraph = interlayer_simplegraph(
     layer_sg, layer_swg, collect(edges(interlayer_sg_swg))
@@ -284,7 +284,7 @@ _interlayer_simplegraph = interlayer_simplegraph(layer_sg, layer_swg, _ne)
 
 _nv_1 = nv(layer_swg)
 _nv_2 = nv(layer_mg)
-_ne = rand(1:(_nv_1 * _nv_2))
+_ne = rand(1:(_nv_1 * _nv_2) - 1)
 interlayer_swg_mg = Interlayer(
     layer_swg,
     layer_mg,
@@ -306,7 +306,7 @@ _interlayer_simpleweightedgraph = interlayer_simpleweightedgraph(
 
 _nv_1 = nv(layer_mg)
 _nv_2 = nv(layer_vg)
-_ne = rand(1:(_nv_1 * _nv_2))
+_ne = rand(1:(_nv_1 * _nv_2) - 1)
 interlayer_mg_vg = Interlayer(
     layer_mg,
     layer_vg,
@@ -346,7 +346,7 @@ _interlayer_valgraph = interlayer_valgraph(
 @test all(getindex.(metadata.(edges(_interlayer_valgraph)), 1) .== ("mymeta",))
 _nv_1 = nv(layer_sg)
 _nv_2 = nv(layer_mg)
-_ne = rand(1:(_nv_1 * _nv_2))
+_ne = rand(1:(_nv_1 * _nv_2) - 1)
 _interlayer_valgraph = interlayer_valgraph(
     layer_sg, layer_mg, _ne; default_edge_metadata=(src, dst) -> ("mymeta",)
 )
@@ -355,7 +355,7 @@ interlayer_empty_sg_vg = empty_interlayer(layer_sg, layer_vg, SimpleGraph{vertex
 
 _nv_1 = nv(layer_sdg)
 _nv_2 = nv(layer_swdg)
-_ne = rand(1:(2 * _nv_1 * _nv_2))
+_ne = rand(1:(2 * _nv_1 * _nv_2) - 1)
 interlayer_sdg_swdg = Interlayer(layer_sdg, layer_swdg, _ne, SimpleDiGraph{vertextype}())
 _interlayer_simpledigraph = interlayer_simpledigraph(
     layer_sdg, layer_swdg, collect(edges(interlayer_sdg_swdg))
@@ -364,7 +364,7 @@ _interlayer_simpledigraph = interlayer_simpledigraph(layer_sdg, layer_swdg, _ne)
 
 _nv_1 = nv(layer_swdg)
 _nv_2 = nv(layer_mdg)
-_ne = rand(1:(2 * _nv_1 * _nv_2))
+_ne = rand(1:(2 * _nv_1 * _nv_2) - 1)
 interlayer_swdg_mdg = Interlayer(
     layer_swdg,
     layer_mdg,
@@ -386,7 +386,7 @@ _interlayer_simpleweighteddigraph = interlayer_simpleweighteddigraph(
 
 _nv_1 = nv(layer_mdg)
 _nv_2 = nv(layer_vodg)
-_ne = rand(1:(2 * _nv_1 * _nv_2))
+_ne = rand(1:(2 * _nv_1 * _nv_2) - 1)
 interlayer_mdg_vodg = Interlayer(
     layer_mdg,
     layer_vodg,
@@ -409,7 +409,7 @@ _interlayer_metadigraph = interlayer_metadigraph(
 
 _nv_1 = nv(layer_vodg)
 _nv_2 = nv(layer_vdg)
-_ne = rand(1:(2 * _nv_1 * _nv_2))
+_ne = rand(1:(2 * _nv_1 * _nv_2) - 1)
 interlayer_vodg_vdg = Interlayer(
     layer_vodg,
     layer_vdg,
@@ -435,7 +435,7 @@ _interlayer_valoutdigraph = interlayer_valoutdigraph(
 
 _nv_1 = nv(layer_sdg)
 _nv_2 = nv(layer_mdg)
-_ne = rand(1:(2 * _nv_1 * _nv_2))
+_ne = rand(1:(2 * _nv_1 * _nv_2) - 1)
 interlayer_sdg_mdg = Interlayer(
     layer_sdg,
     layer_mdg,
