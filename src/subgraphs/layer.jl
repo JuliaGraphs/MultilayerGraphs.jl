@@ -213,7 +213,7 @@ function Layer(
 
     vertex_type = @isdefined(V) ? MultilayerVertex : Node
 
-    edge_list = NTuple{2,MultilayerVertex}[]  #MultilayerEdge
+    edge_list = NTuple{2,MultilayerVertex{nothing}}[]  #MultilayerEdge
     fadjlist = Dict{vertex_type,Vector{vertex_type}}()
 
     max_links_per_vertex = _nv - 1 # directed ? _nv - 1 : _nv-1
@@ -266,7 +266,6 @@ function Layer(
         default_edge_metadata=default_edge_metadata,
     )
 
-    edge_list = [rand() < 0.5 ? tup : reverse(tup) for tup in edge_list]
     layer = Layer(descriptor, vertices, edge_list)
 
     return layer

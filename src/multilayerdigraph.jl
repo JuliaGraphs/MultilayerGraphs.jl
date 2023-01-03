@@ -54,88 +54,7 @@ function MultilayerDiGraph(
     return multilayerdigraph
 end
 
-# General MultilayerDiGraph Utilities
-fadjlist(mg::MultilayerDiGraph) = mg.fadjlist
-badjlist(mg::MultilayerDiGraph) = mg.badjlist
 
-# Nodes
-
-# Vertices
-
-# Edges    
-"""
-    add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
-
-Add MultilayerEdge `me` to the MultilayerDiGraph `mg`. Return true if succeeds, false otherwise.
-"""
-function Graphs.add_edge!(
-    mg::M, me::E
-) where {T,U,M<:AbstractMultilayerDiGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
-    _src = get_bare_mv(src(me))
-    _dst = get_bare_mv(dst(me))
-    has_vertex(mg, _src) ||
-        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, _dst) ||
-        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
-
-    # Add edge to `edge_dict`
-    src_V_idx = get_v(mg, _src)
-    dst_V_idx = get_v(mg, _dst)
-
-    _weight = isnothing(weight(me)) ? one(U) : weight(me)
-    _metadata = metadata(me)
-
-    if !has_edge(mg, _src, _dst)
-        push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-        push!(mg.badjlist[dst_V_idx], HalfEdge(_src, _weight, _metadata))
-    else
-        return false
-    end
-    #=     else
-            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-        end =#
-
-    return true
-end
-
-"""
-    rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
-
-Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
-"""
-function Graphs.rem_edge!(
-    mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex
-)
-
-    # Perform routine checks
-    has_vertex(mg, src) ||
-        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, dst) ||
-        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
-
-    has_edge(mg, src, dst) || return false
-
-    src_V_idx = get_v(mg, src)
-    dst_V_idx = get_v(mg, dst)
-
-    _src = get_bare_mv(src)
-    _dst = get_bare_mv(dst)
-
-    src_idx_tbr = findfirst(halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx])
-    deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
-
-    dst_idx_tbr = findfirst(halfedge -> halfedge.vertex == _src, mg.badjlist[dst_V_idx])
-    deleteat!(mg.badjlist[dst_V_idx], dst_idx_tbr)
-
-    return true
-end
-
-# Layers and Interlayers
-
-# Graphs.jl's extensions
-
-# Multilayer-specific methods
-# "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
 """
     MultilayerDiGraph(
         empty_layers::Vector{<:Layer{T,U}},
@@ -285,6 +204,90 @@ function MultilayerDiGraph(
         default_interlayers_structure=default_interlayers_structure,
     )
 end
+
+# General MultilayerDiGraph Utilities
+fadjlist(mg::MultilayerDiGraph) = mg.fadjlist
+badjlist(mg::MultilayerDiGraph) = mg.badjlist
+
+# Nodes
+
+# Vertices
+
+# Edges    
+"""
+    add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+
+Add MultilayerEdge `me` to the MultilayerDiGraph `mg`. Return true if succeeds, false otherwise.
+"""
+function Graphs.add_edge!(
+    mg::M, me::E
+) where {T,U,M<:AbstractMultilayerDiGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
+    _src = get_bare_mv(src(me))
+    _dst = get_bare_mv(dst(me))
+    has_vertex(mg, _src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, _dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+
+    # Add edge to `edge_dict`
+    src_V_idx = get_v(mg, _src)
+    dst_V_idx = get_v(mg, _dst)
+
+    _weight = isnothing(weight(me)) ? one(U) : weight(me)
+    _metadata = metadata(me)
+
+    if !has_edge(mg, _src, _dst)
+        push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
+        push!(mg.badjlist[dst_V_idx], HalfEdge(_src, _weight, _metadata))
+    else
+        return false
+    end
+    #=     else
+            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
+        end =#
+
+    return true
+end
+
+"""
+    rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
+
+Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
+"""
+function Graphs.rem_edge!(
+    mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+
+    # Perform routine checks
+    has_vertex(mg, src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+
+    has_edge(mg, src, dst) || return false
+
+    src_V_idx = get_v(mg, src)
+    dst_V_idx = get_v(mg, dst)
+
+    _src = get_bare_mv(src)
+    _dst = get_bare_mv(dst)
+
+    src_idx_tbr = findfirst(halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx])
+    deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
+
+    dst_idx_tbr = findfirst(halfedge -> halfedge.vertex == _src, mg.badjlist[dst_V_idx])
+    deleteat!(mg.badjlist[dst_V_idx], dst_idx_tbr)
+
+    return true
+end
+
+# Layers and Interlayers
+
+# Graphs.jl's extensions
+
+# Multilayer-specific methods
+# "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
+
 
 # Base overloads
 """

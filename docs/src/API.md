@@ -235,8 +235,7 @@ mv_vertices(mg::AbstractMultilayerGraph)
 mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_neighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex)
-add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
-add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
+add_vertex!(mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool = true)
 rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
 rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) 
