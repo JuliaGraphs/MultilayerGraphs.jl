@@ -36,19 +36,22 @@ metadata(e::AbstractMultilayerEdge)
 
 ```@docs
 Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}}
-Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
+Layer(
+    descriptor::LayerDescriptor{T},
+    vertices::Union{<:Vector{<:MultilayerVertex},Vector{Node}},
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}},
+)
 
 Layer(
     name::Symbol,
-    vertices::Vector{ <: MultilayerVertex},
-    ne::Int64,
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}},
     null_graph::G,
     weighttype::Type{U};
-    default_vertex_metadata::Function = mv -> NamedTuple(),
-    default_edge_weight::Function = (src, dst) -> nothing,
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    allow_self_loops::Bool = false
-) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
+    default_vertex_metadata::Function=mv -> NamedTuple(),
+    default_edge_weight::Function=(src, dst) -> one(U),
+    default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
 
 layer_simplegraph
 layer_simpledigraph
