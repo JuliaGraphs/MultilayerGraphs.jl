@@ -135,7 +135,7 @@ end
 """
     get_v(subgraph::AbstractSubGraph, V::MultilayerVertex)
 
-Return `v` associated with `V`. 
+Return the integer label `v` associated to `MultilayerVertex` `V` within `subgraph`. Useful for indexing the weight matrix of `subgraph`. 
 """
 function get_v(subgraph::AbstractSubGraph, V::MultilayerVertex)
     # Convert V to a bare vertex
@@ -284,6 +284,7 @@ function add_edge_standard!(
     weight::W=nothing,
     metadata::Union{Tuple,NamedTuple}=NamedTuple(),
 ) where {T,U<:Real,W<:Union{U,Nothing},S<:AbstractSubGraph{T,U}}
+    #  @debug "" subgraph src dst weight metadata
     return add_edge!(
         subgraph,
         get_v(subgraph, src),
@@ -427,3 +428,10 @@ end
 Return the name of `subgraph`. 
 """
 name(subgraph::AbstractSubGraph) = subgraph.name
+
+"""
+    name(subgraph::AbstractSubGraph)
+
+Return the underlying graph of `subgraph`. 
+"""
+graph(subgraph::AbstractSubGraph) = subgraph.graph

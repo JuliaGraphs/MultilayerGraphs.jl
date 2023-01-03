@@ -9,7 +9,7 @@ mutable struct MultilayerDiGraph{T,U} <: AbstractMultilayerDiGraph{T,U}
     v_V_associations::Bijection{T,<:MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
     idx_N_associations::Bijection{Int64,Node} # A Bijection from Bijections.jl that associates Int64 to `Node`s.
     fadjlist::Vector{Vector{HalfEdge{<:MultilayerVertex,<:Union{Nothing,U}}}} # the forward adjacency list of the MultilayerDiGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that originate from `v_V_associations[i]`.
-    badjlist::Vector{Vector{HalfEdge{<:MultilayerVertex,<:Union{Nothing,U}}}} # the bacward adjacency list of the MultilayerDiGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that insost on `v_V_associations[i]`.
+    badjlist::Vector{Vector{HalfEdge{<:MultilayerVertex,<:Union{Nothing,U}}}} # the backward adjacency list of the MultilayerDiGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that insist on `v_V_associations[i]`.
     v_metadata_dict::Dict{T,<:Union{<:Tuple,<:NamedTuple}} # A Dictionary that associates numeric vertices to their metadata
 end
 
@@ -162,12 +162,6 @@ function MultilayerDiGraph(
         ),
     )
 
-    minimum(support(indegree_distribution)) >= 0 || throw(
-        ErrorException(
-            "Both the `indegree_distribution` and the `outdegree_distribution` must have positive support. Found $(support(indegree_distribution)) and $(support(outdegree_distribution)).",
-        ),
-    )
-
     empty_multilayerdigraph = MultilayerDiGraph(
         empty_layers,
         empty_interlayers;
@@ -177,23 +171,9 @@ function MultilayerDiGraph(
 
     n = nv(empty_multilayerdigraph)
 
-    indegree_sequence = Vector{Int64}(undef, n)
-    outdegree_sequence = Vector{Int64}(undef, n)
-    acceptable = false
-
-    @info "Trying to sample a digraphical sequence from the two provided distributions..."
-    while !acceptable
-        indegree_sequence .=
-            round.(Ref(Int), rand(indegree_distribution, nv(empty_multilayerdigraph)))
-        outdegree_sequence .=
-            round.(Ref(Int), rand(outdegree_distribution, nv(empty_multilayerdigraph)))
-
-        acceptable = all(0 .<= vcat(indegree_sequence, outdegree_sequence) .< n)
-
-        if acceptable
-            acceptable = isdigraphical(indegree_sequence, outdegree_sequence)
-        end
-    end
+    indegree_sequence, outdegree_sequence = sample_digraphical_degree_sequences(
+        indegree_distribution, outdegree_distribution, n
+    )
 
     return MultilayerDiGraph(
         empty_multilayerdigraph,
@@ -223,7 +203,7 @@ function MultilayerDiGraph(
     perform_checks::Bool=false,
 ) where {T,U}
     (allow_self_loops && perform_checks) &&
-        @warn "Checks for graphicality and coherence with the provided `empty_multilayerdigraph` are currently performed without taking into account self-loops. Thus said checks may fail event though the provided `indegree_sequence` and `outdegree_sequence` may be graphical when one allows for self-loops within the directed multilayer graph to be present. If you are sure that the provided `indegree_sequence` and `outdegree_sequence` are indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenient."
+        @warn "Checks for graphicality and coherence with the provided `empty_multilayerdigraph` are currently performed without taking into account self-loops. Thus said checks may fail event though the provided `indegree_sequence` and `outdegree_sequence` may be graphical when one allows for self-loops within the directed multilayer graph to be present. If you are sure that the provided `indegree_sequence` and `outdegree_sequence` are indeed graphical under those circumstances, you may want to disable checks by setting `perform_checks = false`. We apologize for the inconvenience."
 
     _multilayerdigraph = deepcopy(empty_multilayerdigraph)
 
@@ -237,19 +217,19 @@ function MultilayerDiGraph(
         n = nv(_multilayerdigraph)
         n == length(indegree_sequence) == length(outdegree_sequence) || throw(
             ErrorException(
-                "The number of vertices of the provided empty MultilayerDiGraph does not match the length of the `indegree_sequence` or the `outdegree_sequence`. Found $(nv(_multilayerdigraph)) , $(length(indegree_sequence)) and  $(length(outdegree_sequence))",
+                "The number of vertices of the provided empty MultilayerDiGraph does not match the length of the `indegree_sequence` or the `outdegree_sequence`. Found $(nv(_multilayerdigraph)) , $(length(indegree_sequence)) and  $(length(outdegree_sequence)).",
             ),
         )
 
         sum(indegree_sequence) == sum(outdegree_sequence) || throw(
             ErrorException(
-                "The sum of the `indegree_sequence` and the `outdegree_sequence` must match. Found $(sum(indegree_sequence)) and $(sum(outdegree_sequence))",
+                "The sum of the `indegree_sequence` and the `outdegree_sequence` must match. Found $(sum(indegree_sequence)) and $(sum(outdegree_sequence)).",
             ),
         )
 
         isdigraphical(degree_sequence) || throw(
             ArgumentError(
-                "`indegree_sequence` and `outdegree_sequence` must be digraphical"
+                "`indegree_sequence` and `outdegree_sequence` must be digraphical."
             ),
         )
     end

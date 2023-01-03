@@ -50,6 +50,16 @@ Layer(
     allow_self_loops::Bool = false
 ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}}
 
+layer_simplegraph
+layer_simpledigraph
+layer_simpleweightedgraph
+layer_simpleweighteddigraph
+layer_metadigraph
+layer_valgraph
+layer_valoutdigraph
+layer_valdigraph
+layer_metagraph
+
 has_node(layer::Layer, n::Node)
 add_vertex!(layer::Layer, mv::MultilayerVertex)
 add_vertex!(layer::L, n::Node, args...; kwargs...) where {T, L <: Layer{T}} 
@@ -79,6 +89,16 @@ Interlayer(
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"),
     transfer_vertex_metadata::Bool = false
 ) where {T<:Integer, U <: Union{Nothing, <: Real},  G<:AbstractGraph{T}}
+
+interlayer_simplegraph
+interlayer_simpleweightedgraph
+interlayer_metagraph
+interlayer_valgraph
+interlayer_simpledigraph
+interlayer_simpleweighteddigraph
+interlayer_metadigraph
+interlayer_valoutdigraph
+interlayer_valdigraph
 
 
 multiplex_interlayer(
@@ -112,6 +132,7 @@ mv_outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 mv_neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
 has_edge(subgraph::AbstractSubGraph,me::MultilayerEdge)
 has_edge( subgraph::AbstractSubGraph, s::MultilayerVertex, d::MultilayerVertex)
+has_edge( layer::Layer, s::MultilayerVertex{nothing}, d::MultilayerVertex{nothing})
 ne(subgraph::AbstractSubGraph)
 edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} 
 add_edge!( subgraph::S, me::E) where {T,U<:Real,S<:AbstractSubGraph{T,U},E<:MultilayerEdge{ <: Union{U, Nothing}}}
@@ -126,14 +147,16 @@ is_directed(subgraph::AbstractSubGraph)
 is_directed(::Type{S}) where {T,U,G,S <: AbstractSubGraph{T,U,G}}
 adjacency_matrix(subgraph::AbstractSubGraph)
 MultilayerGraphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
-name(subgraph::AbstractSubGraph)
- 
+
 is_multiplex_interlayer(interlayer::Interlayer)
 
 get_symmetric_interlayer(
     interlayer::In;
     symmetric_interlayer_name::String = String(interlayer.name) * "_rev"
 ) where {T,U,G,In<:Interlayer{T,U,G}}
+
+name(subgraph::AbstractSubGraph)
+graph(subgraph::AbstractSubGraph)
 ```
 
 ### [Multilayer-Specific Methods](@id msm_eu)

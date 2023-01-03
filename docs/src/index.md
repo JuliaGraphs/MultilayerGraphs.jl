@@ -120,7 +120,7 @@ multilayervertices_meta[1]
 MV(Node("node_1"), :nothing, ("I'm node node_1",))
 ```
 
-Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in (accessible via the [`layer`](@ref) function, here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex (accessible via the [`metadata`](@ref) function, no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples). For a complete list of methods applicable to `MultilayerVertices`, plese refer to the [Vertices](@ref vertices_eu) of the API.
+Where `MV` is an alias for `MultilayerVertex`. The first field is the `Node` being represented (accessible via the [`node`](@ref) function), the second the (name of) the layer the vertex is represented in (accessible via the [`layer`](@ref) function, here it is set to `nothing`, since these vertices are yet to be assigned), and the metadata associated to the vertex (accessible via the [`metadata`](@ref) function, no metadata are currently represented via an empty `NamedTuple`). `MultilayerVertex` metadata can be represented via a `Tuple` or a `NamedTuple` (see below for examples). For a complete list of methods applicable to `MultilayerVertices`, please refer to the [Vertices](@ref vertices_eu) of the API.
 
 ### Layers
 
@@ -128,21 +128,21 @@ As said before, to define a multilayer graph we need to specify its layers and i
 
 ```julia
 Layer(
-    name::Symbol,                                                 # The name of the layer
-    vertices::Vector{ <: MultilayerVertex},                       # The `MultilayerVertex`s of the Layer
-    ne::Int64,                                                    # The number of edges of the Layer
-    null_graph::G,                                                # The Layer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
-    weighttype::Type{U};                                          # The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
-    default_vertex_metadata::Function = mv -> NamedTuple(),       # Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. defaults to `mv -> NamedTuple()`;
-    default_edge_weight::Function = (src, dst) -> nothing,        #  Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
-    default_edge_metadata::Function = (src, dst) -> NamedTuple(), # Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
-    allow_self_loops::Bool = false                                # whether to allow self loops to be generated or not. Defaults to `false`.
-)
+    name::Symbol,                                                     # The name of the layer
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},  # The `MultilayerVertex`s of the Layer. May be a vector of `MultilayerVertex{nothing}`s or a vector of `Node`s. In the latter case, the metadata of the `MultilayerVertex` to be added are computed via the `default_vertex_metadata` before the vertex is added (the function will act on each element of `MV.(vertices)`);
+    ne::Int64,                                                        # The number of edges of the Layer
+    null_graph::AbstractGraph{T},                                     # The Layer's underlying graph type, which must be passed as a null graph. If it is not, an error will be thrown.
+    weighttype::Type{U};                                              # The type of the `MultilayerEdge` weights (even when the underlying Layer's graph is unweighted, we need to specify a weight type since the `MultilayerGraph`s will always be weighted)
+    default_vertex_metadata::Function = mv -> NamedTuple(),           # Function that takes a `MultilayerVertex` and returns a `Tuple` or a `NamedTuple` containing the vertex metadata. Defaults to `mv -> NamedTuple()`;
+    default_edge_weight::Function = (src, dst) -> nothing,            #  Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
+    default_edge_metadata::Function = (src, dst) -> NamedTuple(),     # Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
+    allow_self_loops::Bool = false                                    # whether to allow self loops to be generated or not. Defaults to `false`.
+) where {T<:Integer, U<: Real}
 ```
 
-A `Layer` is considered "weighted" if its underlying graph (`null_graph` argument) has been given the `IsWeighted` trait (traits throughout this package are implemented via [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl), just like Graphs.jl does). Since one may at any moment add a new weighted `Layer` to a `MultilayerGraph` (see below for details), the latter is always considered a "weighted graph", so it is given the `IsWeighted` trait. Thus, all `Layer`s and `Interlayer`s (collectively named "subgraphs" hereafter) must specify their `weighttype` as the last argument of their constructor, so the user may debug their weight matrices ([`weights(subgraph::AbstractSubGraph)`](@ref)) immediately after construction. As better specified below, all subgraphs that are meant to be part of the same `MultilayerGraph` must have the same `weighttype`.   
+A `Layer` is considered "weighted" if its underlying graph (`null_graph` argument) has been given the `IsWeighted` trait (traits throughout this package are implemented via [SimpleTraits.jl](https://github.com/mauro3/SimpleTraits.jl), just like Graphs.jl does). Since one may at any moment add a new weighted `Layer` to a `MultilayerGraph` (see below for details), the latter is always considered a "weighted graph", so it is given the `IsWeighted` trait. Thus, all `Layer`s and `Interlayer`s (collectively named "subgraphs" hereafter) must specify their `weighttype` as the last argument of their constructor, so the user may debug their weight matrices ([`weights(subgraph::AbstractSubGraph)`](@ref)) immediately after construction. As better specified below, all subgraphs that are meant to be part of the same `MultilayerGraph` must have the same `weighttype`. Moreover, also the vertex type `T` (i.e. the internal representation of vertices) should be the same.
 
-Before instantiating `Layer`s, we define an utility function to ease randomization:
+Before instantiating `Layer`s, we define an utility function to ease randomisation:
 
 ```julia
 # Utility function that returns a random number of vertices and edges each time it is called:
@@ -154,18 +154,25 @@ end
 
 # Utility function that returns two vertices of a Layer that are not adjacent.
 function _get_srcmv_dstmv_layer(layer::Layer)
+    mvs = MultilayerGraphs.get_bare_mv.(collect(mv_vertices(layer)))
 
-    mvs = get_bare_mv.(collect(mv_vertices(layer)))
+    src_mv_idx = findfirst(mv -> !isempty(setdiff(
+        Set(mvs),
+        Set(
+            vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, mv)), mv)
+        ),
+    )), mvs)
 
-    src_mv = nothing    
-    _collection = []
+    src_mv = mvs[src_mv_idx]
 
-    while isempty(_collection)
-        src_mv = rand(mvs)
-        _collection = setdiff(Set(mvs), Set(vcat(get_bare_mv.(mv_outneighbors(layer, src_mv)), src_mv ) ) )  
-    end
-
-    dst_mv = get_bare_mv(rand(_collection))
+    _collection = setdiff(
+        Set(mvs),
+        Set(
+            vcat(MultilayerGraphs.get_bare_mv.(mv_outneighbors(layer, src_mv)), src_mv)
+        ),
+    )
+    
+    dst_mv = MultilayerGraphs.get_bare_mv(rand(_collection))
 
     return mvs, src_mv, dst_mv
 end
@@ -219,7 +226,10 @@ layer_vg = Layer(   :layer_vg,
 layers = [layer_sg, layer_swg, layer_mg, layer_vg]
 ```
 
-The API that inspects and modifies `Layer`s will be shown below together with that of `Interlayer`s, since they are usually the same.  There are of course other constructors that you may discover by typing `?Layer` in the console.
+The API that inspects and modifies `Layer`s will be shown below together with that of `Interlayer`s, since they are usually the same.  There are of course other constructors that you may discover by reading the [API](@ref subgraphs_eu). They include:
+
+1. Constructors that exempt the user from having to explicitly specify the `null_graph`, at the cost of some flexibility;
+2. Constructors that allow for a configuration model-like specifications.
 
 ### Interlayers
 
@@ -264,7 +274,7 @@ Interlayer(
     default_edge_weight::Function = (x,y) -> nothing,                    # Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
     default_edge_metadata::Function = (x,y) -> NamedTuple(),             # Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
     name::Symbol = Symbol("interlayer_$(layer_1.name)_$(layer_2.name)"), # The name of the Interlayer. Defaults to Symbol("interlayer_(layer_1.name)_(layer_2.name)");
-    transfer_vertex_metadata::Bool = false                               # if true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.;
+    transfer_vertex_metadata::Bool = false                               # If true, vertex metadata found in both connected layers are carried over to the vertices of the Interlayer. NB: not all choice of underlying graph may support this feature. Graphs types that don't support metadata or that pose limitations to it may result in errors.;
 )
 ```
 We will build a few of random `Interlayer`s:
@@ -310,6 +320,8 @@ interlayer_empty_sg_vg = empty_interlayer(  layer_sg,
 # Collect all interlayers. Even though the list is ordered, order will not matter when instantiating the multilayer graph.
 interlayers = [interlayer_sg_swg, interlayer_swg_mg, interlayer_mg_vg, interlayer_multiplex_sg_mg, interlayer_empty_sg_vg]
 ```
+
+There are of course other constructors that you may discover by reading the [API](@ref subgraphs_eu). They include constructors that exempt the user from having to explicitly specify the `null_graph`, at the cost of some flexibility;
 
 Next, we explore the API associated to modify and analyze `Layer`s and `Interlayer`s.
 
@@ -619,9 +631,43 @@ Given all the `Layer`s and the `Interlayer`s, let's instantiate a multilayer gra
 ```julia
 multilayergraph = MultilayerGraph(  layers,                                                 # The (ordered) list of layers the multilayer graph will have
                                     interlayers;                                            # The list of interlayers specified by the user. Note that the user does not need to specify all interlayers, as the unspecified ones will be automatically constructed using the indications given by the `default_interlayers_null_graph` and `default_interlayers_structure` keywords.
-                                    default_interlayers_null_graph = SimpleGraph{vertextype}(), # Sets the underlying graph for the interlayers that are to be automatically specified.  Defaults to `SimpleGraph{T}()`. See the `Layer` constructors for more information.
+                                    default_interlayers_null_graph = SimpleGraph{vertextype}(), # Sets the underlying graph for the interlayers that are to be automatically specified.  Defaults to `SimpleGraph{T}()`, where `T` is the `T` of all the `layers` and `interlayers`. See the `Layer` constructors for more information.
                                     default_interlayers_structure = "multiplex" # Sets the structure of the interlayers that are to be automatically specified. May be "multiplex" for diagonally coupled interlayers, or "empty" for empty interlayers (no edges).  "multiplex". See the `Interlayer` constructors for more information.
 );
+```
+```nothing
+`MultilayerGraph` with vertex type `Int64` and weight type `Float64`.
+
+### LAYERS
+┌───────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│   NAME    │                                                                UNDERLYING GRAPH                                                                │
+├───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ layer_sg  │                                                               SimpleGraph{Int64}                                                               │
+├───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ layer_swg │                                                      SimpleWeightedGraph{Int64, Float64}                                                       │
+├───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ layer_mg  │                                                           MetaGraph{Int64, Float64}                                                            │
+├───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ layer_vg  │ ValGraph{Int64, Tuple{String}, Tuple{Float64, String}, Tuple{}, Tuple{Vector{String}}, Tuple{Vector{Vector{Float64}}, Vector{Vector{String}}}} │
+└───────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+### INTERLAYERS
+┌───────────────────────────────┬───────────┬───────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬──────────────────────────┐
+│             NAME              │  LAYER 1  │  LAYER 2  │                                                              UNDERLYING GRAPH                                                              │ TRANSFER VERTEX METADATA │
+├───────────────────────────────┼───────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ interlayer_layer_sg_layer_swg │ layer_sg  │ layer_swg │                                                             SimpleGraph{Int64}                                                             │          false           │
+├───────────────────────────────┼───────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ interlayer_layer_sg_layer_mg  │ layer_sg  │ layer_mg  │ ValGraph{Int64, Tuple{}, NamedTuple{(:from_to,), Tuple{String}}, Tuple{}, Tuple{}, NamedTuple{(:from_to,), Tuple{Vector{Vector{String}}}}} │          false           │
+├───────────────────────────────┼───────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ interlayer_layer_swg_layer_mg │ layer_swg │ layer_mg  │                                                    SimpleWeightedGraph{Int64, Float64}                                                     │          false           │
+├───────────────────────────────┼───────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ interlayer_layer_sg_layer_vg  │ layer_sg  │ layer_vg  │                                                             SimpleGraph{Int64}                                                             │          false           │
+├───────────────────────────────┼───────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ interlayer_layer_vg_layer_swg │ layer_vg  │ layer_swg │                                                             SimpleGraph{Int64}                                                             │          false           │
+├───────────────────────────────┼───────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ interlayer_layer_mg_layer_vg  │ layer_mg  │ layer_vg  │                                                         MetaGraph{Int64, Float64}                                                          │           true           │
+└───────────────────────────────┴───────────┴───────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴──────────────────────────┘
 ```
 
 **Keep in mind that `Multilayer(Di)Graph` only supports uniform and standard interface for both `add_vertex!` and `add_edge!`.**
@@ -637,7 +683,7 @@ It is used as:
 
 ```julia
 # The configuration model-like constructor will be responsible for creating the edges, so we need to provide it with empty layers and interlayers.
-# To create empty layers and interlayers, we will empty the above subgraphs, and, for compatobility reasons, we'll remove the ones having a `SimpleWeightedGraph`s. These lines are not necessary to comprehend the tutorial, they may be skipped. Just know that the variables `empty_layers` and `empty_interlayers` are two lists of, respectively, empty layers and interlayers that do not have `SimpleWeightedGraph`s as their underlying graphs
+# To create empty layers and interlayers, we will empty the above subgraphs, and, for compatibility reasons, we'll remove the ones having a `SimpleWeightedGraph`s. These lines are not necessary to comprehend the tutorial, they may be skipped. Just know that the variables `empty_layers` and `empty_interlayers` are two lists of, respectively, empty layers and interlayers that do not have `SimpleWeightedGraph`s as their underlying graphs
 
 empty_layers =  deepcopy([layer for layer in layers if !(layer.graph isa SimpleWeightedGraphs.AbstractSimpleWeightedGraph)])
 
@@ -867,7 +913,10 @@ Read a complete list of analytical methods exclusive to multilayer graphs in the
 - [Implement more general configuration models / graph generators](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/33);
 - [Implement graph of layers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/34);
 - [Implement projected monoplex and overlay graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/35);
-- [Implement more default multilayer graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/36) (e.g. multiplex graphs).
+- [Implement more default multilayer graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/36) (e.g. multiplex graphs);
+- [Implement configuration models / graph generators for interlayers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/46);
+- [Relax the requirement of same `T` and `U` for all `Layer`s and `Interlayer`s that are meant to constitute a `Multilayer(Di)Graph`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/53);
+- [Implement multilayer graph data visualisation functionalities (or a new package)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54).
 
 ## How to Contribute
 

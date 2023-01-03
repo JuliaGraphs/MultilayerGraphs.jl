@@ -496,8 +496,8 @@ function _specify_interlayer!(
         new_interlayer.descriptor
 
     for edge in edges(new_interlayer)
-        success = add_edge!(mg, edge)
-        @assert success
+        @assert add_edge!(mg, edge)
+        # assert success
     end
 
     return true
@@ -1188,9 +1188,64 @@ function get_rich_mv(
 ) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     if perform_checks
         haskey(mg.v_V_associations, i) ||
-            throw(ErrorException("$i is not a vertex of the multilayer graph"))
+            throw(ErrorException("$i is not a vertex of the multilayer graph."))
     end
 
     bare_V = mg.v_V_associations[i]
     return MV(bare_V.node, bare_V.layer, mg.v_metadata_dict[i])
 end
+
+# Console print utilities
+function to_string(x::AbstractMultilayerGraph)
+    unionall_type = typeof(x).name.wrapper
+    parameters = typeof(x).parameters
+
+    layers_names = name.(x.layers)
+    layers_underlying_graphs = typeof.(graph.(x.layers))
+
+    layers_table = pretty_table(
+        String,
+        hcat(layers_names, layers_underlying_graphs);
+        title="### LAYERS",
+        header=(["NAME", "UNDERLYING GRAPH"]),
+        alignment=:c,
+        header_alignment=:c,
+        header_crayon=crayon"yellow bold",
+        hlines=:all,
+    )
+
+    interlayers_names = name.(values(x.interlayers))
+    interlayers_underlying_graphs = typeof.(graph.(values(x.interlayers)))
+    interlayer_layer_1s = getproperty.(values(x.interlayers), Ref(:layer_1))
+    interlayer_layer_2s = getproperty.(values(x.interlayers), Ref(:layer_2))
+    interlayer_tranfers =
+        getproperty.(values(x.interlayers), Ref(:transfer_vertex_metadata))
+
+    interlayers_table = pretty_table(
+        String,
+        hcat(
+            interlayers_names,
+            interlayer_layer_1s,
+            interlayer_layer_2s,
+            interlayers_underlying_graphs,
+            interlayer_tranfers,
+        );
+        title="### INTERLAYERS",
+        header=([
+            "NAME", "LAYER 1", "LAYER 2", "UNDERLYING GRAPH", "TRANSFER VERTEX METADATA"
+        ]),
+        alignment=:c,
+        header_alignment=:c,
+        header_crayon=crayon"yellow bold",
+        hlines=:all,
+    )
+
+    return """
+           `$unionall_type` with vertex type `$(parameters[1])` and weight type `$(parameters[2])`.
+
+           $layers_table
+
+           $interlayers_table
+           """
+end
+Base.show(io::IO, x::AbstractMultilayerGraph) = print(io, to_string(x))

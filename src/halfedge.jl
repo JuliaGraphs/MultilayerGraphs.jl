@@ -32,7 +32,7 @@ vertex(he::HalfEdge) = he.vertex
 
 Return the weight of the edge.
 """
-weight(he::HalfEdge) = he.weight
+SimpleWeightedGraphs.weight(he::HalfEdge) = he.weight
 """
     metadata(he::HalfEdge) 
 

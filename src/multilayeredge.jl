@@ -88,7 +88,7 @@ Graphs.dst(e::AbstractMultilayerEdge) = e.dst
 
 Return the weight of `e`.
 """
-weight(e::AbstractMultilayerEdge) = e.weight
+SimpleWeightedGraphs.weight(e::AbstractMultilayerEdge) = e.weight
 
 """
     metadata(e::AbstractMultilayerEdge)
@@ -112,9 +112,9 @@ function compare_multilayeredges(
     check_metadata::Bool=false,
 )
     # Check source
-    _check_src = lhs.src == rhs.src ? true : return false
+    lhs.src != rhs.src && return false
     # check destination
-    _check_dst = lhs.dst == rhs.dst ? true : return false
+    lhs.dst != rhs.dst && return false
     # Check weight
     _check_weight = false
     if check_weight

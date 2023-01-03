@@ -3,7 +3,8 @@
 
 An abstract type representing an `Interlayer` descriptor object.
 """
-abstract type AbstractInterlayerDescriptor{T<:Integer,U<:Real,G<:AbstractGraph{T}} end
+abstract type AbstractInterlayerDescriptor{T<:Integer,U<:Real,G<:AbstractGraph{T}} <:
+              AbstractDescriptor{T,U,G} end
 
 """
     struct InterlayerDescriptor{T,U,G} <: AbstractInterlayerDescriptor{T,U,G}
@@ -103,3 +104,18 @@ function Base.getproperty(descriptor::InterlayerDescriptor, f::Symbol)
         [descriptor.layer_1, descriptor.layer_2]
     end
 end
+
+# Console print utilities
+function to_string(x::InterlayerDescriptor)
+    parameters = typeof(x).parameters
+    return """
+           Interlayer\t$(name(x))
+           layer_1: $(x.layer_1)
+           layer_2: $(x.layer_2)
+           underlying_graph: $(typeof(graph(x)))
+           transfer_vertex_metadata = $(x.transfer_vertex_metadata)
+           vertex_type: $(parameters[1])
+           weight_type: $(parameters[2]) 
+           """
+end
+Base.show(io::IO, x::InterlayerDescriptor) = print(io, to_string(x))
