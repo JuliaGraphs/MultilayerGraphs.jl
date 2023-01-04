@@ -189,7 +189,7 @@ Return a random `Layer`.
 """
 function Layer(
     name::Symbol,
-    vertices::Vector{Union{V,N}},#Union{V, N},
+    vertices::Vector{Union{V,N}},
     ne::Int64,
     null_graph::G,
     weighttype::Type{U};
@@ -197,7 +197,7 @@ function Layer(
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
     allow_self_loops::Bool=false,
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T},V<:MultilayerVertex{nothing},N<:Node} #V <: Vector{MultilayerVertex{nothing}}, N <: Vector{Node}}
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T},V<:MultilayerVertex{nothing},N<:Node} 
     _nv = length(vertices)
     @assert(
         length(unique(vertices)) == _nv, "The argument `vertices` must be a unique list"
