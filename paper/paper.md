@@ -118,9 +118,9 @@ n_vertices = rand(1:n_nodes)                                   # Number of verti
 n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
 layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer constructor 
     :layer_simpleweighteddigraph,                              # Layer name
-    sample(node_list, n_vertices; replace=false),              # Nodes represented in the layer
-    n_edges;                                                   # Number of randomly distributed edges
-    default_edge_weight=(src, dst) -> rand()                   # Function assigning weights to edges 
+    sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
+    n_edges;                                      # Number of randomly distributed edges
+    default_edge_weight=(src, dst) -> rand()      # Function assigning weights to edges 
 )
 ```
 
