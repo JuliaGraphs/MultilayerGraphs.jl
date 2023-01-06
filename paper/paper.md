@@ -106,8 +106,8 @@ n_vertices = rand(1:100)                          # Number of vertices
 layer_simple_directed = layer_simpledigraph(      # Layer constructor 
     :layer_simpledigraph,                         # Layer name
     sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
-    Truncated(Normal(5, 5), 0, 20),               # Indegree sequence sample distribution 
-    Truncated(Normal(5, 5), 0, 20)                # Outdegree sequence sample distribution
+    Truncated(Normal(5, 5), 0, 20), # Indegree sequence distribution 
+    Truncated(Normal(5, 5), 0, 20)  # Outdegree sequence distribution
 )
 ```
 
