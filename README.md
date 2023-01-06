@@ -117,7 +117,7 @@ layer_simple_directed_value = Layer(                           # Layer construct
 layers = [layer_simple_directed, layer_simple_directed_weighted, layer_simple_directed_value]
 ```
 
-There are many more constructors the user is encouraged to explore in the package documentation.
+There are many more constructors the user is encouraged to explore in the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl).
 
 The interface of interlayers is very similar to that of layers. It is very important to notice that, in order to define a `Multilayer(Di)Graph`, interlayers don't need to be explicitly constructed by the user since they are automatically identified by the `Multilayer(Di)Graph` constructor, but for more complex interlayers the manual instantiation is required.
 
