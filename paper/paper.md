@@ -188,22 +188,27 @@ interlayers = [interlayer_simple_directed, interlayer_simple_directed_meta]
 
 ## Multilayer Graphs
 
-A directed multilayer graph (MultilayerDiGraph (i.e. a directed multilayer graph, following the naming convention of the JuliaGraph ecosystem) may now be specified 
+In what follows we construct a directed multilayer graph (`MultilayerDiGraph`).
 
 ```julia
 multilayerdigraph = MultilayerDiGraph( # Constructor 
-    layers,                            # The (ordered) collection of layers
-    interlayers;                       # The manually specified interlayers
+    layers,                     # The (ordered) collection of layers
+    interlayers;                # The manually specified interlayers
                                 # The interlayers that are left unspecified 
                                 # will be automatically inserted according 
                                 # to the keyword argument below
-    default_interlayers_structure="multiplex"  # The automatically specified interlayers will have only diagonal couplings
+    default_interlayers_structure="multiplex" 
+    # The automatically specified interlayers will have only diagonal couplings
 )
 
-# Layers and interlayer may be accessed as properties using their names
+# Layers and interlayer can be accessed as properties using their names
 multilayerdigraph.layer_simple_directed_value
 
-# We proceed to show some basic functionality.
+```
+
+Then we proceed by showing some basic functionalities: 
+
+```julia
 ## Add a vertex
 ### The user may add vertices that do or do not represent node_list already present in the multilayergraph. In the latter case, we have a new node:
 new_node_1 = Node("new_node_1")
