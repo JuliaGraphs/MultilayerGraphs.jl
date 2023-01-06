@@ -168,6 +168,8 @@ interlayer_simple_directed = interlayer_simpledigraph( # Interlayer constructor
 )
 ```
 
+
+
 ```julia
 ## The interlayer exports a more flexible constructor too. 
 n_vertices_1 = nv(layer_simple_directed_weighted)   # Number of vertices of layer 1
