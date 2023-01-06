@@ -43,7 +43,7 @@ The tutorial below will be focused on the end-used experience, as developer meth
 
 ## Installation
 
-Press `]` in the Julia REPL and then
+To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pressing `]` in the Julia REPL and then run the following command:
 
 ```nothing
 pkg> add MultilayerGraphs
@@ -926,13 +926,18 @@ Read a complete list of analytical methods exclusive to multilayer graphs in the
 
 ### Future Developments
 
-- [Implement more general configuration models / graph generators](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/33);
 - [Implement graph of layers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/34);
 - [Implement projected monoplex and overlay graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/35);
 - [Implement more default multilayer graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/36) (e.g. multiplex graphs);
 - [Implement configuration models / graph generators for interlayers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/46);
+- [Implement a fully-fledged multilayer configuration model / graph generator](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/48);
 - [Relax the requirement of same `T` and `U` for all `Layer`s and `Interlayer`s that are meant to constitute a `Multilayer(Di)Graph`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/53);
-- [Implement multilayer graph data visualisation functionalities (or a new package)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54).
+- [Implement multilayer graph data visualisation functionalities](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54);
+- [Infer `weighttype` from `default_edge_weight`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/58);
+- [Improve error explanations](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/59); 
+- [Improve integration with Agents.jl](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/61);
+- [Allow configuration models to specify a minimum discrepancy between the sampled (di)graphical sequence(s) and the provided distribution](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/62);
+- [Add to `add_layer!` a kwarg that allows the user to specify some new interlayers, skipping the instantiation of the default ones.](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/63).
 
 ## How to Contribute
 
@@ -942,7 +947,9 @@ We therefore encourage you to participate in [discussions](https://github.com/Ju
 
 ## How to Cite
 
-If you utilize this package in your project, please consider citing this repository using the citation information provided in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib). This will help to give appropriate credit to the [contributors](https://github.com/JuliaGraphs/MultilayerGraphs.jl/graphs/contributors) and support the continued development of the package.
+If you utilize this package in your project, please consider citing this repository using the citation information provided in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib). 
+
+This will help to give appropriate credit to the [contributors](https://github.com/JuliaGraphs/MultilayerGraphs.jl/graphs/contributors) and support the continued development of the package.
 
 ## Announcements
 
