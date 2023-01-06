@@ -1,4 +1,3 @@
-using Revise
 using Distributions
 using Graphs
 using MultilayerGraphs

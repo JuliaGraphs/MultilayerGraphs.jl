@@ -28,9 +28,9 @@ Formally, a multilayer graph can be defined as a triple $G=(V,E,L)$, where:
 
 Each layer $\ell$ in $L$ is a tuple $(V_\ell, E_\ell)$, where $V_\ell$ is a subset of $V$ that represents the vertices within that layer, and $E_\ell$ is a subset of $E$ that represents the edges within that layer.
 
-Multiple theoretical frameworks have been proposed to formally subsume all instances of multilayer graphs ([De Domenico  et al. (2013)](https://doi.org/10.1103/physrevx.3.041022); [Kivelä et al. (2014)](https://doi.org/10.1093/comnet/cnu016); [Boccaletti et al. (2014)](https://doi.org/10.1016/j.physrep.2014.07.001); [Lee et al. (2015)](https://doi.org/10.1140/epjb/e2015-50742-1); [Aleta and Moreno (2019)](https://doi.org/10.1146/annurev-conmatphys-031218-013259); [Bianconi (2018)](https://doi.org/10.1093/oso/9780198753919.001.0001); [Cozzo et al. (2018)](https://doi.org/10.1007/978-3-319-92255-3); [Artime et al. (2022)](https://doi.org/10.1017/9781009085809); [De Domenico (2022)](https://doi.org/10.1007/978-3-030-75718-2)). 
+Multiple theoretical frameworks have been proposed to formally subsume all instances of multilayer graphs [^1]. 
 
-Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks ([Cozzo et al. (2013)](https://doi.org/10.1103/physreve.88.050801); [Granell et al. (2013)](https://doi.org/10.1103/physrevlett.111.128701); [Massaro and Bagnoli (2014)](https://doi.org/10.1103/physreve.90.052817); [Estrada and Gomez-Gardenes (2014)](https://doi.org/10.1103/physreve.89.042819); [Azimi-Tafreshi (2016)](https://doi.org/10.1103/physreve.93.042303); [Baggio et al. (2016)](https://doi.org/10.1073/pnas.1604401113); [DeDomenico et al. (2016)](https://doi.org/10.1038/nphys3865); [Amato et al. (2017)](https://doi.org/10.1038/s41598-017-06933-2); [DeDomenico (2017)](https://doi.org/10.1093/gigascience/gix004); [Pilosof et al. (2017)](https://doi.org/10.1038/s41559-017-0101); [de Arruda et al. (2017)](https://doi.org/10.1103/physrevx.7.011014); [Gosak et al. (2018)](https://doi.org/10.1016/j.plrev.2017.11.003); [Soriano-Panos et al. (2018)](https://doi.org/10.1103/physrevx.8.031039); [Timteo et al. (2018)](https://doi.org/10.1038/s41467-017-02658-y); [Buldú et al. (2018)](https://doi.org/10.1162/netn_a_00033); [Lim et al. (2019)](https://doi.org/10.1038/s41598-019-39243-w); [Mangioni et al. (2020)](https://doi.org/10.1109/tnse.2018.2871726); [Aleta et al. (2020)](https://doi.org/10.1038/s41562-020-0931-9); [Aleta et al. (2022)](https://doi.org/10.1073/pnas.2112182119)). 
+Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks[^2]. 
 
 MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features a peculiar implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects an experienced practitioner would expect such as nodes ([`Node`](@ref)), vertices ([`MultilayerVertex`](@ref)), layers ([`Layer`](@ref)), interlayers ([`Interlayer`](@ref)), etc.
 
@@ -63,21 +63,27 @@ using MultilayerGraphs
 Define some constants that will prove useful later in the tutorial:
 
 ```julia
-# Set the minimum and maximum number of all_nodes and edges for random graphs
+# Set the minimum and maximum number of nodes_list and edges for random graphs
 const vertextype   = Int64
 const _weighttype  = Float64
 const min_vertices = 5
 const max_vertices = 7
-const min_edges    = 1
-const max_edges    = max_vertices*(max_vertices-1)
 const n_nodes      = max_vertices
 ```
 
-Next we define nodes:
+Next we define the list of immutable objects that are represneted (through vertices, see below) in the various layers and interlayers of a multilayer graph. These obkects are called [`Node`](@ref)s. The constructor for a `Node` reads:
+
+```julia
+Node(
+    id::String
+)
+```
+
+Where `id` is a `String` that is the name of what the `Node` stands for (could be cities in a transportation network, users in a social network, etc.). Let's contruct a list of `Node`s to use in the remainder of the tutorial:
 
 ```julia
 # The constructor for nodes (which are immutable) only requires a name (`id`) for the node
-const all_nodes = [Node("node_$i") for i in 1:n_nodes]
+const nodes_list = [Node("node_$i") for i in 1:n_nodes]
 ```
 ```nothing
 7-element Vector{Node}:
@@ -90,13 +96,23 @@ const all_nodes = [Node("node_$i") for i in 1:n_nodes]
  Node("node_7")
 ```
 
-You may access (but not modify) the `id` of a `Node` via the [`id`](@ref) function. And construct `MultilayerVertex`s from these nodes:
+You may access (but not modify) the `id` of a `Node` via the [`id`](@ref) function. `Node`s are reepresented throughout layers and interlayers via a struct named [`MultilayerVertex`](@ref). It has several convenience constructors, the most complete of them reads:
+
+```julia
+MultilayerVertex( 
+                node::Node,                            # The Node that th evertex will represent     
+                layer::Union{Nothing,Symbol},          # The layer which the `Node` will be represented in. Should be set to `nothing` when constructing layers.
+                metadata::Union{<:NamedTuple,<:Tuple} # The metadata associated to this vertex
+)
+```
+
+Let's contruct a list of `MultilayerVertex`s to use in the remainder of the tutorial:
 
 ```julia
 ## Convert nodes to multilayer vertices without metadata
-const multilayervertices = MV.(all_nodes)
+const multilayervertices = MV.(nodes_list)
 ## Convert nodes multilayer vertices with metadata
-const multilayervertices_meta  = [MV(node, ("I'm node $(node.id)",)) for node in all_nodes]
+const multilayervertices_meta  = [MV(node, ("I'm node $(node.id)",)) for node in nodes_list] # `MV` is an alias for `MultilayerVertex`
 ```
 ```nothing
 7-element Vector{MultilayerVertex{nothing}}:
@@ -109,7 +125,7 @@ const multilayervertices_meta  = [MV(node, ("I'm node $(node.id)",)) for node in
  MV(Node("node_7"), :nothing, ("I'm node node_7",))
 ```
 
-This conversion from `Node`s to `MultilayerVertex`s is performed since it is logical to add vertices to a graph, not nodes, and also for consistency reasons with the ecosystem.
+This conversion from `Node`s to `MultilayerVertex`s is performed since it is logical to add vertices to a graph, not nodes, and also for consistency reasons with the ecosystem. Regarding layers, adding/removing nodes or vertices allows for selecting the most comfortable interface. A similar mechanism is implemented for edges (see below).
 
 Printing a `MultilayerVertex` returns:
 
@@ -184,7 +200,7 @@ We are now are ready to define some `Layer`s. Every type of graph from the Graph
 # An unweighted simple layer:
 _nv, _ne  = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_sg = Layer(   :layer_sg,
-                    sample(multilayervertices, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     SimpleGraph{vertextype}(),
                     _weighttype
@@ -193,7 +209,7 @@ layer_sg = Layer(   :layer_sg,
 # A weighted `Layer`
 _nv, _ne  = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_swg = Layer(  :layer_swg,
-                    sample(multilayervertices, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     SimpleWeightedGraph{vertextype, _weighttype}(),
                     _weighttype;
@@ -202,7 +218,7 @@ layer_swg = Layer(  :layer_swg,
 # A `Layer` with an underlying `MetaGraph`:
 _nv, _ne = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_mg = Layer(   :layer_mg,
-                    sample(multilayervertices_meta, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     MetaGraph{vertextype, _weighttype}(),
                     _weighttype;
@@ -211,7 +227,7 @@ layer_mg = Layer(   :layer_mg,
 # `Layer` with an underlying `ValGraph` from `SimpleValueGraphs.jl`
 _nv, _ne = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_vg = Layer(   :layer_vg,
-                    sample(multilayervertices_meta, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     MultilayerGraphs.ValGraph{vertextype}(;edgeval_types=(Float64, String, ),
                                             edgeval_init=(s, d) -> (s+d, "hi"),
@@ -969,3 +985,7 @@ At the best of our knowledge there are currently no software packages dedicated 
 7. Aleta and Moreno (2019) [Multilayer Networks in a Nutshell](https://doi.org/10.1146/annurev-conmatphys-031218-013259). *Annual Review of Condensed Matter Physics*; 
 8. Artime et al. (2022) [Multilayer Network Science: From Cells to Societies](https://doi.org/10.1017/9781009085809). *Cambridge University Press*; 
 9. De Domenico (2022) [Multilayer Networks: Analysis and Visualization](https://doi.org/10.1007/978-3-030-75718-2). *Springer Cham*. 
+
+[^1]: [De Domenico  et al. (2013)](https://doi.org/10.1103/physrevx.3.041022); [Kivelä et al. (2014)](https://doi.org/10.1093/comnet/cnu016); [Boccaletti et al. (2014)](https://doi.org/10.1016/j.physrep.2014.07.001); [Lee et al. (2015)](https://doi.org/10.1140/epjb/e2015-50742-1); [Aleta and Moreno (2019)](https://doi.org/10.1146/annurev-conmatphys-031218-013259); [Bianconi (2018)](https://doi.org/10.1093/oso/9780198753919.001.0001); [Cozzo et al. (2018)](https://doi.org/10.1007/978-3-319-92255-3); [Artime et al. (2022)](https://doi.org/10.1017/9781009085809); [De Domenico (2022)](https://doi.org/10.1007/978-3-030-75718-2)
+
+[^2]: [Cozzo et al. (2013)](https://doi.org/10.1103/physreve.88.050801); [Granell et al. (2013)](https://doi.org/10.1103/physrevlett.111.128701); [Massaro and Bagnoli (2014)](https://doi.org/10.1103/physreve.90.052817); [Estrada and Gomez-Gardenes (2014)](https://doi.org/10.1103/physreve.89.042819); [Azimi-Tafreshi (2016)](https://doi.org/10.1103/physreve.93.042303); [Baggio et al. (2016)](https://doi.org/10.1073/pnas.1604401113); [DeDomenico et al. (2016)](https://doi.org/10.1038/nphys3865); [Amato et al. (2017)](https://doi.org/10.1038/s41598-017-06933-2); [DeDomenico (2017)](https://doi.org/10.1093/gigascience/gix004); [Pilosof et al. (2017)](https://doi.org/10.1038/s41559-017-0101); [de Arruda et al. (2017)](https://doi.org/10.1103/physrevx.7.011014); [Gosak et al. (2018)](https://doi.org/10.1016/j.plrev.2017.11.003); [Soriano-Panos et al. (2018)](https://doi.org/10.1103/physrevx.8.031039); [Timteo et al. (2018)](https://doi.org/10.1038/s41467-017-02658-y); [Buldú et al. (2018)](https://doi.org/10.1162/netn_a_00033); [Lim et al. (2019)](https://doi.org/10.1038/s41598-019-39243-w); [Mangioni et al. (2020)](https://doi.org/10.1109/tnse.2018.2871726); [Aleta et al. (2020)](https://doi.org/10.1038/s41562-020-0931-9); [Aleta et al. (2022)](https://doi.org/10.1073/pnas.2112182119))
