@@ -83,7 +83,7 @@ pkg> add MultilayerGraphs
 
 In the following code chunks we synthetically illustrate some of the main features outlined in the previous section.
 
-Let's begin by importing the necessary dependencies and setting the relevant constants: 
+Let's begin by importing the necessary dependencies and setting the relevant constants.
 
 ```julia
 using Distributions, Graphs, SimpleValueGraphs
@@ -147,27 +147,17 @@ layer_simple_directed_value = Layer(                           # Layer construct
     default_edge_metadata=default_edge_metadata      # Edge metadata 
 )
 
+# Create a list of layers 
 layers = [layer_simple_directed, layer_simple_directed_weighted, layer_simple_directed_value]
 ```
 
 There are many more constructors the user is encouraged to explore in the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl).
-We may now move to Interlayers. Note that, in order to define a `Multilayer(Di)Graph`, 
-interlayers do not need to be explicitly constructed by the user, 
-since they are automatically specified by the `Multilayer(Di)Graph` constructor. 
-Anyway, more complex interlayers need to be manually instantiated. 
-The interface is very similar to the layers.
+
+It is very important to notice that, in order to define a `Multilayer(Di)Graph`, interlayers don't need to be explicitly constructed by the user since they are automatically identified by the `Multilayer(Di)Graph` constructor, but for more complex interlayers the manual instantiation is required.
+
+The interface of interlayers is very similar to the layers' one. Here we define an interlayer with an underlying simple directed graph.
 
 ```julia
-#=
-There are many more constructors that the user is encouraged to explore in the package documentation.
-We may now move to Interlayers. Note that, in order to define a `Multilayer(Di)Graph`, 
-interlayers do not need to be explicitly constructed by the user, 
-since they are automatically specified by the `Multilayer(Di)Graph` constructor. 
-Anyway, more complex interlayers need to be manually instantiated. 
-The interface is very similar to the layers.
-=#
-
-# Interlayer with an underlying simple directed graph and `n_edges` edges
 n_vertices_1 = nv(layer_simple_directed)               # Number of vertices of layer 1
 n_vertices_2 = nv(layer_simple_directed_weighted)      # Number of vertices of layer 2
 n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1))    # Number of interlayer edges 
@@ -176,18 +166,20 @@ interlayer_simple_directed = interlayer_simpledigraph( # Interlayer constructor
     layer_simple_directed_weighted,                    # Layer 2 
     n_edges                                            # Number of edges 
 )
+```
 
+```julia
 ## The interlayer exports a more flexible constructor too. 
-n_vertices_1 = nv(layer_simple_directed_weighted)         # Number of vertices of layer 1
-n_vertices_2 = nv(layer_simple_directed_value)            # Number of vertices of layer 2
-n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1))       # Number of interlayer edges 
+n_vertices_1 = nv(layer_simple_directed_weighted)   # Number of vertices of layer 1
+n_vertices_2 = nv(layer_simple_directed_value)      # Number of vertices of layer 2
+n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1)) # Number of interlayer edges 
 interlayer_simple_directed_meta = interlayer_metadigraph( # Interlayer constructor
     layer_simple_directed_weighted,                       # Layer 1 
     layer_simple_directed_value,                          # Layer 2
     n_edges;                                              # Number of edges
     default_edge_metadata=(src, dst) ->                   # Edge metadata 
         (edge_metadata="metadata_of_edge_from_$(src)_to_$(dst)"),
-    transfer_vertex_metadata=true                         # Boolean deciding layer vertex metadata inheritance
+    transfer_vertex_metadata=true # Boolean deciding layer vertex metadata inheritance
 )
 
 interlayers = [interlayer_simple_directed, interlayer_simple_directed_meta]
@@ -260,7 +252,7 @@ and others required to be re-implemented.
 We showcase a few of them here:
 =#
 
-## Compute the global clustering coefficient as in @DeDomenico2014
+## Compute the global clustering coefficient as in @DeDomenico2013
 multilayer_global_clustering_coefficient(multilayerdigraph) # A weighted version `multilayer_weighted_global_clustering_coefficient`
 ## Compute the overlay clustering coefficient as in @DeDomenico2013
 overlay_clustering_coefficient(multilayerdigraph)
