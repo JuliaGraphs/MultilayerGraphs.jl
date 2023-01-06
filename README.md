@@ -132,8 +132,11 @@ interlayer_simple_directed = interlayer_simpledigraph( # Interlayer constructor
     layer_simple_directed_weighted,                    # Layer 2 
     n_edges                                            # Number of edges 
 )
+```
 
-## The interlayer exports a more flexible constructor too. 
+The interlayer exports a more flexible constructor too.
+
+```julia
 n_vertices_1 = nv(layer_simple_directed_weighted)   # Number of vertices of layer 1
 n_vertices_2 = nv(layer_simple_directed_value)      # Number of vertices of layer 2
 n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1)) # Number of interlayer edges 
