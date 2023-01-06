@@ -89,7 +89,7 @@ Let's begin by importing the necessary dependencies and setting the relevant con
 using Distributions, Graphs, SimpleValueGraphs
 using MultilayerGraphs
 
-# Set the number of nodes: objects represented by `MultilayerVertex`s are `Node`s
+# Set the number of nodes: objects represented by multilayer vertices
 const n_nodes = 100 
 # Create a list of nodes
 const node_list = [Node("node_$i") for i in 1:n_nodes]
