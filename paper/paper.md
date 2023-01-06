@@ -119,8 +119,8 @@ n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges
 layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer constructor 
     :layer_simpleweighteddigraph,                              # Layer name
     sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
-    n_edges;                                      # Number of randomly distributed edges
-    default_edge_weight=(src, dst) -> rand()      # Function assigning weights to edges 
+    n_edges;                                 # Number of randomly distributed edges
+    default_edge_weight=(src, dst) -> rand() # Function assigning weights to edges 
 )
 ```
 
@@ -133,8 +133,8 @@ default_vertex_metadata = v -> ("vertex_$(v)_metadata")        # Vertex metadata
 default_edge_metadata = (s, d) -> (rand(),)                    # Edge metadata 
 layer_simple_directed_value = Layer(                           # Layer constructor
     :layer_simplevaldigraph,                                   # Layer name
-    sample(node_list, n_vertices; replace=false),              # Nodes represented in the layer
-    n_edges,                                                   # Number of randomly distributed edges
+    sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
+    n_edges,                                      # Number of randomly distributed edges
     ValDiGraph(                                                
         SimpleDiGraph{Int64}(); 
         vertexval_types=(String,),
@@ -143,8 +143,8 @@ layer_simple_directed_value = Layer(                           # Layer construct
         edgeval_init=default_edge_metadata,
     ),
     Float64;
-    default_vertex_metadata=default_vertex_metadata,           # Vertex metadata 
-    default_edge_metadata=default_edge_metadata                # Edge metadata 
+    default_vertex_metadata=default_vertex_metadata, # Vertex metadata 
+    default_edge_metadata=default_edge_metadata      # Edge metadata 
 )
 
 layers = [layer_simple_directed, layer_simple_directed_weighted, layer_simple_directed_value]
