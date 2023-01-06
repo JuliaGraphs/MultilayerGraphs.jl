@@ -126,7 +126,7 @@ layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer construct
 )
 ```
 
-Similar constructors, more flexible at the cost of ease of use, enable a finer tuning. The constructor we present below should be necessary only in rare circumstances, e.g. if the equivalent simplified constructor `layer_simple_directed_value` is not able to infer the correct return types of `default_vertex_metadata` or `default_edge_metadata`, or to use and underlying graph structure that isn't currently supported.
+Similar constructors, more flexible at the cost of ease of use, enable a finer tuning. The constructor we write below should be necessary only in rare circumstances, e.g. if the equivalent simplified constructor `layer_simple_directed_value` is not able to infer the correct return types of `default_vertex_metadata` or `default_edge_metadata`, or to use and underlying graph structure that isn't currently supported.
 
 ```julia
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
@@ -186,17 +186,17 @@ interlayer_simple_directed_meta = interlayer_metadigraph( # Interlayer construct
 interlayers = [interlayer_simple_directed, interlayer_simple_directed_meta]
 ```
 
+## Multilayer Graphs
+
+A directed multilayer graph (MultilayerDiGraph (i.e. a directed multilayer graph, following the naming convention of the JuliaGraph ecosystem) may now be specified 
+
 ```julia
-
-# Layers and Interlayers are not immutable, and mostly behave like normal graphs. The reader is invited to consult the API for more information.
-# A MultilayerDiGraph (i.e. a directed multilayer graph, following the naming convention of the JuliaGraph ecosystem) may now be specified 
-
-multilayerdigraph = MultilayerDiGraph(
-    layers,                                    # The (ordered) collection of layers
-    interlayers;                               # The manually specified interlayers
-                                               # The interlayers that are left unspecified 
-                                               # will be automatically inserted according 
-                                               # to the keyword argument below
+multilayerdigraph = MultilayerDiGraph( # Constructor 
+    layers,                            # The (ordered) collection of layers
+    interlayers;                       # The manually specified interlayers
+                                # The interlayers that are left unspecified 
+                                # will be automatically inserted according 
+                                # to the keyword argument below
     default_interlayers_structure="multiplex"  # The automatically specified interlayers will have only diagonal couplings
 )
 
