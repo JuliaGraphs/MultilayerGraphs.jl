@@ -206,7 +206,7 @@ multilayerdigraph.layer_simple_directed_value
 
 ```
 
-Then we proceed by showing some basic functionalities: 
+Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph and how to compute a few simple metrics such as the global clustering coefficient, the overlay clustering coefficient, the multilayer eigenvector centrality, the multilayer modularity as defined in @DeDomenico2013. 
 
 ```julia
 ## Add a vertex
@@ -272,9 +272,6 @@ modularity(
     multilayerdigraph,
     rand([1, 2, 3, 4], length(nodes(multilayerdigraph)), length(multilayerdigraph.layers))
 )
-
-## Currently, Von Neumann entropy is available only for undirected multilayer graphs. 
-# NB: this brief script is far from complete: many more features and functionalities are detailed in the documentation.
 
 ```
 
