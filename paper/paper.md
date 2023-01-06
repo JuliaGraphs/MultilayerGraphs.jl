@@ -97,25 +97,9 @@ const node_list = [Node("node_$i") for i in 1:n_nodes]
 
 We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques.
 
-Here, we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. 
+Here we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. Before instantiating each layer we sample the number of its vertices and, optionally, of its edges.
 
 ```julia
-#= 
-Each layer and Interlayer that is involved in a `Multilayer(Di)Graph` must have the same 
-vertex type (i.e. the type of the internal representation of vertices) and (edge) weight type. 
-We proceed by defining them:
-const vertex_type = Int64
-const weight_type = Float64 
-=#
-
-#= 
-We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a portfolio of techniques.
-Here, we define a layer with an underlying simple directed graph
-using a graph generator-like (or "configuration model"-like) constructor which allows 
-for specifying both the indegree and the outdegree sequences. 
-    
-Before instantiating each layer we sample its number of vertices and, optionally, of edges.
-=#
 n_vertices = rand(1:100)                          # Number of vertices 
 layer_simple_directed = layer_simpledigraph(      # Layer constructor 
     :layer_simpledigraph,                         # Layer name
@@ -123,12 +107,11 @@ layer_simple_directed = layer_simpledigraph(      # Layer constructor
     Truncated(Normal(5, 5), 0, 20),               # Indegree sequence sample distribution 
     Truncated(Normal(5, 5), 0, 20)                # Outdegree sequence sample distribution
 )
+```
 
-#= Next, we define a layer with an underlying simple weighted directed graph. 
-This time we show another kind of constructor that allows the user to specify 
-the number of edges to be randomly distributed among the vertices. 
-The keyword argument `default_edge_weight` will assign a weight to such edges before they are added to the layer
-=#
+Then we define a layer with an underlying simple weighted directed graph. This is another kind of constructor that allows the user to specify the number of edges to be randomly distributed among the vertices. 
+
+```julia
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
 n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
 layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer constructor 
@@ -137,7 +120,9 @@ layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer construct
     n_edges;                                                   # Number of randomly distributed edges
     default_edge_weight=(src, dst) -> rand()                   # Function assigning weights to edges 
 )
+```
 
+```julia
 #=
 ## Similar constructors, more flexible at the cost of ease of use, allows for finer tuning:
 ## NB: This constructor should be necessary only in rare circumstances, where e.g. 
