@@ -206,28 +206,32 @@ multilayerdigraph.layer_simple_directed_value
 
 ```
 
-Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph and how to compute a few simple metrics such as the global clustering coefficient, the overlay clustering coefficient, the multilayer eigenvector centrality, the multilayer modularity as defined in @DeDomenico2013. 
+Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph and how to compute a few metrics such as the global clustering coefficient, the overlay clustering coefficient, the multilayer eigenvector centrality, and the multilayer modularity as defined in @DeDomenico2013. 
+
+The user may add vertices that do or do not represent nodes which are already present in the multilayergraph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph.
 
 ```julia
-## Add a vertex
-### The user may add vertices that do or do not represent node_list already present in the multilayergraph. In the latter case, we have a new node:
+# Create a node 
 new_node_1 = Node("new_node_1")
-### Before adding any vertex representing such node to the multilayer graph, the user should first add the Node:
+# Add the node to the multilayer graph 
 add_node!(multilayerdigraph, new_node_1)
-### Define a vertex that represents that node
+# Create a vertex representing the node 
 new_vertex_1 = MV(           # Constructor (alias for "MultilayerVertex")
     new_node_1,              # Node represented by the vertex
     :layer_simplevaldigraph, # Layer containing the vertex 
     ("new_metadata")         # Vertex metadata 
 )
-### Add the vertex
+# Add the vertex 
 add_vertex!(
     multilayerdigraph, # MultilayerDiGraph the vertex will be added to
     new_vertex_1       # MultilayerVertex to add
 )
-# NB: The vertex-level metadata are considered iff the graph underlying the layer/interlayer which the vertex belongs to supports them, otherwise they are discarded.
 
-### `add_vertex!` implements multiple interfaces.
+#= 
+NB: The vertex-level metadata are considered iff the graph underlying the layer/interlayer 
+which the vertex belongs to supports them, otherwise they are discarded.
+=#
+
 
 ## Add an edge
 ### Let's represent another node in another layer
