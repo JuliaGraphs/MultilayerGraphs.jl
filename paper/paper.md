@@ -81,7 +81,7 @@ To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pr
 pkg> add MultilayerGraphs
 ```
 
-In the following code chunks we synthetically illustrate some of the main features outlined in the previous section.
+In the following code chunks we synthetically illustrate some of the main features outlined in the previous section. For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the tutorial and the API included in the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl).  
 
 Let's begin by importing the necessary dependencies and setting the relevant constants.
 
@@ -97,7 +97,7 @@ const node_list = [Node("node_$i") for i in 1:n_nodes]
 
 ## Layers and Interlayers 
 
-We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques.
+We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques. Layers and Interlayers are not immutable, and mostly behave like normal graphs. 
 
 Here we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. Before instantiating each layer we sample the number of its vertices and, optionally, of its edges.
 
@@ -151,7 +151,7 @@ layer_simple_directed_value = Layer(                           # Layer construct
 layers = [layer_simple_directed, layer_simple_directed_weighted, layer_simple_directed_value]
 ```
 
-There are many more constructors the user is encouraged to explore in the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl).
+There are many more constructors the user is encouraged to explore in the package documentation.
 
 The interface of interlayers is very similar to that of layers. It is very important to notice that, in order to define a `Multilayer(Di)Graph`, interlayers don't need to be explicitly constructed by the user since they are automatically identified by the `Multilayer(Di)Graph` constructor, but for more complex interlayers the manual instantiation is required.
 
@@ -182,7 +182,9 @@ interlayer_simple_directed_meta = interlayer_metadigraph( # Interlayer construct
     transfer_vertex_metadata=true # Boolean deciding layer vertex metadata inheritance
 )
 
+# Create a list of interlayers 
 interlayers = [interlayer_simple_directed, interlayer_simple_directed_meta]
+```julia
 
 # Layers and Interlayers are not immutable, and mostly behave like normal graphs. The reader is invited to consult the API for more information.
 # A MultilayerDiGraph (i.e. a directed multilayer graph, following the naming convention of the JuliaGraph ecosystem) may now be specified 
@@ -264,12 +266,10 @@ modularity(
     rand([1, 2, 3, 4], length(nodes(multilayerdigraph)), length(multilayerdigraph.layers))
 )
 
-## Currently, Von Neumann entropy is available only for undirected multilayer graphs.
+## Currently, Von Neumann entropy is available only for undirected multilayer graphs. 
 # NB: this brief script is far from complete: many more features and functionalities are detailed in the documentation.
 
 ```
-
-For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the [tutorial](https://juliagraphs.org/MultilayerGraphs.jl/stable/#Tutorial) included in the package documentation.  
 
 # Related Packages 
 
