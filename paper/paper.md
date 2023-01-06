@@ -99,7 +99,7 @@ const node_list = [Node("node_$i") for i in 1:n_nodes]
 
 ## Layers and Interlayers 
 
-We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques. Layers and Interlayers are not immutable, and mostly behave like normal graphs. 
+We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques. Layers and Interlayers are not immutable, and mostly behave like normal graphs. The reader is invited to consult the [API](https://juliagraphs.org/MultilayerGraphs.jl/stable/API/) for more information.
 
 Here we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. Before instantiating each layer we sample the number of its vertices and, optionally, of its edges.
 
@@ -168,11 +168,7 @@ interlayer_simple_directed = interlayer_simpledigraph( # Interlayer constructor
     layer_simple_directed_weighted,                    # Layer 2 
     n_edges                                            # Number of edges 
 )
-```
 
-
-
-```julia
 ## The interlayer exports a more flexible constructor too. 
 n_vertices_1 = nv(layer_simple_directed_weighted)   # Number of vertices of layer 1
 n_vertices_2 = nv(layer_simple_directed_value)      # Number of vertices of layer 2
@@ -188,6 +184,8 @@ interlayer_simple_directed_meta = interlayer_metadigraph( # Interlayer construct
 
 # Create a list of interlayers 
 interlayers = [interlayer_simple_directed, interlayer_simple_directed_meta]
+```
+
 ```julia
 
 # Layers and Interlayers are not immutable, and mostly behave like normal graphs. The reader is invited to consult the API for more information.
