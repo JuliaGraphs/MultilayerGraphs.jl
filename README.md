@@ -47,7 +47,7 @@ pkg> add MultilayerGraphs
 
 ## Usage
 
-Here we are going to synthetically illustrate some of the main features of MultilayerGraphs.jl. For a more comprehensive exploration of the package functionalities we strongly recommend consulting the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl). 
+Here we are going to synthetically illustrate some of the main features of MultilayerGraphs.jl. For a more comprehensive exploration of the package functionalities we strongly recommend consulting the [documentation](https://juliagraphs.org/MultilayerGraphs.jl). 
 
 Let's begin by importing the necessary dependencies and setting the relevant constants.
 
