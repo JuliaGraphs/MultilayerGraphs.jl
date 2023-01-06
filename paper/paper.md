@@ -106,20 +106,20 @@ Here we define a layer with an underlying simple directed graph using a graph ge
 ```julia
 n_vertices = rand(1:100)                          # Number of vertices 
 layer_simple_directed = layer_simpledigraph(      # Layer constructor 
-    :layer_simpledigraph,                         # Layer name
+    :layer_simple_directed,                       # Layer name
     sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
     Truncated(Normal(5, 5), 0, 20), # Indegree sequence distribution 
     Truncated(Normal(5, 5), 0, 20)  # Outdegree sequence distribution
 )
 ```
 
-Then we define a layer with an underlying simple weighted directed graph. This is another kind of constructor that allows the user to specify the number of edges to be randomly distributed among the vertices. 
+Then we define a layer with an underlying simple weighted directed graph. This is another kind of constructor that allows the user to specify the number of edges to be randomly distributed among vertices. 
 
 ```julia
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
 n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
 layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer constructor 
-    :layer_simpleweighteddigraph,                              # Layer name
+    :layer_simple_directed_weighted,                           # Layer name
     sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
     n_edges;                                 # Number of randomly distributed edges
     default_edge_weight=(src, dst) -> rand() # Function assigning weights to edges 
@@ -134,7 +134,7 @@ n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges
 default_vertex_metadata = v -> ("vertex_$(v)_metadata")        # Vertex metadata 
 default_edge_metadata = (s, d) -> (rand(),)                    # Edge metadata 
 layer_simple_directed_value = Layer(                           # Layer constructor
-    :layer_simplevaldigraph,                                   # Layer name
+    :layer_simple_directed_value,                              # Layer name
     sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
     n_edges,                                      # Number of randomly distributed edges
     ValDiGraph(                                                
