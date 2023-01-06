@@ -126,7 +126,7 @@ layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer construct
 )
 ```
 
-Similar constructors, more flexible at the cost of ease of use, enable a finer tuning. The constructor we write below should be necessary only in rare circumstances, e.g. if the equivalent simplified constructor `layer_simple_directed_value` is not able to infer the correct return types of `default_vertex_metadata` or `default_edge_metadata`, or to use and underlying graph structure that isn't currently supported.
+Similar constructors, more flexible at the cost of ease of use, enable a finer tuning. The constructor we use below should be necessary only in rare circumstances, e.g. if the equivalent simplified constructor `layer_simple_directed_value` is not able to infer the correct return types of `default_vertex_metadata` or `default_edge_metadata`, or to use and underlying graph structure that isn't currently supported.
 
 ```julia
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
