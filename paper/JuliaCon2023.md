@@ -16,7 +16,7 @@ Lightning talk (10 minutes)
 
 [**MultilayerGraphs.jl**](https://github.com/JuliaGraphs/MultilayerGraphs.jl) is a Julia package for the creation, manipulation and analysis of the structure, dynamics and functions of multilayer graphs. 
 
-A multilayer graph is a graph consisting of multiple subgraphs called **layers** which can be interconnected through [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) called **interlayers**. 
+A multilayer graph consists of multiple subgraphs called **layers** which can be interconnected through [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) called **interlayers**. 
 
 Several theoretical frameworks have been proposed to formally subsume all instances of multilayer graphs ([De Domenico  et al. (2013)](https://doi.org/10.1103/physrevx.3.041022); [Kivelä et al. (2014)](https://doi.org/10.1093/comnet/cnu016); [Bianconi (2018)](https://doi.org/10.1093/oso/9780198753919.001.0001); [De Domenico (2022)](https://doi.org/10.1007/978-3-030-75718-2)). 
 
