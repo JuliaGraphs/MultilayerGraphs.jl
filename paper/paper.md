@@ -206,9 +206,7 @@ multilayerdigraph.layer_simple_directed_value
 
 ```
 
-Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph and how to compute a few metrics such as the global clustering coefficient, the overlay clustering coefficient, the multilayer eigenvector centrality, and the multilayer modularity as defined in @DeDomenico2013. 
-
-The user may add vertices that do or do not represent nodes which are already present in the multilayergraph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph.
+Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph. The user may add vertices that do or do not represent nodes which are already present in the multilayergraph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph. The vertex-level metadata are effectively considered only if the graph underlying the relevant layer or interlayer supports them, otherwise they are discarded. The same holds for edge-level metadata and/or weight. 
 
 ```julia
 # Create a node 
@@ -227,56 +225,43 @@ add_vertex!(
     new_vertex_1       # MultilayerVertex to add
 )
 
-#= 
-NB: The vertex-level metadata are considered iff the graph underlying the layer/interlayer 
-which the vertex belongs to supports them, otherwise they are discarded.
-=#
-
-
-## Add an edge
-### Let's represent another node in another layer
+# Create another node in another layer 
 new_node_2 = Node("new_node_2")
+# Create another vertex representing the new node
 new_vertex_2 = MV(new_node_2, :layer_simpledigraph)
+# Add the new vertex
 add_vertex!(
     multilayerdigraph,
     new_vertex_2;
     add_node=true # Add the associated node before adding the vertex
 )
-### Construct a new edge
+# Create an edge 
 new_edge = MultilayerEdge( # Constructor 
     new_vertex_1,          # Source vertex
     new_vertex_2,          # Destination vertex 
     ("some_edge_metadata") # Edge metadata 
 )
-### Add the edge
+# Add the edge 
 add_edge!(
     multilayerdigraph, # MultilayerDiGraph the edge will be added to
     new_edge           # MultilayerVertex to add
 )
-# NB: The edge-level metadata and/or weight are considered iff the graph underlying the layer/interlayer which the edge belongs to supports them, otherwise they are discarded.
+```
 
-#=
-Using the provided `add_layer!`, `rem_layer!` and `specify_interlayer!`, 
-Layers and Interlayers may be added, removed or specified on the fly. 
-Since MultilayerGraphs.jl extends Graphs.jl, all metrics from the JuliaGraphs ecosystem 
-should be available by default. Anyway, some multilayer-specific metrics have been implemented, 
-and others required to be re-implemented. 
+Finally we illustrate how to compute a few multilayer metrics such as the global clustering coefficient, the overlay clustering coefficient, the multilayer eigenvector centrality, and the multilayer modularity as defined in @DeDomenico2013. 
 
-We showcase a few of them here:
-=#
-
-## Compute the global clustering coefficient as in @DeDomenico2013
-multilayer_global_clustering_coefficient(multilayerdigraph) # A weighted version `multilayer_weighted_global_clustering_coefficient`
-## Compute the overlay clustering coefficient as in @DeDomenico2013
+```julia
+# Compute the global clustering coefficient
+multilayer_global_clustering_coefficient(multilayerdigraph) 
+# Compute the overlay clustering coefficient
 overlay_clustering_coefficient(multilayerdigraph)
-## Compute the eigenvector centrality (the implementation is sp that it coincides with Graphs.jl's `eigenvector_centrality` on monoplex graphs)
+# Compute the multilayer eigenvector centrality 
 eigenvector_centrality(multilayerdigraph)
-## Compute the multilayer modularity as in @DeDomenico2013
+# Compute the multilayer modularity 
 modularity(
     multilayerdigraph,
     rand([1, 2, 3, 4], length(nodes(multilayerdigraph)), length(multilayerdigraph.layers))
 )
-
 ```
 
 # Related Packages 
