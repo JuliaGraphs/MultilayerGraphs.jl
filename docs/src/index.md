@@ -96,11 +96,11 @@ const nodes_list = [Node("node_$i") for i in 1:n_nodes]
  Node("node_7")
 ```
 
-You may access (but not modify) the `id` of a `Node` via the [`id`](@ref) function. `Node`s are reepresented throughout layers and interlayers via a struct named [`MultilayerVertex`](@ref). It has several convenience constructors, the most complete of them reads:
+You may access (but not modify) the `id` of a `Node` via the [`id`](@ref) function. `Node`s are represented throughout layers and interlayers via a struct named [`MultilayerVertex`](@ref). It has several convenience constructors, the most complete of them reads:
 
 ```julia
 MultilayerVertex( 
-                node::Node,                            # The Node that th evertex will represent     
+                node::Node,                            # The Node that the vertex will represent     
                 layer::Union{Nothing,Symbol},          # The layer which the `Node` will be represented in. Should be set to `nothing` when constructing layers.
                 metadata::Union{<:NamedTuple,<:Tuple} # The metadata associated to this vertex
 )
