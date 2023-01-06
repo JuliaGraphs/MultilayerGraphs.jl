@@ -81,18 +81,25 @@ To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pr
 pkg> add MultilayerGraphs
 ```
 
-In the following code chunks we synthetically illustrate how to define, handle and analyse a `MultilayerGraph` in order to showcase some of the main features outlined in the previous section.
+In the following code chunks we synthetically illustrate some of the main features outlined in the previous section.
+
+Let's begin by importing the necessary dependencies and setting the relevant constants: 
 
 ```julia
-using Revise
-using Graphs, SimpleValueGraphs
-using Distributions
+using Distributions, Graphs, SimpleValueGraphs
 using MultilayerGraphs
 
-# The objects represented by `MultilayerVertex`s are `Node`s
+# Set the number of nodes: objects represented by `MultilayerVertex`s are `Node`s
 const n_nodes = 100 
+# Create a list of nodes
 const node_list = [Node("node_$i") for i in 1:n_nodes]
+```
 
+We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques.
+
+Here, we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. 
+
+```julia
 #= 
 Each layer and Interlayer that is involved in a `Multilayer(Di)Graph` must have the same 
 vertex type (i.e. the type of the internal representation of vertices) and (edge) weight type. 
