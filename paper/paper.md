@@ -95,6 +95,8 @@ const n_nodes = 100
 const node_list = [Node("node_$i") for i in 1:n_nodes]
 ```
 
+## Layers and Interlayers 
+
 We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques.
 
 Here we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. Before instantiating each layer we sample the number of its vertices and, optionally, of its edges.
@@ -146,7 +148,16 @@ layer_simple_directed_value = Layer(                           # Layer construct
 )
 
 layers = [layer_simple_directed, layer_simple_directed_weighted, layer_simple_directed_value]
+```
 
+There are many more constructors the user is encouraged to explore in the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl).
+We may now move to Interlayers. Note that, in order to define a `Multilayer(Di)Graph`, 
+interlayers do not need to be explicitly constructed by the user, 
+since they are automatically specified by the `Multilayer(Di)Graph` constructor. 
+Anyway, more complex interlayers need to be manually instantiated. 
+The interface is very similar to the layers.
+
+```julia
 #=
 There are many more constructors that the user is encouraged to explore in the package documentation.
 We may now move to Interlayers. Note that, in order to define a `Multilayer(Di)Graph`, 
