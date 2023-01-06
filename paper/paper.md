@@ -73,6 +73,8 @@ Alternatively, it is possible to construct a `Multilayer(Di)Graph` making use of
 
 `Multilayer(Di)Graph`s structure may be represented via dedicated `WeightTensor`, `MetadataTensor` and `SupraWeightMatrix` structs, all of which support indexing with `MultilayerVertex`s. Once a `Multilayer(Di)Graph` has been instantiated, its layers and interlayers can be accessed as their properties.
 
+For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl).  
+
 # Installation and Usage 
 
 To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pressing `]` in the Julia REPL and then run the following command:
@@ -81,7 +83,7 @@ To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pr
 pkg> add MultilayerGraphs
 ```
 
-In the following code chunks we synthetically illustrate some of the main features outlined in the previous section. For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the tutorial and the API included in the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl).  
+In the following code chunks we synthetically illustrate some of the main features outlined in the previous section. 
 
 Let's begin by importing the necessary dependencies and setting the relevant constants.
 
