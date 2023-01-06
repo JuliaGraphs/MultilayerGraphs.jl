@@ -12,7 +12,7 @@ const vertex_type = Int64
 const weight_type = Float64 =#
 
 # We will be instantiating layers and interlayers with randomly-chosen edges and vertices, using different techniques with the intent to showcase them.
-## Here, we define a layer with an underlying simple directed graph, using a configuration model-like constructor that allows for specifying both the indegree and the outdegree sequences. Before instantiating each layer we will sample its  nuber of vertices and, optionally, of edges.
+## Here, we define a layer with an underlying simple directed graph, using a configuration model-like constructor that allows for specifying both the indegree and the outdegree sequences. Before instantiating each layer we will sample its number of vertices and, optionally, of edges.
 _nv = rand(1:100)
 _layer_simpledigraph = layer_simpledigraph(
     :layer_simpledigraph,           # The name of the layer_metagraph
@@ -21,7 +21,7 @@ _layer_simpledigraph = layer_simpledigraph(
     Truncated(Normal(5, 5), 0, 20),   # The distribution from which the outdegree sequence will be sampled from
 )
 
-## Next, we define a layer with an underliyng simple weighted directed graph. This time we show another kind of constructor that allows the user to specify the number of edges to be randomly distributed among the vertices. The keyword argument `default_edge_weight` will assign a weight to such edges before they are added to the layer
+## Next, we define a layer with an underlying simple weighted directed graph. This time we show another kind of constructor that allows the user to specify the number of edges to be randomly distributed among the vertices. The keyword argument `default_edge_weight` will assign a weight to such edges before they are added to the layer
 _nv = rand(1:n__nodes)
 _ne = rand(_nv:(_nv * (_nv - 1) - 1))
 _layer_simpleweighteddigraph = layer_simpleweighteddigraph(
@@ -57,7 +57,7 @@ layers = [_layer_simpledigraph, _layer_simpleweighteddigraph, _layer_valdigraph]
 
 # There are many more constructors that the user is encouraged to explore in the package documentation.
 
-# We may now move to Interlayers. Note that, in order to define a `Multilayer(Di)Graph`, interlayers do not need to be explicitly constructed by the user, since they are automatically specified by the `Multilayer(Di)Graph` constructor. Anyway, more complex interlyaers need to be manually instantiated. The interface is very similar to the layers.
+# We may now move to Interlayers. Note that, in order to define a `Multilayer(Di)Graph`, interlayers do not need to be explicitly constructed by the user, since they are automatically specified by the `Multilayer(Di)Graph` constructor. Anyway, more complex interlayers need to be manually instantiated. The interface is very similar to the layers.
 
 ## Interlayer with an underlying simple directed graph and `_ne` edges
 nv_1 = nv(_layer_simpledigraph)
@@ -88,7 +88,7 @@ interlayers = [_interlayer_simpledigraph, _interlayer_metadigraph]
 # A MultilayerDiGraph (i.e. a directed multilayer graph, following the naming convention of the JuliaGraph ecosystem) may now be specified 
 
 multilayerdigraph = MultilayerDiGraph(
-    layers,     # The (ordered) collection of layers that consistute the multilayer graph
+    layers,     # The (ordered) collection of layers that constitute the multilayer graph
     interlayers; # The manually-specified interlayers. The interlayers that are left unspecified (in this example, the interlayer between `_layer_simpledigraph` and `_layer_valdigraph`), will be automatically inserted according to the keyword argument below
     default_interlayers_structure="multiplex", # The automatically-specified interlayers will have only diagonal couplings
 )
@@ -96,7 +96,7 @@ multilayerdigraph = MultilayerDiGraph(
 # Layers and interlayer may be accessed as properties using their names
 multilayerdigraph.layer_simplevaldigraph
 
-# We proceed to show some basic funcionality.
+# We proceed to show some basic functionality.
 ## Add a vertex
 ### The user may add vertices that do or do not represent _nodes already present in the multilayergraph. In the latter case, we have a new node:
 new_node_1 = Node("new_node_1")
@@ -104,7 +104,7 @@ new_node_1 = Node("new_node_1")
 add_node!(multilayerdigraph, new_node_1)
 ### Define a vertex that represents that node
 new_vertex_1 = MV(                         # MV is an alias for MultilayerVertex
-    new_node_1,              # The Node that the vetex represents 
+    new_node_1,              # The Node that the vertex represents 
     :layer_simplevaldigraph, # The layer which the vertex belongs to
     ("new_metadata",),        # Metadata to associate to the vertex.
 )
@@ -138,7 +138,7 @@ add_edge!(
 
 # Using the provided `add_layer!`, `rem_layer!` and `specify_interlayer!`, Layers and Interlayers may be added, removed or specified on the fly. 
 
-# Since MultilayerGraphs.jl extends Graphs.jl, all metrics from the JuliaGraphs ecosystem should be avaliable by default. Anyway, some  Multilayer graph-specific metrics have been implemented, and others required to be re-implemented.  A few of them are shown  hereafter
+# Since MultilayerGraphs.jl extends Graphs.jl, all metrics from the JuliaGraphs ecosystem should be available by default. Anyway, some  Multilayer graph-specific metrics have been implemented, and others required to be re-implemented.  A few of them are shown  hereafter
 
 ## Compute the global clustering coefficient as in @DeDomenico2014
 multilayer_global_clustering_coefficient(multilayerdigraph) # A weighted version `multilayer_weighted_global_clustering_coefficient`, from the same authors ad been implemented
@@ -146,7 +146,7 @@ multilayer_global_clustering_coefficient(multilayerdigraph) # A weighted version
 ## Compute the overlay clustering coefficient as in @DeDomenico2014
 overlay_clustering_coefficient(multilayerdigraph)
 
-## Compute the eigenvector centality (the implementaation is sp that it coincides with Graphs.jl's `eigenvector_centality` on monoplex graphs)
+## Compute the eigenvector centrality (the implementation is sp that it coincides with Graphs.jl's `eigenvector_centality` on monoplex graphs)
 eigenvector_centrality(multilayerdigraph)
 
 ## Compute the multilayer modularity as in @DeDomenico2014
@@ -157,4 +157,4 @@ modularity(
 
 ## Currently, Von Neumann entropy is available only for undirected multilayer graphs.
 
-# NB: this brief script is far from complete: many more features and funcionalities are detailed in the documentation.
+# NB: this brief script is far from complete: many more features and functionalities are detailed in the documentation.
