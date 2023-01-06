@@ -71,7 +71,7 @@ const max_vertices = 7
 const n_nodes      = max_vertices
 ```
 
-Next we define the list of immutable objects that are represneted (through vertices, see below) in the various layers and interlayers of a multilayer graph. These obkects are called [`Node`](@ref)s. The constructor for a `Node` reads:
+Next we define the list of immutable objects that are represented (through vertices, see below) in the various layers and interlayers of a multilayer graph. These objects are called [`Node`](@ref)s. The constructor for a `Node` reads:
 
 ```julia
 Node(
@@ -79,7 +79,7 @@ Node(
 )
 ```
 
-Where `id` is a `String` that is the name of what the `Node` stands for (could be cities in a transportation network, users in a social network, etc.). Let's contruct a list of `Node`s to use in the remainder of the tutorial:
+Where `id` is a `String` that is the name of what the `Node` stands for (could be cities in a transportation network, users in a social network, etc.). Let's construct a list of `Node`s to use in the remainder of the tutorial:
 
 ```julia
 # The constructor for nodes (which are immutable) only requires a name (`id`) for the node

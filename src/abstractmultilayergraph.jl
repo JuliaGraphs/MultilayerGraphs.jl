@@ -295,7 +295,7 @@ function get_metadata(
 end
 
 """
-    get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertexph
+    get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)h
 
 Return the weight associated to the `MultilayerEdge` from `src` to `dst`.
 """
