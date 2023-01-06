@@ -47,7 +47,7 @@ pkg> add MultilayerGraphs
 
 ## Usage
 
-Here we are going to synthetically illustrate some of the main features of MultilayerGraphs.jl. For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl). 
+Here we are going to synthetically illustrate some of the main features of MultilayerGraphs.jl. For a more comprehensive exploration of the package functionalities we strongly recommend consulting the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl). 
 
 Let's begin by importing the necessary dependencies and setting the relevant constants.
 
@@ -63,7 +63,7 @@ const node_list = [Node("node_$i") for i in 1:n_nodes]
 
 ### Layers and Interlayers 
 
-We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques. Layers and Interlayers are not immutable, and mostly behave like normal graphs. It is strongly recommended to consult the [API](https://juliagraphs.org/MultilayerGraphs.jl/stable/API/) for further details.
+We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques. Layers and Interlayers are not immutable, and mostly behave like normal graphs. The user is invited to consult the [API](https://juliagraphs.org/MultilayerGraphs.jl/stable/API/) for further details.
 
 Here we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. Before instantiating each layer we sample the number of its vertices and, optionally, of its edges.
 
