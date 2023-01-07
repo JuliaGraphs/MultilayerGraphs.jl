@@ -198,7 +198,7 @@ new_vertex_2 = MV(new_node_2, :layer_simple_directed)
 add_vertex!(
     multilayerdigraph,
     new_vertex_2;
-    add_node=true # Add the associated node before adding the vertex
+    add_node=true
 )
 # Create an edge 
 new_edge = MultilayerEdge( 
@@ -212,7 +212,7 @@ add_edge!(
     new_edge           
 )
 
-# Compute metrics
+# Metrics 
 multilayer_global_clustering_coefficient(multilayerdigraph) 
 overlay_clustering_coefficient(multilayerdigraph)
 eigenvector_centrality(multilayerdigraph)
@@ -226,7 +226,7 @@ modularity(
 
 ## R 
 
-Here is a list of software packages for the creation, manipulation, analysis and visualisation of multilayer graphs implemented in the [R language](https://www.r-project.org): 
+Here is a list of related software packages implemented in the [R language](https://www.r-project.org): 
 
 - [`muxViz`](https://github.com/manlius/muxViz) implements functions to perform multilayer correlation analysis, multilayer centrality analysis, multilayer community structure detection, multilayer structural reducibility, multilayer motifs analysis and utilities to statically and dynamically visualise multilayer graphs [@DeDomenico2014];
 - [`multinet`](https://github.com/cran/multinet) implements functions to import, export, create and manipulate multilayer graphs, several state-of-the-art multiplex graph analysis algorithms for centrality measures, layer comparison, community detection and visualization [@Magnani2021];
@@ -235,7 +235,7 @@ Here is a list of software packages for the creation, manipulation, analysis and
 
 ## Python
 
-Here is a list of software packages for the creation, manipulation, analysis and visualisation of multilayer graphs implemented in the [Python language](https://www.python.org): 
+Here is a list of related software packages implemented in the [Python language](https://www.python.org): 
 
 - [`MultiNetX`](https://github.com/nkoub/multinetx) implements methods to create undirected networks with weighted or unweighted links, to analyse the spectral properties of adjacency or Laplacian matrices and to visualise multilayer graphs and dynamical processes by coloring the nodes and links accordingly;
 - [`PyMNet`](https://github.com/bolozna/Multilayer-networks-library) implements data structures for multilayer graphs and multiplex graphs, methods to import, export, create, manipulate multilayer graphs and for the rule-based generation and lazy-evaluation of coupling edges and utilities to visualise multilayer graphs [@Kivela2014].
