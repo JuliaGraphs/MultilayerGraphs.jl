@@ -9,11 +9,11 @@ abstract type AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 
 # Vertices
 """
-    add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
+    add_vertex_specialized!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
 
 Add MultilayerVertex `V` to multilayer graph `mg`, provided that `node(V)` is a `Node` of `mg`. Return true if succeeds.
 """
-function Graphs.add_vertex!(
+function add_vertex_specialized!(
     mg::M, V::MultilayerVertex
 ) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
     !has_node(mg, node(V)) && return false

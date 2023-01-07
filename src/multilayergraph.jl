@@ -59,103 +59,6 @@ function MultilayerGraph(
     return multilayergraph
 end
 
-# General MultilayerGraph Utilities
-fadjlist(mg::MultilayerGraph) = mg.fadjlist
-
-# Nodes
-
-# Vertices
-
-# Edges
-
-"""
-    add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
-
-Add MultilayerEdge `me` to the MultilayerGraph `mg`. Return true if succeeds, false otherwise.
-"""
-function Graphs.add_edge!(
-    mg::M, me::E
-) where {T,U,M<:AbstractMultilayerUGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
-    _src = get_bare_mv(src(me))
-    _dst = get_bare_mv(dst(me))
-    has_vertex(mg, _src) ||
-        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, _dst) ||
-        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
-
-    # Add edge to `edge_dict`
-    src_V_idx = get_v(mg, _src)
-    dst_V_idx = get_v(mg, _dst)
-
-    _weight = isnothing(weight(me)) ? one(U) : weight(me)
-    _metadata = metadata(me)
-
-    if !has_edge(mg, _src, _dst)
-        if src_V_idx != dst_V_idx
-            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-            push!(mg.fadjlist[dst_V_idx], HalfEdge(_src, _weight, _metadata))
-        else
-            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-        end
-        return true
-    else
-        #=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
-                set_weight!(mg, src, dst, _weight)
-                set_metadata!(mg, src, dst, _metadata) =#
-        @debug "Edge already exists" me [
-            edge for edge in edges(mg) if
-            node(src(edge)) == Node("node_1") && node(dst(edge)) == Node("node_1")
-        ]
-        return false
-    end
-end
-
-"""
-    rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex)
-
-Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
-"""
-function Graphs.rem_edge!(
-    mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex
-)
-    # Perform routine checks
-    has_vertex(mg, src) ||
-        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, dst) ||
-        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
-
-    has_edge(mg, src, dst) || return false
-
-    src_V_idx = get_v(mg, src)
-    dst_V_idx = get_v(mg, dst)
-
-    _src = get_bare_mv(src)
-    _dst = get_bare_mv(dst)
-
-    if get_bare_mv(src) != get_bare_mv(dst)
-        src_idx_tbr = findfirst(
-            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
-        )
-        deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
-
-        dst_idx_tbr = findfirst(halfedge -> halfedge.vertex == _src, mg.fadjlist[dst_V_idx])
-        deleteat!(mg.fadjlist[dst_V_idx], dst_idx_tbr)
-    else
-        src_idx_tbr = findfirst(
-            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
-        )
-        deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
-    end
-
-    return true
-end
-
-# Layers and Interlayers
-
-# Graphs.jl's extensions
-
-# Multilayer-specific methods
-# "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
 """
     MultilayerGraph(
         empty_layers::Vector{<:Layer{T,U}},
@@ -283,6 +186,104 @@ function MultilayerGraph(
         default_interlayers_structure=default_interlayers_structure,
     )
 end
+
+# General MultilayerGraph Utilities
+fadjlist(mg::MultilayerGraph) = mg.fadjlist
+
+# Nodes
+
+# Vertices
+
+# Edges
+
+"""
+    add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+
+Add MultilayerEdge `me` to the MultilayerGraph `mg`. Return true if succeeds, false otherwise.
+"""
+function Graphs.add_edge!(
+    mg::M, me::E
+) where {T,U,M<:AbstractMultilayerUGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
+    _src = get_bare_mv(src(me))
+    _dst = get_bare_mv(dst(me))
+    has_vertex(mg, _src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, _dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+
+    # Add edge to `edge_dict`
+    src_V_idx = get_v(mg, _src)
+    dst_V_idx = get_v(mg, _dst)
+
+    _weight = isnothing(weight(me)) ? one(U) : weight(me)
+    _metadata = metadata(me)
+
+    if !has_edge(mg, _src, _dst)
+        if src_V_idx != dst_V_idx
+            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
+            push!(mg.fadjlist[dst_V_idx], HalfEdge(_src, _weight, _metadata))
+        else
+            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
+        end
+        return true
+    else
+        #=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
+                set_weight!(mg, src, dst, _weight)
+                set_metadata!(mg, src, dst, _metadata) =#
+        @debug "Edge already exists" me [
+            edge for edge in edges(mg) if
+            node(src(edge)) == Node("node_1") && node(dst(edge)) == Node("node_1")
+        ]
+        return false
+    end
+end
+
+"""
+    rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex)
+
+Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
+"""
+function Graphs.rem_edge!(
+    mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+    # Perform routine checks
+    has_vertex(mg, src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+
+    has_edge(mg, src, dst) || return false
+
+    src_V_idx = get_v(mg, src)
+    dst_V_idx = get_v(mg, dst)
+
+    _src = get_bare_mv(src)
+    _dst = get_bare_mv(dst)
+
+    if get_bare_mv(src) != get_bare_mv(dst)
+        src_idx_tbr = findfirst(
+            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
+        )
+        deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
+
+        dst_idx_tbr = findfirst(halfedge -> halfedge.vertex == _src, mg.fadjlist[dst_V_idx])
+        deleteat!(mg.fadjlist[dst_V_idx], dst_idx_tbr)
+    else
+        src_idx_tbr = findfirst(
+            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
+        )
+        deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
+    end
+
+    return true
+end
+
+# Layers and Interlayers
+
+# Graphs.jl's extensions
+
+# Multilayer-specific methods
+# "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
 
 # Base overloads
 """

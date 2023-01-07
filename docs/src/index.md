@@ -28,9 +28,9 @@ Formally, a multilayer graph can be defined as a triple $G=(V,E,L)$, where:
 
 Each layer $\ell$ in $L$ is a tuple $(V_\ell, E_\ell)$, where $V_\ell$ is a subset of $V$ that represents the vertices within that layer, and $E_\ell$ is a subset of $E$ that represents the edges within that layer.
 
-Multiple theoretical frameworks have been proposed to formally subsume all instances of multilayer graphs ([De Domenico  et al. (2013)](https://doi.org/10.1103/physrevx.3.041022); [Kivelä et al. (2014)](https://doi.org/10.1093/comnet/cnu016); [Boccaletti et al. (2014)](https://doi.org/10.1016/j.physrep.2014.07.001); [Lee et al. (2015)](https://doi.org/10.1140/epjb/e2015-50742-1); [Aleta and Moreno (2019)](https://doi.org/10.1146/annurev-conmatphys-031218-013259); [Bianconi (2018)](https://doi.org/10.1093/oso/9780198753919.001.0001); [Cozzo et al. (2018)](https://doi.org/10.1007/978-3-319-92255-3); [Artime et al. (2022)](https://doi.org/10.1017/9781009085809); [De Domenico (2022)](https://doi.org/10.1007/978-3-030-75718-2)). 
+Multiple theoretical frameworks have been proposed to formally subsume all instances of multilayer graphs [^1]. 
 
-Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks ([Cozzo et al. (2013)](https://doi.org/10.1103/physreve.88.050801); [Granell et al. (2013)](https://doi.org/10.1103/physrevlett.111.128701); [Massaro and Bagnoli (2014)](https://doi.org/10.1103/physreve.90.052817); [Estrada and Gomez-Gardenes (2014)](https://doi.org/10.1103/physreve.89.042819); [Azimi-Tafreshi (2016)](https://doi.org/10.1103/physreve.93.042303); [Baggio et al. (2016)](https://doi.org/10.1073/pnas.1604401113); [DeDomenico et al. (2016)](https://doi.org/10.1038/nphys3865); [Amato et al. (2017)](https://doi.org/10.1038/s41598-017-06933-2); [DeDomenico (2017)](https://doi.org/10.1093/gigascience/gix004); [Pilosof et al. (2017)](https://doi.org/10.1038/s41559-017-0101); [de Arruda et al. (2017)](https://doi.org/10.1103/physrevx.7.011014); [Gosak et al. (2018)](https://doi.org/10.1016/j.plrev.2017.11.003); [Soriano-Panos et al. (2018)](https://doi.org/10.1103/physrevx.8.031039); [Timteo et al. (2018)](https://doi.org/10.1038/s41467-017-02658-y); [Buldú et al. (2018)](https://doi.org/10.1162/netn_a_00033); [Lim et al. (2019)](https://doi.org/10.1038/s41598-019-39243-w); [Mangioni et al. (2020)](https://doi.org/10.1109/tnse.2018.2871726); [Aleta et al. (2020)](https://doi.org/10.1038/s41562-020-0931-9); [Aleta et al. (2022)](https://doi.org/10.1073/pnas.2112182119)). 
+Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks[^2]. 
 
 MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features a peculiar implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects an experienced practitioner would expect such as nodes ([`Node`](@ref)), vertices ([`MultilayerVertex`](@ref)), layers ([`Layer`](@ref)), interlayers ([`Interlayer`](@ref)), etc.
 
@@ -43,7 +43,7 @@ The tutorial below will be focused on the end-used experience, as developer meth
 
 ## Installation
 
-Press `]` in the Julia REPL and then
+To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pressing `]` in the Julia REPL and then run the following command:
 
 ```nothing
 pkg> add MultilayerGraphs
@@ -63,21 +63,27 @@ using MultilayerGraphs
 Define some constants that will prove useful later in the tutorial:
 
 ```julia
-# Set the minimum and maximum number of all_nodes and edges for random graphs
+# Set the minimum and maximum number of nodes_list and edges for random graphs
 const vertextype   = Int64
 const _weighttype  = Float64
 const min_vertices = 5
 const max_vertices = 7
-const min_edges    = 1
-const max_edges    = max_vertices*(max_vertices-1)
 const n_nodes      = max_vertices
 ```
 
-Next we define nodes:
+Next we define the list of immutable objects that are represented (through vertices, see below) in the various layers and interlayers of a multilayer graph. These objects are called [`Node`](@ref)s. The constructor for a `Node` reads:
+
+```julia
+Node(
+    id::String
+)
+```
+
+Where `id` is a `String` that is the name of what the `Node` stands for (could be cities in a transportation network, users in a social network, etc.). Let's construct a list of `Node`s to use in the remainder of the tutorial:
 
 ```julia
 # The constructor for nodes (which are immutable) only requires a name (`id`) for the node
-const all_nodes = [Node("node_$i") for i in 1:n_nodes]
+const nodes_list = [Node("node_$i") for i in 1:n_nodes]
 ```
 ```nothing
 7-element Vector{Node}:
@@ -90,13 +96,23 @@ const all_nodes = [Node("node_$i") for i in 1:n_nodes]
  Node("node_7")
 ```
 
-You may access (but not modify) the `id` of a `Node` via the [`id`](@ref) function. And construct `MultilayerVertex`s from these nodes:
+You may access (but not modify) the `id` of a `Node` via the [`id`](@ref) function. `Node`s are represented throughout layers and interlayers via a struct named [`MultilayerVertex`](@ref). It has several convenience constructors, the most complete of them reads:
+
+```julia
+MultilayerVertex( 
+                node::Node,                            # The Node that the vertex will represent     
+                layer::Union{Nothing,Symbol},          # The layer which the `Node` will be represented in. Should be set to `nothing` when constructing layers.
+                metadata::Union{<:NamedTuple,<:Tuple} # The metadata associated to this vertex
+)
+```
+
+Let's contruct a list of `MultilayerVertex`s to use in the remainder of the tutorial:
 
 ```julia
 ## Convert nodes to multilayer vertices without metadata
-const multilayervertices = MV.(all_nodes)
+const multilayervertices = MV.(nodes_list)
 ## Convert nodes multilayer vertices with metadata
-const multilayervertices_meta  = [MV(node, ("I'm node $(node.id)",)) for node in all_nodes]
+const multilayervertices_meta  = [MV(node, ("I'm node $(node.id)",)) for node in nodes_list] # `MV` is an alias for `MultilayerVertex`
 ```
 ```nothing
 7-element Vector{MultilayerVertex{nothing}}:
@@ -109,7 +125,7 @@ const multilayervertices_meta  = [MV(node, ("I'm node $(node.id)",)) for node in
  MV(Node("node_7"), :nothing, ("I'm node node_7",))
 ```
 
-This conversion from `Node`s to `MultilayerVertex`s is performed since it is logical to add vertices to a graph, not nodes, and also for consistency reasons with the ecosystem.
+This conversion from `Node`s to `MultilayerVertex`s is performed since it is logical to add vertices to a graph, not nodes, and also for consistency reasons with the ecosystem. Regarding layers, adding/removing nodes or vertices allows for selecting the most comfortable interface. A similar mechanism is implemented for edges (see below).
 
 Printing a `MultilayerVertex` returns:
 
@@ -184,7 +200,7 @@ We are now are ready to define some `Layer`s. Every type of graph from the Graph
 # An unweighted simple layer:
 _nv, _ne  = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_sg = Layer(   :layer_sg,
-                    sample(multilayervertices, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     SimpleGraph{vertextype}(),
                     _weighttype
@@ -193,7 +209,7 @@ layer_sg = Layer(   :layer_sg,
 # A weighted `Layer`
 _nv, _ne  = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_swg = Layer(  :layer_swg,
-                    sample(multilayervertices, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     SimpleWeightedGraph{vertextype, _weighttype}(),
                     _weighttype;
@@ -202,7 +218,7 @@ layer_swg = Layer(  :layer_swg,
 # A `Layer` with an underlying `MetaGraph`:
 _nv, _ne = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_mg = Layer(   :layer_mg,
-                    sample(multilayervertices_meta, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     MetaGraph{vertextype, _weighttype}(),
                     _weighttype;
@@ -211,15 +227,16 @@ layer_mg = Layer(   :layer_mg,
 # `Layer` with an underlying `ValGraph` from `SimpleValueGraphs.jl`
 _nv, _ne = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_vg = Layer(   :layer_vg,
-                    sample(multilayervertices_meta, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
-                    MultilayerGraphs.ValGraph{vertextype}(;edgeval_types=(Float64, String, ),
-                                            edgeval_init=(s, d) -> (s+d, "hi"),
-                                            vertexval_types=(String,),
-                                            vertexval_init=v -> ("$v",),),
-                    _weighttype;
-                    default_edge_metadata = (src,dst) -> (rand(), "from_$(src)_to_$(dst)",),
-                    default_vertex_metadata = mv -> ("This metadata had been generated via the default_vertex_metadata method",)
+                    MultilayerGraphs.ValGraph(SimpleGraph{vertextype}();
+                                                edgeval_types=(Float64, String, ),
+                                                edgeval_init=(s, d) -> (s+d, "hi"),
+                                                vertexval_types=(String,),
+                                                vertexval_init=v -> ("$v",),),
+                                                _weighttype;
+                                                default_edge_metadata = (src,dst) -> (rand(), "from_$(src)_to_$(dst)",),
+                                                default_vertex_metadata = mv -> ("This metadata had been generated via the default_vertex_metadata method",)
 )
 
 # Collect all layers in an ordered list. Order will be recorded when instantiating the multilayer graph.
@@ -258,8 +275,9 @@ end
 
 ## Utility function that returns a random number edges between its arguments `layer_1` and `layer_2`:
 function rand_ne_interlayer(layer_1, layer_2)
-    _nv = nv(layer_1) + nv(layer_2)
-    _ne = rand(_nv:(_nv*(_nv-1)) ÷ 2 )
+    nv_1 = nv(layer_1)
+    nv_2 = nv(layer_2)
+    _ne = rand(1: (nv_1 * nv_2 - 1) )
     return _ne
 end
 ```
@@ -286,7 +304,7 @@ interlayer_sg_swg = Interlayer( layer_sg,                  # The first layer to 
                                 layer_swg,                 # The second layer to be connected
                                 _ne,                       # The number of edges to randomly generate
                                 SimpleGraph{vertextype}(), # The underlying graph, passed as a null graph
-                                name = :random_interlayer  # The name of the interlayer. We will be able to access it as a property of the multilayer graph via its name. This kwarg's default value is given by a combination of the two layers' names.
+                                interlayer_name = :random_interlayer  # The name of the interlayer. We will be able to access it as a property of the multilayer graph via its name. This kwarg's default value is given by a combination of the two layers' names.
 )
 # Define a weighted `Interlayer`
 _ne = rand_ne_interlayer(layer_swg, layer_mg)
@@ -308,7 +326,7 @@ interlayer_mg_vg = Interlayer(  layer_mg,
 # Define an `Interlayer` with an underlying `ValGraph` from `SimpleValueGraphs.jl`, with diagonal couplings only:
 interlayer_multiplex_sg_mg = multiplex_interlayer(  layer_sg,
                                                     layer_mg,
-                                                    ValGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)"));
+                                                    ValGraph(SimpleGraph{vertextype}(); edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)"));
                                                     default_edge_metadata = (x,y) -> (from_to = "from_$(src)_to_$(dst)",)
 )
 # Finally, An `Interlayer` with no couplings (an "empty" interlayer):
@@ -425,7 +443,7 @@ interlayer_sg_swg_vertices = mv_vertices(interlayer_sg_swg)
  MV(Node("node_3"), :layer_swg, NamedTuple())
 ```
 
-The [`vertices(subgraph::AbstractSubGraph)`](@ref) command would return an internal representation of the `MultilayerVertex`s. This method, together with others, serves to make `MultilayerGraphs.jl` compatible with the Graphs.jl ecosystem, but it is not meant to be called by the end user. It is, anyway, thought to be used by developers who wish to interface their packages with `MultilayerGraphs.jl` just as with other packages of the `Graphs.jl` ecosystem: as said above, a developer-oriented guide will be compiled if there is the need, although docstrings are already completed.
+The [`vertices(subgraph::AbstractSubGraph)`](@ref) command would return an internal representation of the `MultilayerVertex`s (that of type `vertextype`). This method, together with others, serves to make `MultilayerGraphs.jl` compatible with the Graphs.jl ecosystem, but it is not meant to be called by the end user. It is, anyway, thought to be used by developers who wish to interface their packages with `MultilayerGraphs.jl` just as with other packages of the `Graphs.jl` ecosystem: as said above, a developer-oriented guide will be compiled if there is the need, although docstrings are already completed.
 
 To add a vertex, simply use `add_vertex!`. Let us define a vertex with metadata to add. Since nodes may not be represented more than once in layers, we have to define a new node too:
 
@@ -633,7 +651,7 @@ multilayergraph = MultilayerGraph(  layers,                                     
                                     interlayers;                                            # The list of interlayers specified by the user. Note that the user does not need to specify all interlayers, as the unspecified ones will be automatically constructed using the indications given by the `default_interlayers_null_graph` and `default_interlayers_structure` keywords.
                                     default_interlayers_null_graph = SimpleGraph{vertextype}(), # Sets the underlying graph for the interlayers that are to be automatically specified.  Defaults to `SimpleGraph{T}()`, where `T` is the `T` of all the `layers` and `interlayers`. See the `Layer` constructors for more information.
                                     default_interlayers_structure = "multiplex" # Sets the structure of the interlayers that are to be automatically specified. May be "multiplex" for diagonally coupled interlayers, or "empty" for empty interlayers (no edges).  "multiplex". See the `Interlayer` constructors for more information.
-);
+)
 ```
 ```nothing
 `MultilayerGraph` with vertex type `Int64` and weight type `Float64`.
@@ -707,7 +725,7 @@ end
 configuration_multilayergraph = MultilayerGraph(empty_layers, empty_interlayers, truncated(Normal(10), 0.0, 20.0));
 ```
 
-Note that this is not an implementation of a fully-fledged configuration model, which would require to be able to specify a degree distribution for every dimension of multiplexity. Please refer to [Future Developments](@ref).
+Note that this is not an implementation of a fully-fledged configuration model, which would require to be able to specify a degree distribution for every dimension of multiplexity. Moreover, it stil lacks the abilty to specify a minimum discrepancy (w.r.t. a yet-to-be-chosen metric) between the empirical distributions of the sampled sequence and the provided thorietical disribution. Please refer to [Future Developments](@ref).
 
 There is a similar constructor for `MultilayerDiGraph` which requires both the indegree distribution and the outdegree distribution. Anyway due to current performance limitations in the graph realization algorithms, it is suggested to provide two "similar" distributions (similar mean or location parameter, similar variance or shape parameter), in order not to incur in lengthy computational times.  
 
@@ -774,7 +792,7 @@ One may of course add layers on the fly:
 # Instantiate a new Layer
 _nv, _ne = rand_nv_ne_layer(min_vertices,max_vertices)
 new_layer = Layer(  :new_layer,
-                    sample(multilayervertices, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     SimpleGraph{vertextype}(),
                     _weighttype
@@ -795,7 +813,7 @@ has_layer(multilayergraph, :new_layer)
 true
 ```
 
-The [`add_layer!`](@ref) function will automatically instantiate all the `Interlayer`s between the newly added `Layer` and the `Layer`s already present in the multilayer graph.
+The [`add_layer!`](@ref) function will automatically instantiate all the `Interlayer`s between the newly added `Layer` and the `Layer`s already present in the multilayer graph, according to its kwargs `default_interlayers_null_graph` and `default_interlayers_structure`.
 
 If you wish to manually specify an interlayer, just do:
 
@@ -806,7 +824,7 @@ new_interlayer = Interlayer(    layer_sg,
                                 new_layer,               
                                 _ne,                     
                                 SimpleGraph{vertextype}(),
-                                name = :new_interlayer
+                                interlayer_name = :new_interlayer
 )
 
 # Modify an existing interlayer with the latter i.e. specify the latter interlayer:
@@ -826,7 +844,12 @@ Suppose that, after some modifications of `multilayergraph`, you would like to i
 multilayergraph.new_layer
 ```
 ```nothing
-Layer{Int64, Float64, SimpleGraph{Int64}}(LayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_layer, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#54#60"(), MultilayerGraphs.var"#55#61"(), MultilayerGraphs.var"#56#62"()), SimpleGraph{Int64}(10, [[3, 5, 7], [4, 5, 6], [1, 6], [2, 7], [1, 2, 6], [2, 3, 5, 7], [1, 4, 6]]), Bijection{Int64,MultilayerVertex{:new_layer}} (with 7 pairs))
+Layer   new_layer
+underlying_graph: SimpleGraph{Int64}
+vertex type: Int64
+weight type: Float64
+nv = 7
+ne = 11
 ```
 
 ```julia
@@ -834,7 +857,14 @@ Layer{Int64, Float64, SimpleGraph{Int64}}(LayerDescriptor{Int64, Float64, Simple
 multilayergraph.new_interlayer
 ```
 ```nothing
-Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer, :layer_sg, :new_layer, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(19, [[7, 12], [7, 8, 10, 11, 13], [7, 10], [7, 13], [7, 9, 11, 13], [7, 8, 12, 13], [1, 2, 3, 4, 5, 6], [2, 6], [5], [2, 3], [2, 5], [1, 6], [2, 4, 5, 6]]), Bijection{Int64,MultilayerVertex} (with 13 pairs))
+Interlayer      new_interlayer
+layer_1: layer_sg
+layer_2: new_layer
+underlying graph: SimpleGraph{Int64}
+vertex type : Int64
+weight type : Float64
+nv : 14
+ne : 46
 ```
 
 `Interlayer`s may also be accessed by remembering the names of the `Layer`s they connect:
@@ -844,12 +874,19 @@ Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float
 get_interlayer(multilayergraph, :new_layer, :layer_sg )
 ```
 ```nothing
-Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer_rev, :new_layer, :layer_sg, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(19, [[8, 9, 10, 11, 12, 13], [9, 13], [12], [9, 10], [9, 12], [8, 13], [9, 11, 12, 13], [1, 6], [1, 2, 4, 5, 7], [1, 4], [1, 7], [1, 3, 5, 7], [1, 2, 6, 7]]), Bijection{Int64,MultilayerVertex} (with 13 pairs))
+Interlayer      new_interlayer_rev
+layer_1: new_layer
+layer_2: layer_sg
+underlying graph: SimpleGraph{Int64}
+vertex type : Int64
+weight type : Float64
+nv : 14
+ne : 46
 ```
 
 **NB:** Although the interlayer from an arbitrary `layer_1` to `layer_2` is the same mathematical object as the interlayer from `layer_2` to `layer_1`, their representations as `Interlayer`s differ in the internals, and most notably in the order of the vertices. The `Interlayer` from `layer_1` to `layer_2` orders its vertices so that the `MultilayerVertex`s of `layer_1` (in the order they were in `layer_1` when the `Interlayer` was instantiated) come before the `MultilayerVertex`s of `layer_2` (in the order they were in `layer_2` when the `Interlayer` was instantiated).
 
-When calling `get_interlayer(multilayergraph, :layer_1, :layer_2)` it is returned the `Interlayer` from `layer_1` to `layer_2`. If the Interlayer from `layer_2` to `layer_1` was manually specified or automatically generated during  during the instantiation of the multilayer graph with name, say, `"some_interlayer"`, then the returned `Interlayer` will be named `"some_interlayer_rev"`.
+When calling `get_interlayer(multilayergraph, :layer_1, :layer_2)` it is returned the `Interlayer` from `layer_1` to `layer_2`. If the Interlayer from `layer_2` to `layer_1` was manually specified or automatically generated during the instantiation of the multilayer graph with name, say, `"some_interlayer"`, then the returned `Interlayer` will be named `"some_interlayer_rev"`.
 
 To remove a layer:
 
@@ -910,13 +947,18 @@ Read a complete list of analytical methods exclusive to multilayer graphs in the
 
 ### Future Developments
 
-- [Implement more general configuration models / graph generators](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/33);
 - [Implement graph of layers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/34);
 - [Implement projected monoplex and overlay graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/35);
 - [Implement more default multilayer graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/36) (e.g. multiplex graphs);
 - [Implement configuration models / graph generators for interlayers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/46);
+- [Implement a fully-fledged multilayer configuration model / graph generator](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/48);
 - [Relax the requirement of same `T` and `U` for all `Layer`s and `Interlayer`s that are meant to constitute a `Multilayer(Di)Graph`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/53);
-- [Implement multilayer graph data visualisation functionalities (or a new package)](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54).
+- [Implement multilayer graph data visualisation functionalities](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54);
+- [Infer `weighttype` from `default_edge_weight`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/58);
+- [Improve error explanations](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/59); 
+- [Improve integration with Agents.jl](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/61);
+- [Allow configuration models to specify a minimum discrepancy between the sampled (di)graphical sequence(s) and the provided distribution](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/62);
+- [Add to `add_layer!` a kwarg that allows the user to specify some new interlayers, skipping the instantiation of the default ones.](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/63).
 
 ## How to Contribute
 
@@ -926,7 +968,9 @@ We therefore encourage you to participate in [discussions](https://github.com/Ju
 
 ## How to Cite
 
-If you utilize this package in your project, please consider citing this repository using the citation information provided in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib). This will help to give appropriate credit to the [contributors](https://github.com/JuliaGraphs/MultilayerGraphs.jl/graphs/contributors) and support the continued development of the package.
+If you utilize this package in your project, please consider citing this repository using the citation information provided in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib). 
+
+This will help to give appropriate credit to the [contributors](https://github.com/JuliaGraphs/MultilayerGraphs.jl/graphs/contributors) and support the continued development of the package.
 
 ## Announcements
 
@@ -969,3 +1013,7 @@ At the best of our knowledge there are currently no software packages dedicated 
 7. Aleta and Moreno (2019) [Multilayer Networks in a Nutshell](https://doi.org/10.1146/annurev-conmatphys-031218-013259). *Annual Review of Condensed Matter Physics*; 
 8. Artime et al. (2022) [Multilayer Network Science: From Cells to Societies](https://doi.org/10.1017/9781009085809). *Cambridge University Press*; 
 9. De Domenico (2022) [Multilayer Networks: Analysis and Visualization](https://doi.org/10.1007/978-3-030-75718-2). *Springer Cham*. 
+
+[^1]: [De Domenico  et al. (2013)](https://doi.org/10.1103/physrevx.3.041022); [Kivelä et al. (2014)](https://doi.org/10.1093/comnet/cnu016); [Boccaletti et al. (2014)](https://doi.org/10.1016/j.physrep.2014.07.001); [Lee et al. (2015)](https://doi.org/10.1140/epjb/e2015-50742-1); [Aleta and Moreno (2019)](https://doi.org/10.1146/annurev-conmatphys-031218-013259); [Bianconi (2018)](https://doi.org/10.1093/oso/9780198753919.001.0001); [Cozzo et al. (2018)](https://doi.org/10.1007/978-3-319-92255-3); [Artime et al. (2022)](https://doi.org/10.1017/9781009085809); [De Domenico (2022)](https://doi.org/10.1007/978-3-030-75718-2)
+
+[^2]: [Cozzo et al. (2013)](https://doi.org/10.1103/physreve.88.050801); [Granell et al. (2013)](https://doi.org/10.1103/physrevlett.111.128701); [Massaro and Bagnoli (2014)](https://doi.org/10.1103/physreve.90.052817); [Estrada and Gomez-Gardenes (2014)](https://doi.org/10.1103/physreve.89.042819); [Azimi-Tafreshi (2016)](https://doi.org/10.1103/physreve.93.042303); [Baggio et al. (2016)](https://doi.org/10.1073/pnas.1604401113); [DeDomenico et al. (2016)](https://doi.org/10.1038/nphys3865); [Amato et al. (2017)](https://doi.org/10.1038/s41598-017-06933-2); [DeDomenico (2017)](https://doi.org/10.1093/gigascience/gix004); [Pilosof et al. (2017)](https://doi.org/10.1038/s41559-017-0101); [de Arruda et al. (2017)](https://doi.org/10.1103/physrevx.7.011014); [Gosak et al. (2018)](https://doi.org/10.1016/j.plrev.2017.11.003); [Soriano-Panos et al. (2018)](https://doi.org/10.1103/physrevx.8.031039); [Timteo et al. (2018)](https://doi.org/10.1038/s41467-017-02658-y); [Buldú et al. (2018)](https://doi.org/10.1162/netn_a_00033); [Lim et al. (2019)](https://doi.org/10.1038/s41598-019-39243-w); [Mangioni et al. (2020)](https://doi.org/10.1109/tnse.2018.2871726); [Aleta et al. (2020)](https://doi.org/10.1038/s41562-020-0931-9); [Aleta et al. (2022)](https://doi.org/10.1073/pnas.2112182119))
