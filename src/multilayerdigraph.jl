@@ -54,7 +54,6 @@ function MultilayerDiGraph(
     return multilayerdigraph
 end
 
-
 """
     MultilayerDiGraph(
         empty_layers::Vector{<:Layer{T,U}},
@@ -287,7 +286,6 @@ end
 
 # Multilayer-specific methods
 # "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
-
 
 # Base overloads
 """
