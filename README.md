@@ -90,7 +90,7 @@ layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer construct
 )
 ```
 
-Similar constructors, more flexible at the cost of ease of use, enable a finer tuning. The constructor we use below should be necessary only in rare circumstances, e.g. if the equivalent simplified constructor `layer_simple_directed_value` is not able to infer the correct return types of `default_vertex_metadata` or `default_edge_metadata`, or to use and underlying graph structure that isn't currently supported.
+Similar constructors, more flexible at the cost of ease of use, enable a finer tuning. The constructor we use below should be necessary only in rare circumstances, e.g. if the equivalent simplified constructor `layer_simplevaldigraph` is not able to infer the correct return types of `default_vertex_metadata` or `default_edge_metadata`, or to use and underlying graph structure that isn't currently supported.
 
 ```julia
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
@@ -169,7 +169,7 @@ multilayerdigraph = MultilayerDiGraph( # Constructor
 )
 
 # Layers and interlayer can be accessed as properties using their names
-multilayerdigraph.layer_simple_directed_value
+multilayerdigraph.layer_simplevaldigraph
 ```
 
 Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph. The user may add vertices that do or do not represent nodes which are already present in the multilayergraph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph. The vertex-level metadata are effectively considered only if the graph underlying the relevant layer or interlayer supports them, otherwise they are discarded. The same holds for edge-level metadata and/or weight. 
