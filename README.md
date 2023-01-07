@@ -10,6 +10,7 @@
 [![Coverage: Coveralls](https://coveralls.io/repos/github/JuliaGraphs/MultilayerGraphs.jl/badge.svg?branch=main)](https://coveralls.io/github/JuliaGraphs/MultilayerGraphs.jl?branch=main)
 [![Code Style: Blue](https://img.shields.io/badge/Code%20Style-Blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![DOI: Zenodo](https://zenodo.org/badge/490352002.svg)](https://zenodo.org/badge/latestdoi/490352002)
+[![JOSS](https://joss.theoj.org/papers/7d1b94ff7a1a2ebd5e86075e86fc62fb/status.svg)](https://joss.theoj.org/papers/7d1b94ff7a1a2ebd5e86075e86fc62fb)
 
 <img align="right" width="220" height="220" src="https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/docs/src/assets/logo.png?raw=true">
 
