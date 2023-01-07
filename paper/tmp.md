@@ -55,7 +55,7 @@ Several theoretical frameworks have been proposed to formally subsume all instan
 
 Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks [@Cozzo2013; @Granell2013; @Massaro2014; @Estrada2014; @AzimiTafreshi2016; @Baggio2016; @DeDomenico2016; @Amato2017; @DeDomenico2017; @Pilosof2017; @deArruda2017; @Gosak2018; @SorianoPaos2018; @Timteo2018; @Buldu2018; @Lim2019; @Mangioni2020; @Aleta2020; @Aleta2022]. 
 
-We have chosen the [Julia language](https://julialang.org) for this software package because it is a modern, open-source, high-level, high-performance dynamic language for technical computing [@Bezanson2017]. At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the Julia language apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022]. 
+At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the Julia language [@Bezanson2017] apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022]. 
 
 # Main Features 
 
@@ -83,60 +83,49 @@ To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pr
 pkg> add MultilayerGraphs
 ```
 
-In the following code chunks we synthetically illustrate some of the main features outlined in the previous section. 
-
-Let's begin by importing the necessary dependencies and setting the relevant constants.
+In the following code chunks we synthetically illustrate: 
+- how to define **layers** and **interlayers** with a variety of constructors and underlying graphs;
+- how to construct **directed multilayer graph** with those layers and interlayers;
+- how to add nodes, vertices and edges to the multilayer graph;
+- how to compute some multilayer metrics as defined in @DeDomenico2013. 
 
 ```julia
+# Import necessary dependencies
 using Distributions, Graphs, SimpleValueGraphs
 using MultilayerGraphs
 
-# Set the number of nodes: objects represented by multilayer vertices
-const n_nodes = 100 
-# Create a list of nodes
-const node_list = [Node("node_$i") for i in 1:n_nodes]
-```
+# Set relevant constants 
+n_nodes = 100 
+node_list = [Node("node_$i") for i in 1:n_nodes]
 
-## Layers and Interlayers 
-
-We will instantiate layers and interlayers with randomly-selected edges and vertices adopting a variety of techniques. Layers and Interlayers are not immutable, and mostly behave like normal graphs. The reader is invited to consult the [API](https://juliagraphs.org/MultilayerGraphs.jl/stable/API/) for more information.
-
-Here we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. Before instantiating each layer we sample the number of its vertices and, optionally, of its edges.
-
-```julia
-n_vertices = rand(1:100)                          # Number of vertices 
-layer_simple_directed = layer_simpledigraph(      # Layer constructor 
-    :layer_simple_directed,                       # Layer name
-    sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
-    Truncated(Normal(5, 5), 0, 20), # Indegree sequence distribution 
-    Truncated(Normal(5, 5), 0, 20)  # Outdegree sequence distribution
+# Simple directed layer 
+n_vertices = rand(1:100)                          
+layer_simple_directed = layer_simpledigraph(      
+    :layer_simple_directed,                       
+    sample(node_list, n_vertices; replace=false), 
+    Truncated(Normal(5, 5), 0, 20), 
+    Truncated(Normal(5, 5), 0, 20)  
 )
-```
 
-Then we define a layer with an underlying simple weighted directed graph. This is another kind of constructor that allows the user to specify the number of edges to be randomly distributed among vertices. 
-
-```julia
-n_vertices = rand(1:n_nodes)                                   # Number of vertices 
-n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
-layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer constructor 
-    :layer_simple_directed_weighted,                           # Layer name
-    sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
-    n_edges;                                 # Number of randomly distributed edges
-    default_edge_weight=(src, dst) -> rand() # Function assigning weights to edges 
+# Simple weighted layer 
+n_vertices = rand(1:n_nodes)                                   
+n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) 
+layer_simple_directed_weighted = layer_simpleweighteddigraph(  
+    :layer_simple_directed_weighted,                           
+    sample(node_list, n_vertices; replace=false),
+    n_edges;                                
+    default_edge_weight=(src, dst) -> rand()
 )
-```
 
-Similar constructors, more flexible at the cost of ease of use, enable a finer tuning. The constructor we use below should be necessary only in rare circumstances, e.g. if the equivalent simplified constructor `layer_simplevaldigraph` is not able to infer the correct return types of `default_vertex_metadata` or `default_edge_metadata`, or to use and underlying graph structure that isn't currently supported.
-
-```julia
-n_vertices = rand(1:n_nodes)                                   # Number of vertices 
-n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
-default_vertex_metadata = v -> ("vertex_$(v)_metadata")        # Vertex metadata 
-default_edge_metadata = (s, d) -> (rand(),)                    # Edge metadata 
-layer_simple_directed_value = Layer(                           # Layer constructor
-    :layer_simple_directed_value,                              # Layer name
-    sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
-    n_edges,                                      # Number of randomly distributed edges
+# Simple directed value layer 
+n_vertices = rand(1:n_nodes)                     
+n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) 
+default_vertex_metadata = v -> ("vertex_$(v)_metadata")        
+default_edge_metadata = (s, d) -> (rand(),)                    
+layer_simple_directed_value = Layer(                           
+    :layer_simple_directed_value,                              
+    sample(node_list, n_vertices; replace=false), 
+    n_edges,                                      
     ValDiGraph(                                                
         SimpleDiGraph{Int64}(); 
         vertexval_types=(String,),
@@ -145,89 +134,66 @@ layer_simple_directed_value = Layer(                           # Layer construct
         edgeval_init=default_edge_metadata,
     ),
     Float64;
-    default_vertex_metadata=default_vertex_metadata, # Vertex metadata 
-    default_edge_metadata=default_edge_metadata      # Edge metadata 
+    default_vertex_metadata=default_vertex_metadata, 
+    default_edge_metadata=default_edge_metadata      
 )
 
-# Create a list of layers 
+# List of layers
 layers = [layer_simple_directed, layer_simple_directed_weighted, layer_simple_directed_value]
-```
 
-There are many more constructors the user is encouraged to explore in the package documentation.
-
-The interface of interlayers is very similar to that of layers. It is very important to notice that, in order to define a `Multilayer(Di)Graph`, interlayers don't need to be explicitly constructed by the user since they are automatically identified by the `Multilayer(Di)Graph` constructor, but for more complex interlayers the manual instantiation is required.
-
-Here we define an interlayer with an underlying simple directed graph.
-
-```julia
-n_vertices_1 = nv(layer_simple_directed)               # Number of vertices of layer 1
-n_vertices_2 = nv(layer_simple_directed_weighted)      # Number of vertices of layer 2
-n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1))    # Number of interlayer edges 
-interlayer_simple_directed = interlayer_simpledigraph( # Interlayer constructor 
-    layer_simple_directed,                             # Layer 1 
-    layer_simple_directed_weighted,                    # Layer 2 
-    n_edges                                            # Number of edges 
+# Simple directed interlayer
+n_vertices_1 = nv(layer_simple_directed)               
+n_vertices_2 = nv(layer_simple_directed_weighted)      
+n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1))    
+interlayer_simple_directed = interlayer_simpledigraph( 
+    layer_simple_directed,                             
+    layer_simple_directed_weighted,                    
+    n_edges                                            
 )
 
-## The interlayer exports a more flexible constructor too. 
-n_vertices_1 = nv(layer_simple_directed_weighted)   # Number of vertices of layer 1
-n_vertices_2 = nv(layer_simple_directed_value)      # Number of vertices of layer 2
-n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1)) # Number of interlayer edges 
-interlayer_simple_directed_meta = interlayer_metadigraph( # Interlayer constructor
-    layer_simple_directed_weighted,                       # Layer 1 
-    layer_simple_directed_value,                          # Layer 2
-    n_edges;                                              # Number of edges
-    default_edge_metadata=(src, dst) ->                   # Edge metadata 
+# Simple directed meta interlayer
+n_vertices_1 = nv(layer_simple_directed_weighted)   
+n_vertices_2 = nv(layer_simple_directed_value)      
+n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1)) 
+interlayer_simple_directed_meta = interlayer_metadigraph( 
+    layer_simple_directed_weighted,                       
+    layer_simple_directed_value,                         
+    n_edges;                                              
+    default_edge_metadata=(src, dst) ->                   
         (edge_metadata="metadata_of_edge_from_$(src)_to_$(dst)"),
-    transfer_vertex_metadata=true # Boolean deciding layer vertex metadata inheritance
+    transfer_vertex_metadata=true 
 )
 
-# Create a list of interlayers 
+# List of interlayers
 interlayers = [interlayer_simple_directed, interlayer_simple_directed_meta]
-```
 
-## Multilayer Graphs
-
-In what follows we construct a directed multilayer graph (`MultilayerDiGraph`).
-
-```julia
-multilayerdigraph = MultilayerDiGraph( # Constructor 
-    layers,                     # The (ordered) collection of layers
-    interlayers;                # The manually specified interlayers
-                                # The interlayers that are left unspecified 
-                                # will be automatically inserted according 
-                                # to the keyword argument below
+# Directed multilayer graph
+multilayerdigraph = MultilayerDiGraph( 
+    layers,                     
+    interlayers;                
     default_interlayers_structure="multiplex" 
-    # The automatically specified interlayers will have only diagonal couplings
 )
 
-# Layers and interlayer can be accessed as properties using their names
-multilayerdigraph.layer_simplevaldigraph
-```
-
-Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph. The user may add vertices that do or do not represent nodes which are already present in the multilayergraph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph. The vertex-level metadata are effectively considered only if the graph underlying the relevant layer or interlayer supports them, otherwise they are discarded. The same holds for edge-level metadata and/or weight. 
-
-```julia
-# Create a node 
+# Create node 
 new_node_1 = Node("new_node_1")
-# Add the node to the multilayer graph 
+# Add node to multilayer 
 add_node!(multilayerdigraph, new_node_1)
-# Create a vertex representing the node 
-new_vertex_1 = MV(           # Constructor (alias for "MultilayerVertex")
-    new_node_1,              # Node represented by the vertex
-    :layer_simplevaldigraph, # Layer containing the vertex 
-    ("new_metadata")         # Vertex metadata 
+# Create vertex representing the node 
+new_vertex_1 = MV(           
+    new_node_1,              
+    :layer_simple_directed_value, 
+    ("new_metadata")         
 )
-# Add the vertex 
+# Add vertex 
 add_vertex!(
-    multilayerdigraph, # MultilayerDiGraph the vertex will be added to
-    new_vertex_1       # MultilayerVertex to add
+    multilayerdigraph, 
+    new_vertex_1       
 )
 
-# Create another node in another layer 
+# Create node in another layer 
 new_node_2 = Node("new_node_2")
-# Create another vertex representing the new node
-new_vertex_2 = MV(new_node_2, :layer_simpledigraph)
+# Create vertex representing the new node
+new_vertex_2 = MV(new_node_2, :layer_simple_directed)
 # Add the new vertex
 add_vertex!(
     multilayerdigraph,
@@ -235,28 +201,21 @@ add_vertex!(
     add_node=true # Add the associated node before adding the vertex
 )
 # Create an edge 
-new_edge = MultilayerEdge( # Constructor 
-    new_vertex_1,          # Source vertex
-    new_vertex_2,          # Destination vertex 
-    ("some_edge_metadata") # Edge metadata 
+new_edge = MultilayerEdge( 
+    new_vertex_1,          
+    new_vertex_2,          
+    ("some_edge_metadata") 
 )
 # Add the edge 
 add_edge!(
-    multilayerdigraph, # MultilayerDiGraph the edge will be added to
-    new_edge           # MultilayerVertex to add
+    multilayerdigraph, 
+    new_edge           
 )
-```
 
-Finally we illustrate how to compute a few multilayer metrics such as the global clustering coefficient, the overlay clustering coefficient, the multilayer eigenvector centrality, and the multilayer modularity as defined in @DeDomenico2013. 
-
-```julia
-# Compute the global clustering coefficient
+# Compute metrics
 multilayer_global_clustering_coefficient(multilayerdigraph) 
-# Compute the overlay clustering coefficient
 overlay_clustering_coefficient(multilayerdigraph)
-# Compute the multilayer eigenvector centrality 
 eigenvector_centrality(multilayerdigraph)
-# Compute the multilayer modularity 
 modularity(
     multilayerdigraph,
     rand([1, 2, 3, 4], length(nodes(multilayerdigraph)), length(multilayerdigraph.layers))
