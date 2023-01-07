@@ -15,8 +15,6 @@ const vertextype = Int64
 const _weighttype = Float64
 const min_vertices = 5
 const max_vertices = 7
-const min_edges = 1
-const max_edges = max_vertices * (max_vertices - 1)
 
 const multilayer_nodes = [Node("node_$i") for i in 1:max_vertices]
 const mvs_layers = MV.(multilayer_nodes)

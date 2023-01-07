@@ -36,11 +36,20 @@ metadata(e::AbstractMultilayerEdge)
 
 ```@docs
 Layer{T <: Integer, U <: Real, G <: AbstractGraph{T}}
-Layer(name::Symbol, vertices::Vector{<: MultilayerVertex}, edge_list::Vector{ <: MultilayerEdge}, null_graph::G, weighttype::Type{U};  default_vertex_metadata::Function = mv -> NamedTuple(), default_edge_weight::Function = (src, dst) -> one(U), default_edge_metadata::Function = (src, dst) -> NamedTuple()) where {T <: Integer, U <: Real,  G <: AbstractGraph{T}}
+Layer(
+    name::Symbol, 
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}}, 
+    edge_list::Union{Vector{<:MultilayerEdge},Vector{NTuple{2,MultilayerVertex{nothing}}}}, 
+    null_graph::G, 
+    weighttype::Type{U}; 
+    default_vertex_metadata::Function = mv -> NamedTuple(), 
+    default_edge_weight::Function = (src, dst) -> one(U), 
+    default_edge_metadata::Function = (src, dst) -> NamedTuple()
+) where {T <: Integer, U <: Real, G <: AbstractGraph{T}}
 
 Layer(
     name::Symbol,
-    vertices::Vector{ <: MultilayerVertex},
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64,
     null_graph::G,
     weighttype::Type{U};
@@ -226,8 +235,7 @@ mv_vertices(mg::AbstractMultilayerGraph)
 mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_neighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex)
-add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
-add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
+add_vertex!(mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool)
 rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
 rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) 

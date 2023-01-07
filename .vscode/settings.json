@@ -1,11 +1,14 @@
 {
     "cSpell.words": [
+        "abstractmatrixrrepresentation",
         "abstractmultilayerdigraph",
         "abstractmultilayergraph",
         "abstractmultilayerugraph",
         "abstractmultiplexdigraph",
         "abstractmultiplexugraph",
         "abstractsubgraph",
+        "abstracttensorrepresentation",
+        "abstractvertex",
         "add_vertex",
         "adjm",
         "agrs",
@@ -107,6 +110,7 @@
         "supraweightmatrix",
         "swdg",
         "tensoreig",
+        "tensorfacoriazations",
         "tensorsfactorizations",
         "testset",
         "traitdef",

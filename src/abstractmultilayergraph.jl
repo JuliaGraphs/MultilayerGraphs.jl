@@ -168,6 +168,21 @@ function set_metadata!(
     return true
 end
 
+"""
+    add_vertex!(mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool = true)
+
+Add MultilayerVertex `mv` to multilayer graph `mg`. If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error.
+"""
+function Graphs.add_vertex!(
+    mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool=true
+)
+    _node = node(mv)
+    if add_node && !has_node(mg, _node)
+        add_node!(mg, _node)
+    end
+    return add_vertex_specialized!(mg, mv)
+end
+
 # Edges
 """
     edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
@@ -281,7 +296,7 @@ function get_metadata(
 end
 
 """
-    get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertexph
+    get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)h
 
 Return the weight associated to the `MultilayerEdge` from `src` to `dst`.
 """

@@ -189,7 +189,7 @@ Return a random `Layer`.
 """
 function Layer(
     name::Symbol,
-    vertices::Vector{Union{V,N}},#Union{V, N},
+    vertices::Vector{Union{V,N}},
     ne::Int64,
     null_graph::G,
     weighttype::Type{U};
@@ -197,7 +197,7 @@ function Layer(
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
     allow_self_loops::Bool=false,
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T},V<:MultilayerVertex{nothing},N<:Node} #V <: Vector{MultilayerVertex{nothing}}, N <: Vector{Node}}
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T},V<:MultilayerVertex{nothing},N<:Node}
     _nv = length(vertices)
     @assert(
         length(unique(vertices)) == _nv, "The argument `vertices` must be a unique list"
@@ -213,7 +213,7 @@ function Layer(
 
     vertex_type = @isdefined(V) ? MultilayerVertex : Node
 
-    edge_list = NTuple{2,MultilayerVertex}[]  #MultilayerEdge
+    edge_list = NTuple{2,MultilayerVertex{nothing}}[]  #MultilayerEdge
     fadjlist = Dict{vertex_type,Vector{vertex_type}}()
 
     max_links_per_vertex = _nv - 1 # directed ? _nv - 1 : _nv-1
@@ -266,7 +266,6 @@ function Layer(
         default_edge_metadata=default_edge_metadata,
     )
 
-    edge_list = [rand() < 0.5 ? tup : reverse(tup) for tup in edge_list]
     layer = Layer(descriptor, vertices, edge_list)
 
     return layer

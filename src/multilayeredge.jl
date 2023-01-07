@@ -57,7 +57,9 @@ end
 Convert to `MultilayerEdge{Nothing}(src, dst, nothing, metadata)`.
 """
 function MultilayerEdge(
-    src::AbstractMultilayerVertex, dst::AbstractMultilayerVertex, metadata::NamedTuple
+    src::AbstractMultilayerVertex,
+    dst::AbstractMultilayerVertex,
+    metadata::Union{Tuple,NamedTuple},
 )
     return MultilayerEdge{Nothing}(src, dst, nothing, metadata)
 end
