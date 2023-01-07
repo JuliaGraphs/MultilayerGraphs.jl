@@ -219,7 +219,8 @@ overlay_clustering_coefficient(multilayerdigraph)
 eigenvector_centrality(multilayerdigraph)
 modularity(
     multilayerdigraph,
-    rand([1, 2, 3, 4], length(nodes(multilayerdigraph)), length(multilayerdigraph.layers))
+    rand([1, 2, 3, 4], length(nodes(multilayerdigraph)), 
+                       length(multilayerdigraph.layers))
 )
 ```
 
