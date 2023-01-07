@@ -55,7 +55,7 @@ Several theoretical frameworks have been proposed to formally subsume all instan
 
 Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks [@Cozzo2013; @Granell2013; @Massaro2014; @Estrada2014; @AzimiTafreshi2016; @Baggio2016; @DeDomenico2016; @Amato2017; @DeDomenico2017; @Pilosof2017; @deArruda2017; @Gosak2018; @SorianoPaos2018; @Timteo2018; @Buldu2018; @Lim2019; @Mangioni2020; @Aleta2020; @Aleta2022]. 
 
-We have chosen the [Julia language](https://julialang.org) for this software package because it is a modern, open-source, high-level, high-performance dynamic language for technical computing [@Bezanson2017]. At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the Julia language apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022]. 
+At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the [Julia language](https://julialang.org) [@Bezanson2017] apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022]. 
 
 # Main Features 
 
@@ -73,7 +73,7 @@ Alternatively, it is possible to construct a `Multilayer(Di)Graph` making use of
 
 `Multilayer(Di)Graph`s structure may be represented via dedicated `WeightTensor`, `MetadataTensor` and `SupraWeightMatrix` structs, all of which support indexing with `MultilayerVertex`s. Once a `Multilayer(Di)Graph` has been instantiated, its layers and interlayers can be accessed as their properties.
 
-For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the package [documentation](https://juliagraphs.org/MultilayerGraphs.jl).  
+For a more comprehensive exploration of the package features and functionalities we strongly recommend consulting the package [README](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/README.md) and [documentation](https://juliagraphs.org/MultilayerGraphs.jl).  
 
 # Installation and Usage 
 
