@@ -229,13 +229,14 @@ _nv, _ne = rand_nv_ne_layer(min_vertices,max_vertices)
 layer_vg = Layer(   :layer_vg,
                     sample(nodes_list, _nv, replace = false),
                     _ne,
-                    MultilayerGraphs.ValGraph{vertextype}(;edgeval_types=(Float64, String, ),
-                                            edgeval_init=(s, d) -> (s+d, "hi"),
-                                            vertexval_types=(String,),
-                                            vertexval_init=v -> ("$v",),),
-                    _weighttype;
-                    default_edge_metadata = (src,dst) -> (rand(), "from_$(src)_to_$(dst)",),
-                    default_vertex_metadata = mv -> ("This metadata had been generated via the default_vertex_metadata method",)
+                    MultilayerGraphs.ValGraph(SimpleGraph{vertextype}();
+                                                edgeval_types=(Float64, String, ),
+                                                edgeval_init=(s, d) -> (s+d, "hi"),
+                                                vertexval_types=(String,),
+                                                vertexval_init=v -> ("$v",),),
+                                                _weighttype;
+                                                default_edge_metadata = (src,dst) -> (rand(), "from_$(src)_to_$(dst)",),
+                                                default_vertex_metadata = mv -> ("This metadata had been generated via the default_vertex_metadata method",)
 )
 
 # Collect all layers in an ordered list. Order will be recorded when instantiating the multilayer graph.
@@ -274,8 +275,9 @@ end
 
 ## Utility function that returns a random number edges between its arguments `layer_1` and `layer_2`:
 function rand_ne_interlayer(layer_1, layer_2)
-    _nv = nv(layer_1) + nv(layer_2)
-    _ne = rand(_nv:(_nv*(_nv-1)) ÷ 2 )
+    nv_1 = nv(layer_1)
+    nv_2 = nv(layer_2)
+    _ne = rand(1: (nv_1 * nv_2 - 1) )
     return _ne
 end
 ```
@@ -302,7 +304,7 @@ interlayer_sg_swg = Interlayer( layer_sg,                  # The first layer to 
                                 layer_swg,                 # The second layer to be connected
                                 _ne,                       # The number of edges to randomly generate
                                 SimpleGraph{vertextype}(), # The underlying graph, passed as a null graph
-                                name = :random_interlayer  # The name of the interlayer. We will be able to access it as a property of the multilayer graph via its name. This kwarg's default value is given by a combination of the two layers' names.
+                                interlayer_name = :random_interlayer  # The name of the interlayer. We will be able to access it as a property of the multilayer graph via its name. This kwarg's default value is given by a combination of the two layers' names.
 )
 # Define a weighted `Interlayer`
 _ne = rand_ne_interlayer(layer_swg, layer_mg)
@@ -324,7 +326,7 @@ interlayer_mg_vg = Interlayer(  layer_mg,
 # Define an `Interlayer` with an underlying `ValGraph` from `SimpleValueGraphs.jl`, with diagonal couplings only:
 interlayer_multiplex_sg_mg = multiplex_interlayer(  layer_sg,
                                                     layer_mg,
-                                                    ValGraph{vertextype}(; edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)"));
+                                                    ValGraph(SimpleGraph{vertextype}(); edgeval_types=(from_to = String,), edgeval_init=(s, d) -> (from_to = "from_$(s)_to_$(d)"));
                                                     default_edge_metadata = (x,y) -> (from_to = "from_$(src)_to_$(dst)",)
 )
 # Finally, An `Interlayer` with no couplings (an "empty" interlayer):
@@ -441,7 +443,7 @@ interlayer_sg_swg_vertices = mv_vertices(interlayer_sg_swg)
  MV(Node("node_3"), :layer_swg, NamedTuple())
 ```
 
-The [`vertices(subgraph::AbstractSubGraph)`](@ref) command would return an internal representation of the `MultilayerVertex`s. This method, together with others, serves to make `MultilayerGraphs.jl` compatible with the Graphs.jl ecosystem, but it is not meant to be called by the end user. It is, anyway, thought to be used by developers who wish to interface their packages with `MultilayerGraphs.jl` just as with other packages of the `Graphs.jl` ecosystem: as said above, a developer-oriented guide will be compiled if there is the need, although docstrings are already completed.
+The [`vertices(subgraph::AbstractSubGraph)`](@ref) command would return an internal representation of the `MultilayerVertex`s (that of type `vertextype`). This method, together with others, serves to make `MultilayerGraphs.jl` compatible with the Graphs.jl ecosystem, but it is not meant to be called by the end user. It is, anyway, thought to be used by developers who wish to interface their packages with `MultilayerGraphs.jl` just as with other packages of the `Graphs.jl` ecosystem: as said above, a developer-oriented guide will be compiled if there is the need, although docstrings are already completed.
 
 To add a vertex, simply use `add_vertex!`. Let us define a vertex with metadata to add. Since nodes may not be represented more than once in layers, we have to define a new node too:
 
@@ -649,7 +651,7 @@ multilayergraph = MultilayerGraph(  layers,                                     
                                     interlayers;                                            # The list of interlayers specified by the user. Note that the user does not need to specify all interlayers, as the unspecified ones will be automatically constructed using the indications given by the `default_interlayers_null_graph` and `default_interlayers_structure` keywords.
                                     default_interlayers_null_graph = SimpleGraph{vertextype}(), # Sets the underlying graph for the interlayers that are to be automatically specified.  Defaults to `SimpleGraph{T}()`, where `T` is the `T` of all the `layers` and `interlayers`. See the `Layer` constructors for more information.
                                     default_interlayers_structure = "multiplex" # Sets the structure of the interlayers that are to be automatically specified. May be "multiplex" for diagonally coupled interlayers, or "empty" for empty interlayers (no edges).  "multiplex". See the `Interlayer` constructors for more information.
-);
+)
 ```
 ```nothing
 `MultilayerGraph` with vertex type `Int64` and weight type `Float64`.
@@ -723,7 +725,7 @@ end
 configuration_multilayergraph = MultilayerGraph(empty_layers, empty_interlayers, truncated(Normal(10), 0.0, 20.0));
 ```
 
-Note that this is not an implementation of a fully-fledged configuration model, which would require to be able to specify a degree distribution for every dimension of multiplexity. Please refer to [Future Developments](@ref).
+Note that this is not an implementation of a fully-fledged configuration model, which would require to be able to specify a degree distribution for every dimension of multiplexity. Moreover, it stil lacks the abilty to specify a minimum discrepancy (w.r.t. a yet-to-be-chosen metric) between the empirical distributions of the sampled sequence and the provided thorietical disribution. Please refer to [Future Developments](@ref).
 
 There is a similar constructor for `MultilayerDiGraph` which requires both the indegree distribution and the outdegree distribution. Anyway due to current performance limitations in the graph realization algorithms, it is suggested to provide two "similar" distributions (similar mean or location parameter, similar variance or shape parameter), in order not to incur in lengthy computational times.  
 
@@ -790,7 +792,7 @@ One may of course add layers on the fly:
 # Instantiate a new Layer
 _nv, _ne = rand_nv_ne_layer(min_vertices,max_vertices)
 new_layer = Layer(  :new_layer,
-                    sample(multilayervertices, _nv, replace = false),
+                    sample(nodes_list, _nv, replace = false),
                     _ne,
                     SimpleGraph{vertextype}(),
                     _weighttype
@@ -811,7 +813,7 @@ has_layer(multilayergraph, :new_layer)
 true
 ```
 
-The [`add_layer!`](@ref) function will automatically instantiate all the `Interlayer`s between the newly added `Layer` and the `Layer`s already present in the multilayer graph.
+The [`add_layer!`](@ref) function will automatically instantiate all the `Interlayer`s between the newly added `Layer` and the `Layer`s already present in the multilayer graph, according to its kwargs `default_interlayers_null_graph` and `default_interlayers_structure`.
 
 If you wish to manually specify an interlayer, just do:
 
@@ -822,7 +824,7 @@ new_interlayer = Interlayer(    layer_sg,
                                 new_layer,               
                                 _ne,                     
                                 SimpleGraph{vertextype}(),
-                                name = :new_interlayer
+                                interlayer_name = :new_interlayer
 )
 
 # Modify an existing interlayer with the latter i.e. specify the latter interlayer:
@@ -842,7 +844,12 @@ Suppose that, after some modifications of `multilayergraph`, you would like to i
 multilayergraph.new_layer
 ```
 ```nothing
-Layer{Int64, Float64, SimpleGraph{Int64}}(LayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_layer, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#54#60"(), MultilayerGraphs.var"#55#61"(), MultilayerGraphs.var"#56#62"()), SimpleGraph{Int64}(10, [[3, 5, 7], [4, 5, 6], [1, 6], [2, 7], [1, 2, 6], [2, 3, 5, 7], [1, 4, 6]]), Bijection{Int64,MultilayerVertex{:new_layer}} (with 7 pairs))
+Layer   new_layer
+underlying_graph: SimpleGraph{Int64}
+vertex type: Int64
+weight type: Float64
+nv = 7
+ne = 11
 ```
 
 ```julia
@@ -850,7 +857,14 @@ Layer{Int64, Float64, SimpleGraph{Int64}}(LayerDescriptor{Int64, Float64, Simple
 multilayergraph.new_interlayer
 ```
 ```nothing
-Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer, :layer_sg, :new_layer, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(19, [[7, 12], [7, 8, 10, 11, 13], [7, 10], [7, 13], [7, 9, 11, 13], [7, 8, 12, 13], [1, 2, 3, 4, 5, 6], [2, 6], [5], [2, 3], [2, 5], [1, 6], [2, 4, 5, 6]]), Bijection{Int64,MultilayerVertex} (with 13 pairs))
+Interlayer      new_interlayer
+layer_1: layer_sg
+layer_2: new_layer
+underlying graph: SimpleGraph{Int64}
+vertex type : Int64
+weight type : Float64
+nv : 14
+ne : 46
 ```
 
 `Interlayer`s may also be accessed by remembering the names of the `Layer`s they connect:
@@ -860,12 +874,19 @@ Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float
 get_interlayer(multilayergraph, :new_layer, :layer_sg )
 ```
 ```nothing
-Interlayer{Int64, Float64, SimpleGraph{Int64}}(InterlayerDescriptor{Int64, Float64, SimpleGraph{Int64}}(:new_interlayer_rev, :new_layer, :layer_sg, SimpleGraph{Int64}(0, Vector{Int64}[]), MultilayerGraphs.var"#92#96"(), MultilayerGraphs.var"#93#97"(), false), SimpleGraph{Int64}(19, [[8, 9, 10, 11, 12, 13], [9, 13], [12], [9, 10], [9, 12], [8, 13], [9, 11, 12, 13], [1, 6], [1, 2, 4, 5, 7], [1, 4], [1, 7], [1, 3, 5, 7], [1, 2, 6, 7]]), Bijection{Int64,MultilayerVertex} (with 13 pairs))
+Interlayer      new_interlayer_rev
+layer_1: new_layer
+layer_2: layer_sg
+underlying graph: SimpleGraph{Int64}
+vertex type : Int64
+weight type : Float64
+nv : 14
+ne : 46
 ```
 
 **NB:** Although the interlayer from an arbitrary `layer_1` to `layer_2` is the same mathematical object as the interlayer from `layer_2` to `layer_1`, their representations as `Interlayer`s differ in the internals, and most notably in the order of the vertices. The `Interlayer` from `layer_1` to `layer_2` orders its vertices so that the `MultilayerVertex`s of `layer_1` (in the order they were in `layer_1` when the `Interlayer` was instantiated) come before the `MultilayerVertex`s of `layer_2` (in the order they were in `layer_2` when the `Interlayer` was instantiated).
 
-When calling `get_interlayer(multilayergraph, :layer_1, :layer_2)` it is returned the `Interlayer` from `layer_1` to `layer_2`. If the Interlayer from `layer_2` to `layer_1` was manually specified or automatically generated during  during the instantiation of the multilayer graph with name, say, `"some_interlayer"`, then the returned `Interlayer` will be named `"some_interlayer_rev"`.
+When calling `get_interlayer(multilayergraph, :layer_1, :layer_2)` it is returned the `Interlayer` from `layer_1` to `layer_2`. If the Interlayer from `layer_2` to `layer_1` was manually specified or automatically generated during the instantiation of the multilayer graph with name, say, `"some_interlayer"`, then the returned `Interlayer` will be named `"some_interlayer_rev"`.
 
 To remove a layer:
 
