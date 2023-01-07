@@ -83,7 +83,7 @@ To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pr
 pkg> add MultilayerGraphs
 ```
 
-In the following code chunks we synthetically illustrate: 
+In the following code chunk we synthetically illustrate: 
 - how to define **layers** and **interlayers** with a variety of constructors and underlying graphs;
 - how to construct **directed multilayer graph** with those layers and interlayers;
 - how to add nodes, vertices and edges to the multilayer graph;
