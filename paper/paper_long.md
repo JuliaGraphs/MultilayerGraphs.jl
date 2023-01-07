@@ -136,7 +136,7 @@ default_edge_metadata = (s, d) -> (rand(),)                    # Edge metadata
 layer_simple_directed_value = Layer(                           # Layer constructor
     :layer_simple_directed_value,                              # Layer name
     sample(node_list, n_vertices; replace=false), # Nodes represented in the layer
-    n_edges,                                      # Number of randomly distributed edges
+    n_edges,                                # Number of randomly distributed edges
     ValDiGraph(                                                
         SimpleDiGraph{Int64}(); 
         vertexval_types=(String,),
@@ -169,7 +169,7 @@ interlayer_simple_directed = interlayer_simpledigraph( # Interlayer constructor
     n_edges                                            # Number of edges 
 )
 
-## The interlayer exports a more flexible constructor too. 
+# The interlayer exports a more flexible constructor too
 n_vertices_1 = nv(layer_simple_directed_weighted)   # Number of vertices of layer 1
 n_vertices_2 = nv(layer_simple_directed_value)      # Number of vertices of layer 2
 n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1)) # Number of interlayer edges 
