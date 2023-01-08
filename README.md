@@ -179,7 +179,7 @@ multilayerdigraph = MultilayerDiGraph( # Constructor
 multilayerdigraph.layer_simplevaldigraph
 ```
 
-Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph. The user may add vertices that do or do not represent nodes which are already present in the multilayergraph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph. The vertex-level metadata are effectively considered only if the graph underlying the relevant layer or interlayer supports them, otherwise they are discarded. The same holds for edge-level metadata and/or weight. 
+Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph. The user may add vertices that do or do not represent nodes which are already present in the multilayer graph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph. The vertex-level metadata are effectively considered only if the graph underlying the relevant layer or interlayer supports them, otherwise they are discarded. The same holds for edge-level metadata and/or weight. 
 
 ```julia
 # Create a node 
