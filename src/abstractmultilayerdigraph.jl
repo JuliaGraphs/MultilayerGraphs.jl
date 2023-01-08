@@ -133,6 +133,70 @@ function Graphs.has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerDi
     end
 end
 
+
+# Overloads that make AbstractMultilayerDiGraph an extension of Graphs.jl. These are all well-inferred.
+"""
+    edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
+
+Return an list of all the edges of `mg`.
+"""
+function Graphs.edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
+    edge_list = MultilayerEdge{U}[]
+
+    for (_src_v, halfedges) in enumerate(mg.fadjlist)
+        src_v = T(_src_v)
+        src_V = get_rich_mv(mg, src_v)
+
+        for halfedge in halfedges
+            dst_v = get_v(mg, vertex(halfedge))
+
+            dst_V = get_rich_mv(mg, dst_v)
+            push!(edge_list, ME(src_V, dst_V, weight(halfedge), metadata(halfedge)))
+        end
+    end
+    # Remove duplicate self loops and return
+    return edge_list
+end
+
+
+"""
+    add_edge_directed!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+
+Add MultilayerEdge `me` to the AbstractMultilayerDiGraph `mg`. Return true if succeeds, false otherwise.
+"""
+function add_edge_directed!(
+    mg::M, me::E
+) where {T,U,M<:AbstractMultilayerDiGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
+    _src = get_bare_mv(src(me))
+    _dst = get_bare_mv(dst(me))
+    has_vertex(mg, _src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, _dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+
+    # Add edge to `edge_dict`
+    src_V_idx = get_v(mg, _src)
+    dst_V_idx = get_v(mg, _dst)
+
+    _weight = isnothing(weight(me)) ? one(U) : weight(me)
+    _metadata = metadata(me)
+
+    if !has_edge(mg, _src, _dst)
+        push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
+        push!(mg.badjlist[dst_V_idx], HalfEdge(_src, _weight, _metadata))
+    else
+        @debug "An edge between $(src(me)) and $(dst(me)) already exists"  
+        return false
+    end
+    #=     else
+            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
+        end =#
+        
+
+    return true
+end
+
+
 """
     set_weight!(mg::M, src::MultilayerVertex{L1}, dst::MultilayerVertex{L2}, weight::U) where {L1 <: Symbol, L2 <: Symbol, T,U, M <: AbstractMultilayerGraph{T,U}}
 
@@ -190,30 +254,6 @@ function set_metadata!(
     halfedge_to_dst = halfedges_to_dst[findfirst(he -> vertex(he) == src, halfedges_to_dst)]
     halfedge_to_dst.metadata = metadata
     return true
-end
-
-# Overloads that make AbstractMultilayerDiGraph an extension of Graphs.jl. These are all well-inferred.
-"""
-    edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
-
-Return an list of all the edges of `mg`.
-"""
-function Graphs.edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
-    edge_list = MultilayerEdge{U}[]
-
-    for (_src_v, halfedges) in enumerate(mg.fadjlist)
-        src_v = T(_src_v)
-        src_V = get_rich_mv(mg, src_v)
-
-        for halfedge in halfedges
-            dst_v = get_v(mg, vertex(halfedge))
-
-            dst_V = get_rich_mv(mg, dst_v)
-            push!(edge_list, ME(src_V, dst_V, weight(halfedge), metadata(halfedge)))
-        end
-    end
-    # Remove duplicate self loops and return
-    return edge_list
 end
 
 # Layers and Interlayers

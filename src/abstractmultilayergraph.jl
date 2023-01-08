@@ -27,6 +27,17 @@
     AbstractMultilayerGraph{T <: Integer, U <: Real} <: AbstractGraph{T}
 
 An abstract type for multilayer graphs. It is a subtype of AbstractGraph and its concrete subtypes may extend Graphs.jl.
+
+Its concrete subtypes must have the following fields:
+
+- `idx_N_associations::Bijection{Int64,Node}`:;
+- `v_V_associations::Bijection{T,<:MultilayerVertex}`:;
+- `v_metadata_dict::Dict{T,<:Union{<:Tuple,<:NamedTuple}}`:;
+- `layers`: an indexable collection of `Layer`s.
+- `interlayers`:a collection of `Interlayer`s;
+- `layers_names`: a collection of the names of the layers.
+- `subgraphs_names`: a collection of the names of all the subgraphs.
+- `fadjlist::Vector{Vector{HalfEdge{<:MultilayerVertex,<:Union{Nothing,U}}}}`: the forward adjacency list.
 """
 abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 
@@ -55,17 +66,28 @@ Return true if `n` is a node of `mg`.
 has_node(mg::AbstractMultilayerGraph, n::Node) = n in image(mg.idx_N_associations)
 
 """
-    add_node!(mg::AbstractMultilayerGraph, n::Node)
+    add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
 
-Add node `n` to `mg`. Return true if succeeds.
+Add node `n` to `mg`. Return true if succeeds. Additionally, add a corresponding vertex to all layers whose name is listed in `add_vertex_to_layers`. If `add_vertex_to_layers == :all`, then a corresponding vertex is added to all layers.
 """
-function add_node!(mg::AbstractMultilayerGraph, n::Node)
+function add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
     !has_node(mg, n) || return false
 
     maximum_idx =
         isempty(domain(mg.idx_N_associations)) ? 0 : maximum(domain(mg.idx_N_associations))
 
     mg.idx_N_associations[maximum_idx + 1] = n
+
+    if add_vertex_to_layers == :all
+        for layer_name in mg.layers_names
+            add_vertex!(mg, MV(n, layer_name))
+        end
+    elseif add_vertex_to_layers isa Vector{Symbol}
+        for layer_name in add_vertex_to_layers
+            add_vertex!(mg, MV(n, layer_name))
+        end
+    end
+
 
     return true
 end
@@ -249,6 +271,13 @@ function Graphs.add_edge!(
 ) where {T,U,M<:AbstractMultilayerGraph{T,U},V<:MultilayerVertex}
     return add_edge!(mg, ME(src, dst, weight, metadata))
 end
+
+"""
+    add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+
+Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
+"""
+Graphs.add_edge!( mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = add_edge_specialized!(mg, me)
 
 """
     rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}}

@@ -1,77 +1,64 @@
 """
-    MultilayerGraph{T, U, G <: AbstractGraph{T}} <: AbstractMultilayerGraph{T,U}
+    MultiplexGraph{T, U, G <: AbstractGraph{T}} <: AbstractMultilayerGraph{T,U}
 
 A concrete type that can represent a general multilayer graph. Its internal fields aren't meant to be modified by the user. Please prefer the provided API.
 """
-mutable struct MultilayerGraph{T,U} <: AbstractMultilayerUGraph{T,U}
+mutable struct MultiplexGraph{T,U} <: AbstractMultilayerUGraph{T,U}
     layers::Vector{LayerDescriptor{T,U}} # vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
     interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}} # the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all undirected.
     v_V_associations::Bijection{T,<:MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
     idx_N_associations::Bijection{Int64,Node} # A Bijection from Bijections.jl that associates Int64 to `Node`s.
-    fadjlist::Vector{Vector{HalfEdge{<:MultilayerVertex,<:Union{Nothing,U}}}} # the forward adjacency list of the MultilayerGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that originate from `v_V_associations[i]`.
+    fadjlist::Vector{Vector{HalfEdge{<:MultilayerVertex,<:Union{Nothing,U}}}} # the forward adjacency list of the MultiplexGraph. It is a vector of vectors of `HalfEdge`s. Its i-th element are the `HalfEdge`s that originate from `v_V_associations[i]`.
     v_metadata_dict::Dict{T,<:Union{<:Tuple,<:NamedTuple}} #  A Dictionary that associates numeric vertices to their metadata.
 end
 
 # Traits
-@traitimpl IsWeighted{MultilayerGraph}
-@traitimpl IsMeta{MultilayerGraph}
+@traitimpl IsWeighted{MultiplexGraph}
+@traitimpl IsMeta{MultiplexGraph}
 
 # Constructors
 """
-    MultilayerGraph(
-        layers::Vector{<:Layer{T,U}},
-        specified_interlayers::Vector{<:Interlayer{T,U}};
-        default_interlayers_null_graph::H = SimpleGraph{T}(),
-        default_interlayers_structure::String="multiplex",
+    MultiplexGraph(
+        layers::Vector{<:Layer{T,U}};
+        default_interlayers_null_graph::H = SimpleGraph{T}().
     ) where {T,U, H <: AbstractGraph{T}}   
 
-Construct a MultilayerGraph with layers given by `layers`. The interlayers will be constructed by default according to `default_interlayer` where only `"multiplex"` and `"empty"` are allowed, except for those specified in `specified_interlayers`. `default_interlayer = "multiplex"` will imply that unspecified interlayers will have only diagonal couplings, while  `default_interlayer = "multiplex"` will produced interlayers that have no couplings.
+Construct an undirected multiplex graph. The interlayers will have underlying graph type `default_interlayers_null_graph` and of course have only diagonal couplings.
 
 # ARGUMENTS
 
 - `layers::Vector{<:Layer{T,U}}`: The (ordered) list of layers the multilayer graph will have;
-- `specified_interlayers::Vector{<:Interlayer{T,U}}`: The list of interlayers specified by the user. Note that the user does not need to specify all interlayers, as the unspecified ones will be automatically constructed using the indications given by the `default_interlayers_null_graph` and `default_interlayers_structure` keywords;
 - `default_interlayers_null_graph::H = SimpleGraph{T}()`: Sets the underlying graph for the interlayers that are to be automatically specified. Defaults to `SimpleGraph{T}()`. See the `Interlayer` constructors for more information;
-- `default_interlayers_structure::String = "multiplex"`: Sets the structure of the interlayers that are to be automatically specified. May be "multiplex" for diagonally coupled interlayers, or "empty" for empty interlayers (no edges).  "multiplex". See the `Interlayer` constructors for more information.
 """
-function MultilayerGraph(
-    layers::Vector{<:Layer{T,U}},
-    specified_interlayers::Vector{<:Interlayer{T,U}};
-    default_interlayers_null_graph::H=SimpleGraph{T}(),
-    default_interlayers_structure::String="multiplex",
+function MultiplexGraph(
+    layers::Vector{<:Layer{T,U}};
+    default_interlayers_null_graph::H=SimpleGraph{T}()
 ) where {T,U,H<:AbstractGraph{T}}
-    multilayergraph = MultilayerGraph(T, U)
+    multilayergraph = MultiplexGraph(T, U)
 
     for layer in deepcopy(layers)
         add_layer!(
             multilayergraph,
             layer;
             default_interlayers_null_graph=default_interlayers_null_graph,
-            default_interlayers_structure=default_interlayers_structure,
+            default_interlayers_structure="multiplex",
         )
-    end
-
-    if !isnothing(specified_interlayers)
-        for interlayer in deepcopy(specified_interlayers)
-            specify_interlayer!(multilayergraph, interlayer)
-        end
     end
 
     return multilayergraph
 end
 
 """
-    MultilayerGraph(
+    MultiplexGraph(
         empty_layers::Vector{<:Layer{T,U}},
-        empty_interlayers::Vector{<:Interlayer{T,U}},
         degree_distribution::UnivariateDistribution;
         allow_self_loops::Bool = false,
         default_interlayers_null_graph::H = SimpleGraph{T}(),
     ) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
 
-Return a random MultilayerGraph that has `empty_layers` as layers and `empty_interlayers` as specified interlayers. `empty_layers` and `empty_interlayers` must respectively be `Layer`s and `Interlayer`s with whatever number of vertices but no edges (if any edge is found, an error is thrown). The  degree distribution of the returned random `MultilayerGraph` is given by `degree_distribution`, which must have a support that only contains positive numbers for obvious reasons. `allow_self_loops = true` allows for self loops t be present in the final random MultilayerGraph. `default_interlayers_null_graph` controls the `null_graph` argument passed to automatically-generated interlayers. 
+Return a random MultiplexGraph that has `empty_layers` as layers and `empty_interlayers` as specified interlayers. `empty_layers` and `empty_interlayers` must respectively be `Layer`s and `Interlayer`s with whatever number of vertices but no edges (if any edge is found, an error is thrown). The  degree distribution of the returned random `MultiplexGraph` is given by `degree_distribution`, which must have a support that only contains positive numbers for obvious reasons. `allow_self_loops = true` allows for self loops t be present in the final random MultiplexGraph. `default_interlayers_null_graph` controls the `null_graph` argument passed to automatically-generated interlayers. 
 """
-function MultilayerGraph(
+function MultiplexGraph(
     empty_layers::Vector{<:Layer{T,U}},
     empty_interlayers::Vector{<:Interlayer{T,U}},
     degree_distribution::UnivariateDistribution;
@@ -84,7 +71,7 @@ function MultilayerGraph(
         ),
     )
 
-    empty_multilayergraph = MultilayerGraph(
+    empty_multilayergraph = MultiplexGraph(
         empty_layers,
         empty_interlayers;
         default_interlayers_null_graph=default_interlayers_null_graph,
@@ -95,21 +82,21 @@ function MultilayerGraph(
 
     degree_sequence = sample_graphical_degree_sequence(degree_distribution, n)
 
-    return MultilayerGraph(
+    return MultiplexGraph(
         empty_multilayergraph, degree_sequence; allow_self_loops=false, perform_checks=false
     )
 end
 
 """
-    MultilayerGraph(empty_multilayergraph::MultilayerGraph{T,U},
+    MultiplexGraph(empty_multilayergraph::MultiplexGraph{T,U},
     degree_sequence::Vector{<:Integer}; 
     allow_self_loops::Bool = false,
     perform_checks::Bool = false) where {T,U}
 
-Return a random `MultilayerGraph` with degree sequence `degree_sequence`. `allow_self_loops` controls the presence of self-loops, while if `perform_checks` is true, the `degree_sequence` os checked to be graphical.
+Return a random `MultiplexGraph` with degree sequence `degree_sequence`. `allow_self_loops` controls the presence of self-loops, while if `perform_checks` is true, the `degree_sequence` os checked to be graphical.
 """
-function MultilayerGraph(
-    empty_multilayergraph::MultilayerGraph{T,U},
+function MultiplexGraph(
+    empty_multilayergraph::MultiplexGraph{T,U},
     degree_sequence::Vector{<:Integer};
     allow_self_loops::Bool=false,
     perform_checks::Bool=true,
@@ -121,7 +108,7 @@ function MultilayerGraph(
 
     ne(_multilayergraph) == 0 || throw(
         ErrorException(
-            "The `empty_multilayergraph` argument should be an empty MultilayerGraph. Found $(ne(_multilayergraph)) edges.",
+            "The `empty_multilayergraph` argument should be an empty MultiplexGraph. Found $(ne(_multilayergraph)) edges.",
         ),
     )
 
@@ -129,7 +116,7 @@ function MultilayerGraph(
         n = nv(_multilayergraph)
         n == length(degree_sequence) || throw(
             ErrorException(
-                "The number of vertices of the provided empty MultilayerGraph does not match the length of the degree sequence. Found $(nv(_multilayergraph)) and $(length(degree_sequence)).",
+                "The number of vertices of the provided empty MultiplexGraph does not match the length of the degree sequence. Found $(nv(_multilayergraph)) and $(length(degree_sequence)).",
             ),
         )
 
@@ -155,12 +142,12 @@ function MultilayerGraph(
 end
 
 """
-    MultilayerGraph(T::Type{<:Number}, U::Type{<:Number})
+    MultiplexGraph(T::Type{<:Number}, U::Type{<:Number})
 
-Return a null MultilayerGraph with with vertex type `T` weighttype `U`. Use this constructor and then add Layers and Interlayers via the `add_layer!` and `specify_interlayer!` methods.
+Return a null MultiplexGraph with with vertex type `T` weighttype `U`. Use this constructor and then add Layers and Interlayers via the `add_layer!` and `specify_interlayer!` methods.
 """
-function MultilayerGraph(T::Type{<:Number}, U::Type{<:Number})
-    return MultilayerGraph{T,U}(
+function MultiplexGraph(T::Type{<:Number}, U::Type{<:Number})
+    return MultiplexGraph{T,U}(
         LayerDescriptor{T,U}[],
         OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}}(),
         Bijection{T,MultilayerVertex}(),
@@ -171,16 +158,16 @@ function MultilayerGraph(T::Type{<:Number}, U::Type{<:Number})
 end
 
 """
-    MultilayerGraph(layers::Vector{<:Layer{T,U}}; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String="multiplex") where {T,U, H <: AbstractGraph{T}}
+    MultiplexGraph(layers::Vector{<:Layer{T,U}}; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String="multiplex") where {T,U, H <: AbstractGraph{T}}
 
-Construct a MultilayerGraph with layers `layers` and all interlayers with structure `default_interlayers_structure` (only "multiplex" and "empty" are allowed) and type `default_interlayers_null_graph`.
+Construct a MultiplexGraph with layers `layers` and all interlayers with structure `default_interlayers_structure` (only "multiplex" and "empty" are allowed) and type `default_interlayers_null_graph`.
 """
-function MultilayerGraph(
+function MultiplexGraph(
     layers::Vector{<:Layer{T,U}};
     default_interlayers_null_graph::H=SimpleGraph{T}(),
     default_interlayers_structure::String="multiplex",
 ) where {T,U,H<:AbstractGraph{T}}
-    return MultilayerGraph(
+    return MultiplexGraph(
         layers,
         Interlayer{T,U}[];
         default_interlayers_null_graph=default_interlayers_null_graph,
@@ -188,8 +175,8 @@ function MultilayerGraph(
     )
 end
 
-# General MultilayerGraph Utilities
-fadjlist(mg::MultilayerGraph) = mg.fadjlist
+# General MultiplexGraph Utilities
+fadjlist(mg::MultiplexGraph) = mg.fadjlist
 
 # Nodes
 
@@ -200,9 +187,9 @@ fadjlist(mg::MultilayerGraph) = mg.fadjlist
 """
     add_edge_specialized!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 
-Add MultilayerEdge `me` to the MultilayerGraph `mg`. Return true if succeeds, false otherwise.
+Add MultilayerEdge `me` to the MultiplexGraph `mg`. Return true if succeeds, false otherwise.
 """
-add_edge_specialized!(mg::M, me::E) where {T,U,M<:MultilayerGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}} = add_edge_undirected!(mg, me)
+add_edge_specialized!(mg::M, me::E) where {T,U,M<:MultiplexGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}} = add_edge_undirected!(mg, me)
 
 
 
@@ -255,9 +242,9 @@ end
 
 # Base overloads
 """
-    Base.getproperty(mg::M, f::Symbol) where { M <: MultilayerGraph }
+    Base.getproperty(mg::M, f::Symbol) where { M <: MultiplexGraph }
 """
-function Base.getproperty(mg::MultilayerGraph, f::Symbol)#  where {T,U,M<:AbstractMultilayerUGraph{T,U}}
+function Base.getproperty(mg::MultiplexGraph, f::Symbol)#  where {T,U,M<:AbstractMultilayerUGraph{T,U}}
     if f in (
         :v_V_associations,
         :fadjlist,

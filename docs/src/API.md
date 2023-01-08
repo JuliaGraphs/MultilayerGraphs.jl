@@ -245,8 +245,7 @@ edges(mg::AbstractMultilayerUGraph)
 edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
 edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
 add_edge!(mg::M, src::V, dst::V; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}, V <: MultilayerVertex}
-add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
-add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
 rem_edge!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
@@ -422,6 +421,7 @@ neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerUGraph{T}}
 has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerDiGraph{T}}
+add_edge!(mg::M,src::T,dst::T;weight::Union{Nothing,U}=one(U),metadata::Union{Tuple,NamedTuple}=NamedTuple(),) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}
 AbstractMultilayerUGraph{T,U}
 AbstractMultilayerDiGraph{T,U}

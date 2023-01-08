@@ -16,6 +16,7 @@ end
 # Traits
 @traitimpl IsWeighted{MultilayerDiGraph}
 @traitimpl IsDirected{MultilayerDiGraph}
+@traitimpl IsMeta{MultilayerDiGraph}
 
 # Constructors
 """
@@ -214,40 +215,11 @@ badjlist(mg::MultilayerDiGraph) = mg.badjlist
 
 # Edges    
 """
-    add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+    add_edge_specialized!(mg::M, me::E) where {T,U, M <: MultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 
 Add MultilayerEdge `me` to the MultilayerDiGraph `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.add_edge!(
-    mg::M, me::E
-) where {T,U,M<:AbstractMultilayerDiGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
-    _src = get_bare_mv(src(me))
-    _dst = get_bare_mv(dst(me))
-    has_vertex(mg, _src) ||
-        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, _dst) ||
-        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
-
-    # Add edge to `edge_dict`
-    src_V_idx = get_v(mg, _src)
-    dst_V_idx = get_v(mg, _dst)
-
-    _weight = isnothing(weight(me)) ? one(U) : weight(me)
-    _metadata = metadata(me)
-
-    if !has_edge(mg, _src, _dst)
-        push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-        push!(mg.badjlist[dst_V_idx], HalfEdge(_src, _weight, _metadata))
-    else
-        return false
-    end
-    #=     else
-            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-        end =#
-
-    return true
-end
-
+add_edge_specialized!(mg::M, me::E) where {T,U,M<:MultilayerDiGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}} = add_edge_directed!(mg, me)
 """
     rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
