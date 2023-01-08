@@ -53,10 +53,10 @@ Here we are going to synthetically illustrate some of the main features of Multi
 Let's begin by importing the necessary dependencies and setting the relevant constants.
 
 ```julia
+# Import necessary dependencies
 using Distributions, Graphs, SimpleValueGraphs
 using MultilayerGraphs
-
-# Set the number of nodes: objects represented by multilayer vertices
+# Set the number of nodes
 const n_nodes = 100 
 # Create a list of nodes
 const node_list = [Node("node_$i") for i in 1:n_nodes]
@@ -69,6 +69,7 @@ We will instantiate layers and interlayers with randomly-selected edges and vert
 Here we define a layer with an underlying simple directed graph using a graph generator-like (or "configuration model"-like) constructor which allows us to specify both the **indegree** and the **outdegree sequences**. Before instantiating each layer we sample the number of its vertices and, optionally, of its edges.
 
 ```julia
+# Create a simple directed layer
 n_vertices = rand(1:100)                          # Number of vertices 
 layer_simple_directed = layer_simpledigraph(      # Layer constructor 
     :layer_simple_directed,                       # Layer name
@@ -81,6 +82,7 @@ layer_simple_directed = layer_simpledigraph(      # Layer constructor
 Then we define a layer with an underlying simple weighted directed graph. This is another kind of constructor that allows the user to specify the number of edges to be randomly distributed among vertices. 
 
 ```julia
+# Create a simple directed weighted layer
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
 n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
 layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer constructor 
@@ -94,6 +96,7 @@ layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer construct
 Similar constructors, more flexible at the cost of ease of use, enable a finer tuning. The constructor we use below should be necessary only in rare circumstances, e.g. if the equivalent simplified constructor `layer_simplevaldigraph` is not able to infer the correct return types of `default_vertex_metadata` or `default_edge_metadata`, or to use and underlying graph structure that isn't currently supported.
 
 ```julia
+# Create a simple directed value layer
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
 n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
 default_vertex_metadata = v -> ("vertex_$(v)_metadata")        # Vertex metadata 
@@ -125,6 +128,7 @@ The interface of interlayers is very similar to that of layers. It is very impor
 Here we define an interlayer with an underlying simple directed graph.
 
 ```julia
+# Create a simple directed interlayer
 n_vertices_1 = nv(layer_simple_directed)               # Number of vertices of layer 1
 n_vertices_2 = nv(layer_simple_directed_weighted)      # Number of vertices of layer 2
 n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1))    # Number of interlayer edges 
@@ -138,6 +142,7 @@ interlayer_simple_directed = interlayer_simpledigraph( # Interlayer constructor
 The interlayer exports a more flexible constructor too.
 
 ```julia
+# Create a simple directed meta interlayer 
 n_vertices_1 = nv(layer_simple_directed_weighted)   # Number of vertices of layer 1
 n_vertices_2 = nv(layer_simple_directed_value)      # Number of vertices of layer 2
 n_edges = rand(1:(n_vertices_1 * n_vertices_2 - 1)) # Number of interlayer edges 
@@ -159,6 +164,7 @@ interlayers = [interlayer_simple_directed, interlayer_simple_directed_meta]
 Let's construct a directed multilayer graph (`MultilayerDiGraph`).
 
 ```julia
+# Create a simple directed multilayer graph
 multilayerdigraph = MultilayerDiGraph( # Constructor 
     layers,                     # The (ordered) collection of layers
     interlayers;                # The manually specified interlayers
