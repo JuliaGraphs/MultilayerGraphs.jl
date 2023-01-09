@@ -266,11 +266,21 @@ This will help to give appropriate credit to the [contributors](https://github.c
 
 ## Announcements 
 
-The package and its features were announced on the following platforms:
+### v0.1
 
-- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988)
-- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22)
-- [Twitter](https://twitter.com/In_Phy_T/status/1560594513189638146)
+MultilayerGraphs.jl (v0.1) and its features were announced on the following platforms:
+
+- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988);
+- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22);
+- [Twitter](https://twitter.com/In_Phy_T/status/1560594513189638146).
+
+### v1.1
+
+MultilayerGraphs.jl (v1.1) and its features were announced on the following platforms:
+
+- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-v1-1-multilayer-network-science-in-julia/92680);
+- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-v11-multilayer-network-science-in-julia-2oa3);
+- [Twitter](https://twitter.com/In_Phy_T/status/1612460371939581955).
 
 ## Related Packages 
 
