@@ -41,6 +41,9 @@ Its concrete subtypes must have the following fields:
 """
 abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 
+# General MultilayerGraph Utilities
+fadjlist(mg::AbstractMultilayerGraph) = mg.fadjlist
+
 # Nodes
 """
     nodes(mg::AbstractMultilayerGraph
@@ -284,18 +287,22 @@ Graphs.add_edge!( mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}}
-    return rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
-end
+Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
 
 """
     rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
-    return rem_edge!(mg, src(me), dst(me))
-end
+Graphs.rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = rem_edge_specialized!(mg, src, dst)
+
+
+"""
+    rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
+
+Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
+"""
+Graphs.rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge) = rem_edge!(mg, src(me), dst(me))
 
 """
     get_halfegde(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where M <: AbstractMultilayerGraph
@@ -1293,3 +1300,45 @@ function to_string(x::AbstractMultilayerGraph)
            """
 end
 Base.show(io::IO, x::AbstractMultilayerGraph) = print(io, to_string(x))
+
+
+"""
+    getproperty(mg::AbstractMultilayerGraph, f::Symbol)
+"""
+function Base.getproperty(mg::AbstractMultilayerGraph, f::Symbol)
+    if f in (
+        :v_V_associations,
+        :fadjlist,
+        :idx_N_associations,
+        :layers,
+        :interlayers,
+        :v_metadata_dict,
+    ) # :weight_tensor, :supra_weight_matrix, 
+        Base.getfield(mg, f)
+    elseif f == :badjlist && mg isa AbstractMultilayerDiGraph
+        Base.getfield(mg, f)
+    elseif f == :edge_list
+        return edges(mg)
+    elseif f == :subgraphs
+        return merge(mg.layers, mg.interlayers)
+    elseif f == :layers_names
+        return [layer.name for layer in mg.layers]
+    elseif f == :interlayers_names
+        return [interlayer.name for interlayer in values(mg.interlayers)]
+    elseif f == :subgraphs_names
+        return vcat(mg.layers_names, mg.interlayers_names)
+    else
+        for descriptor in mg.layers
+            if descriptor.name == f
+                return get_subgraph(mg, descriptor)
+            end
+        end
+
+        for descriptor in values(mg.interlayers)
+            if descriptor.name == f
+                return get_subgraph(mg, descriptor)
+            end
+        end
+    end
+end
+

@@ -188,9 +188,6 @@ function MultilayerGraph(
     )
 end
 
-# General MultilayerGraph Utilities
-fadjlist(mg::MultilayerGraph) = mg.fadjlist
-
 # Nodes
 
 # Vertices
@@ -204,9 +201,15 @@ Add MultilayerEdge `me` to the MultilayerGraph `mg`. Return true if succeeds, fa
 """
 add_edge_specialized!(mg::M, me::E) where {T,U,M<:MultilayerGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}} = add_edge_undirected!(mg, me)
 
-
-
 """
+    rem_edge_specialized!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
+
+Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
+"""
+rem_edge_specialized!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)  = rem_edge_undirected!(mg, src, dst)
+
+
+#= """
     rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
@@ -245,7 +248,7 @@ function Graphs.rem_edge!(
 
     return true
 end
-
+ =#
 # Layers and Interlayers
 
 # Graphs.jl's extensions
@@ -254,7 +257,7 @@ end
 # "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
 
 # Base overloads
-"""
+#= """
     Base.getproperty(mg::M, f::Symbol) where { M <: MultilayerGraph }
 """
 function Base.getproperty(mg::MultilayerGraph, f::Symbol)#  where {T,U,M<:AbstractMultilayerUGraph{T,U}}
@@ -290,4 +293,4 @@ function Base.getproperty(mg::MultilayerGraph, f::Symbol)#  where {T,U,M<:Abstra
             end
         end
     end
-end
+end =#

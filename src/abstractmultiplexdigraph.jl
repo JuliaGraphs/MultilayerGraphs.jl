@@ -1,6 +1,6 @@
 """
 """
-abstract type AbstractMultiplexDiGraph{T,U} <: AbstractMultiplexGraph{T,U} end
+abstract type AbstractMultiplexDiGraph{T,U} <: AbstractMultilayerDiGraph{T,U} end
 
 
 # Edges

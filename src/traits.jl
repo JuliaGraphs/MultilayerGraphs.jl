@@ -45,3 +45,18 @@ is_meta(g::G) where {G<:AbstractGraph} = is_meta(typeof(g))
 Check whether `g` supports edge AND vertex metadata.
 """
 is_meta(g::G) where {G<:Type{<:AbstractGraph}} = istrait(IsMeta{g})
+
+
+"""
+    IsMultiplex{X}
+
+Trait that characterizes multilayer graphs that have multiplex-like behavior (i.e. diagonal and immutable interlayers).
+"""
+@traitdef IsMultiplex{X}
+
+"""
+    is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}}
+
+Check whether `mg` is a multiplex graph.
+"""
+is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}} = istrait(IsMultiplex{mg})

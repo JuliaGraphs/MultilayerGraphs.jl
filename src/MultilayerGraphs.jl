@@ -121,6 +121,7 @@ export
     is_weighted,
     IsMeta,
     is_meta,
+    IsMultiplex,
     # abstractmultilayergraph.jl
     AbstractMultilayerGraph,
     nn,
@@ -201,6 +202,11 @@ include("abstractmultilayerugraph.jl")
 include("abstractmultilayerdigraph.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
+include("abstractmultiplexgraph.jl")
+include("abstractmultiplexugraph.jl")
+include("abstractmultiplexdigraph.jl")
+include("multiplexgraph.jl")
+include("multiplexdigraph.jl")
 include("utilities.jl")
 include("tensorsfactorizations.jl")
 

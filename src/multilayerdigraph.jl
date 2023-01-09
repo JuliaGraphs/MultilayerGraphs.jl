@@ -205,10 +205,6 @@ function MultilayerDiGraph(
     )
 end
 
-# General MultilayerDiGraph Utilities
-fadjlist(mg::MultilayerDiGraph) = mg.fadjlist
-badjlist(mg::MultilayerDiGraph) = mg.badjlist
-
 # Nodes
 
 # Vertices
@@ -220,7 +216,17 @@ badjlist(mg::MultilayerDiGraph) = mg.badjlist
 Add MultilayerEdge `me` to the MultilayerDiGraph `mg`. Return true if succeeds, false otherwise.
 """
 add_edge_specialized!(mg::M, me::E) where {T,U,M<:MultilayerDiGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}} = add_edge_directed!(mg, me)
+
+
 """
+    rem_edge_specialized!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
+
+Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
+"""
+rem_edge_specialized!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)  = rem_edge_directed!(mg, src, dst)
+
+
+#= """
     rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
@@ -250,7 +256,7 @@ function Graphs.rem_edge!(
     deleteat!(mg.badjlist[dst_V_idx], dst_idx_tbr)
 
     return true
-end
+end =#
 
 # Layers and Interlayers
 
@@ -259,7 +265,7 @@ end
 # Multilayer-specific methods
 # "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
 
-# Base overloads
+#= # Base overloads
 """
     Base.getproperty(mg::M, f::Symbol) where { M <: MultilayerDiGraph }
 """
@@ -297,3 +303,4 @@ function Base.getproperty(mg::MultilayerDiGraph, f::Symbol) # where {T,U,M<:Abst
         end
     end
 end
+ =#

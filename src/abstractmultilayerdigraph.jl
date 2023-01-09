@@ -5,6 +5,9 @@ Abstract type representing an undirected multilayer graph.
 """
 abstract type AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 
+# General MultilayerDiGraph Utilities
+badjlist(mg::AbstractMultilayerDiGraph) = mg.badjlist
+
 # Nodes
 # Vertices
 """
@@ -198,6 +201,39 @@ end
 
 
 """
+    rem_edge!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
+
+Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
+"""
+function rem_edge_directed!(
+    mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+
+    # Perform routine checks
+    has_vertex(mg, src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+
+    has_edge(mg, src, dst) || return false
+
+    src_V_idx = get_v(mg, src)
+    dst_V_idx = get_v(mg, dst)
+
+    _src = get_bare_mv(src)
+    _dst = get_bare_mv(dst)
+
+    src_idx_tbr = findfirst(halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx])
+    deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
+
+    dst_idx_tbr = findfirst(halfedge -> halfedge.vertex == _src, mg.badjlist[dst_V_idx])
+    deleteat!(mg.badjlist[dst_V_idx], dst_idx_tbr)
+
+    return true
+end
+
+
+"""
     set_weight!(mg::M, src::MultilayerVertex{L1}, dst::MultilayerVertex{L2}, weight::U) where {L1 <: Symbol, L2 <: Symbol, T,U, M <: AbstractMultilayerGraph{T,U}}
 
 Set the weight of the edge between `src` and `dst` to `weight`. Return true if succeeds (i.e. if the edge exists and the underlying graph chosen for the Layer/Interlayer where the edge lies is weighted under the `IsWeighted` trait).
@@ -310,9 +346,9 @@ end
 
 Specify the interlayer `new_interlayer` as part of `mg`.
 """
-function specify_interlayer!(
+@traitfn function specify_interlayer!(
     mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}}
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}; !IsMultiplex{M}}
     istrait(IsDirected{typeof(new_interlayer.graph)}) || throw(
         ErrorException(
             "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is undirected, so it is not compatible with a `AbstractMultilayerDiGraph`.",

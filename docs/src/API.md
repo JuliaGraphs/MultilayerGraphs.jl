@@ -225,9 +225,14 @@ MultilayerDiGraph(
      perform_checks::Bool = false
 ) where {T,U}
 
+
+MultiplexGraph
+
+MultiplexDiGraph
+
 nodes(mg::AbstractMultilayerGraph)
 nn(mg::AbstractMultilayerGraph) 
-add_node!(mg::AbstractMultilayerGraph, n::Node)
+add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol})
 rem_node!(mg::AbstractMultilayerGraph, n::Node)
 has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 nv(mg::M) where {M <: AbstractMultilayerGraph }
@@ -273,15 +278,7 @@ add_layer!(
     mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"
 ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
 
-specify_interlayer!(
-    mg::M,
-    new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}}
-
-specify_interlayer!(
-    mg::M,
-    new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},In<:Interlayer{T,U,G}}
+specify_interlayer!
 
 get_interlayer(
     mg::AbstractMultilayerGraph, layer_1_name::Symbol, layer_2_name::Symbol
@@ -425,6 +422,8 @@ add_edge!(mg::M,src::T,dst::T;weight::Union{Nothing,U}=one(U),metadata::Union{Tu
 rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}
 AbstractMultilayerUGraph{T,U}
 AbstractMultilayerDiGraph{T,U}
+AbstractMultiplexUGraph
+AbstractMultiplexDiGraph
 ```
 
 ### [Representations](@id representations_dev)
@@ -437,4 +436,5 @@ AbstractMatrixRepresentation{T,U}
 ```@docs
 IsWeighted{X}
 IsMeta{X}
+IsMultiplex{X}
 ```

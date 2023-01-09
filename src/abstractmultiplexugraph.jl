@@ -1,18 +1,3 @@
 """
 """
-abstract type AbstractMultiplexUGraph{T,U} <: AbstractMultiplexGraph{T,U} end
-
-
-# Edges
-
-"""
-    add_edge_specialized!(mg::M, me::E) where {T,U, M <: AbstractMultiplexUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
-
-Add MultilayerEdge `me` to the multiplex graph `mg`. Return true if succeeds, false otherwise.
-"""
-function add_edge_specialized!(
-    mg::M, me::E
-) where {T,U,M<:AbstractMultiplexUGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
-    layer(_src) == layer(_dst) || throw(ArgumentError("Cannot add an edge between two `MultilayerVertex`s that belong to two different layers in a multiplex graph"))
-    add_edge_undirected!(mg, me)
-end
+abstract type AbstractMultiplexUGraph{T,U} <: AbstractMultilayerUGraph{T,U} end
