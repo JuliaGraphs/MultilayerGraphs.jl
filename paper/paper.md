@@ -49,7 +49,7 @@ MultilayerGraphs.jl features specific methods and metrics including the global c
 
 Finally, MultilayerGraphs.jl has been integrated within the [JuliaDynamics](https://github.com/JuliaDynamics) ecosystem so that any `Multilayer(Di)Graph` can be utilised as an argument to the `GraphSpace` constructor in Agents.jl [@Datseris2022]. 
 
-![Logo of MultilayerGraphs.jl. \label{fig:logo}](images/logo.png){ width=30% }
+![Logo of MultilayerGraphs.jl. \label{fig:logo}](images/logo.png){ width=25% }
 
 # Statement of Need
 
@@ -58,6 +58,8 @@ Several theoretical frameworks have been proposed to formally subsume all instan
 Multilayer graphs have been adopted to model the structure and dynamics of a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including physical, chemical, biological, neuronal, socio-technical, epidemiological, ecological and economic networks [@Cozzo2013; @Granell2013; @Massaro2014; @Estrada2014; @AzimiTafreshi2016; @Baggio2016; @DeDomenico2016; @Amato2017; @DeDomenico2017; @Pilosof2017; @deArruda2017; @Gosak2018; @SorianoPaos2018; @Timteo2018; @Buldu2018; @Lim2019; @Mangioni2020; @Aleta2020; @Aleta2022]. 
 
 At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the [Julia language](https://julialang.org) [@Bezanson2017] apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022]. 
+
+![[@DeDomenicoIllustrated2022]  \label{fig:logo}](images/application_biology.png){ width=40% }
 
 # Main Features 
 
@@ -110,12 +112,3 @@ Here is a list of related software packages implemented in the [Python language]
 This open-source research software project received no financial support.
 
 # References
-
-# Figures
-
-Figures can be included like this:
-![Logo of MultilayerGraphs.jl \label{fig:logo}](logo.png)
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
