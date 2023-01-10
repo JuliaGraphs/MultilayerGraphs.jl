@@ -81,7 +81,7 @@ For a more comprehensive exploration of the package features and functionalities
 
 We invite the user to read the documented example and run the associated script we have designed to synthetically illustrate: 
 
-- how to **install** MultilayerGraphs.jl;  
+- how to **install** the package;  
 - how to define **layers** and **interlayers** with a variety of constructors and underlying graphs;
 - how to construct a **directed multilayer graph** with those layers and interlayers;
 - how to add nodes, vertices and edges to the multilayer graph;
