@@ -25,7 +25,7 @@ affiliations:
    index: 1
  - name: Interdisciplinary Physics Team, Italy
    index: 2
-date: 07 January 2023
+date: 11 January 2023
 bibliography: paper.bib
 ---
 
