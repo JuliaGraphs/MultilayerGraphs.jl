@@ -81,7 +81,7 @@ For a more comprehensive exploration of the package features and functionalities
 
 # Installation and Usage 
 
-We invite the user to read the documented example and run the associated script we have designed to synthetically illustrate: 
+We invite the user to read the documented [example](https://github.com/JuliaGraphs/MultilayerGraphs.jl/tree/main/example/example.md) and run the associated [script](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/example/example.jl) we have designed to synthetically illustrate: 
 
 - how to **install** the package;
 - how to define **layers** and **interlayers** with a variety of constructors and underlying graphs;
