@@ -1282,7 +1282,7 @@ end
 
 Return `true` if `v` is a vertex of `interlayer`.
 """
-function Graphs.has_vertex(interlayer::Interlayer, mv::MultilayerVertex)
+function has_vertex(interlayer::Interlayer, mv::MultilayerVertex)
     return get_bare_mv(mv) ∈ collect(image(interlayer.v_V_associations))
 end
 
@@ -1291,7 +1291,7 @@ end
 
 Add edge from vertex `src` to vertex `dst` to Interlayer `interlayer`.Returns true if succeeds, but will fail (return false) if `src` and `dst` belong to the same layer, since interlayers are always bipartite. This method supports the uniform and transparent interfaces. See the [Edges](@ref edges_tut_subg) section of the Tutorial.
 """
-function Graphs.add_edge!(
+function add_edge!(
     interlayer::Interlayer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...
 )
     src_bare = get_bare_mv(src)

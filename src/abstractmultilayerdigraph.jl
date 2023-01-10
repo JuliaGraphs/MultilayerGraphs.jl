@@ -45,7 +45,7 @@ end
 
 Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
+function rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
     # Check that the node exists and then that the vertex exists
     has_node(mg, V.node) || return false
     has_vertex(mg, V) || return false
@@ -118,7 +118,7 @@ end
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
-function Graphs.has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerDiGraph{T}}
+function has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerDiGraph{T}}
     # Returns true if src is a vertex of mg
     has_vertex(mg, src) || return false
     # Returns true if dst is a vertex of mg
@@ -143,7 +143,7 @@ end
 
 Return an list of all the edges of `mg`.
 """
-function Graphs.edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
+function edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
     edge_list = MultilayerEdge{U}[]
 
     for (_src_v, halfedges) in enumerate(mg.fadjlist)
@@ -346,9 +346,9 @@ end
 
 Specify the interlayer `new_interlayer` as part of `mg`.
 """
-@traitfn function specify_interlayer!(
+@traits function specify_interlayer!(
     mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}; !IsMultiplex{M}}
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}, !istrait(IsMultiplex{M})}
     istrait(IsDirected{typeof(new_interlayer.graph)}) || throw(
         ErrorException(
             "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is undirected, so it is not compatible with a `AbstractMultilayerDiGraph`.",
@@ -495,7 +495,7 @@ end
 
 Return the degree of MultilayerVertex `v` within `mg`.
 """
-function Graphs.degree(
+function degree(
     mg::M, mv::V
 ) where {T,M<:AbstractMultilayerDiGraph{T,<:Real},V<:MultilayerVertex}
     return indegree(mg, mv) + outdegree(mg, mv)
@@ -506,14 +506,14 @@ end
 
 Return `true` if `mg` is directed, `false` otherwise. 
 """
-Graphs.is_directed(mg::AbstractMultilayerDiGraph) = true
+is_directed(mg::AbstractMultilayerDiGraph) = true
 
 """
     is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
 
 Return `true` if `mg` is directed, `false` otherwise. 
 """
-Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerDiGraph}} = true
+is_directed(mg::M) where {M<:Type{<:AbstractMultilayerDiGraph}} = true
 
 """
     inneighbors(mg::M, v::T
@@ -522,7 +522,7 @@ Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerDiGraph}} = true
 
 Return the list of inneighbors of `v` within `mg`.
 """
-function Graphs.inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T,<:Real}}
+function inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T,<:Real}}
     _inneighbors = T[]
 
     for helfedge in mg.badjlist[v]

@@ -1,4 +1,4 @@
-Graphs.weights(g::G) where {T,G<:AbstractSimpleWeightedGraph{T}} = Graphs.weights(g)
+weights(g::G) where {T,G<:AbstractSimpleWeightedGraph{T}} = weights(g)
 
 function __add_vertex!(
     g::AbstractSimpleWeightedGraph{T}; metadata::Union{Tuple,NamedTuple}=NamedTuple()

@@ -2,7 +2,12 @@
 """
 MultiplexDiGraph{T, U, G <: AbstractGraph{T}} <: AbstractMultilayerGraph{T,U}
 
-A concrete type that can represent a general multilayer graph. Its internal fields aren't meant to be modified by the user. Please prefer the provided API.
+A concrete type that can represent a general (directed) multiplex graph. Differently from `MultilayerDiGraph`, this type will error if:
+1. The user tries to specify one of its interlayers;
+2. The user tries to add and inter-layer edge which is not diagonal;
+3. The user tries to remove an inter-layer edge.
+
+Its internal fields aren't meant to be modified by the user. Please prefer the provided API.
 """
 mutable struct MultiplexDiGraph{T,U} <: AbstractMultilayerDiGraph{T,U}
 layers::Vector{LayerDescriptor{T,U}} # vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
@@ -68,24 +73,7 @@ return MultiplexDiGraph{T,U}(
 )
 end
 
-#= """
-MultiplexDiGraph(layers::Vector{<:Layer{T,U}}; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String="multiplex") where {T,U, H <: AbstractGraph{T}}
 
-Construct a MultiplexDiGraph with layers `layers` and all interlayers with structure `default_interlayers_structure` (only "multiplex" and "empty" are allowed) and type `default_interlayers_null_graph`.
-"""
-function MultiplexDiGraph(
-layers::Vector{<:Layer{T,U}};
-default_interlayers_null_graph::H=SimpleGraph{T}(),
-default_interlayers_structure::String="multiplex",
-) where {T,U,H<:AbstractGraph{T}}
-return MultiplexDiGraph(
-    layers,
-    Interlayer{T,U}[];
-    default_interlayers_null_graph=default_interlayers_null_graph,
-    default_interlayers_structure=default_interlayers_structure,
-)
-end
-=#
 # General MultiplexDiGraph Utilities
 fadjlist(mg::MultiplexDiGraph) = mg.fadjlist
 
@@ -127,43 +115,3 @@ end
 # Graphs.jl's extensions
 
 # Multilayer-specific methods
-# "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
-
-#= # Base overloads
-"""
-Base.getproperty(mg::M, f::Symbol) where { M <: MultiplexDiGraph }
-"""
-function Base.getproperty(mg::MultiplexDiGraph, f::Symbol)
-if f in (
-    :v_V_associations,
-    :fadjlist,
-    :idx_N_associations,
-    :layers,
-    :interlayers,
-    :v_metadata_dict,
-) # :weight_tensor, :supra_weight_matrix, 
-    Base.getfield(mg, f)
-elseif f == :edge_list
-    return edges(mg)
-elseif f == :subgraphs
-    return merge(mg.layers, mg.interlayers)
-elseif f == :layers_names
-    return [layer.name for layer in mg.layers]
-elseif f == :interlayers_names
-    return [interlayer.name for interlayer in values(mg.interlayers)]
-elseif f == :subgraphs_names
-    return vcat(mg.layers_names, mg.interlayers_names)
-else
-    for descriptor in mg.layers
-        if descriptor.name == f
-            return get_subgraph(mg, descriptor)
-        end
-    end
-
-    for descriptor in values(mg.interlayers)
-        if descriptor.name == f
-            return get_subgraph(mg, descriptor)
-        end
-    end
-end
-end =#

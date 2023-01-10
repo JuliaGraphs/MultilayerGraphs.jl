@@ -278,10 +278,10 @@ end
         degree_distribution::UnivariateDistribution,
         null_graph::G,
         weighttype::Type{U};
-        default_vertex_metadata::Function = mv -> NamedTuple(),
-        default_edge_weight::Function = (src, dst) -> nothing,
-        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}; !IsDirected{G}}
+        default_vertex_metadata::Function=mv -> NamedTuple(),
+        default_edge_weight::Function=(src, dst) -> nothing,
+        default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    ) where {U<:Real, G<:AbstractGraph, !istrait(IsDirected{G})}
 
 Returns an undirected `Layer` whose degree sequence is sampled from `degree_distribution`. Graph realization is performed using the Havel-Hakimi algorithm.
 
@@ -298,7 +298,7 @@ Returns an undirected `Layer` whose degree sequence is sampled from `degree_dist
 - `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
 - `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
 """
-@traitfn function Layer(
+@traits function Layer(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     degree_distribution::UnivariateDistribution,
@@ -307,7 +307,7 @@ Returns an undirected `Layer` whose degree sequence is sampled from `degree_dist
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T};!IsDirected{G}}
+) where {U<:Real, G<:AbstractGraph, !istrait(IsDirected{G})}
     degree_sequence = sample_graphical_degree_sequence(
         degree_distribution, length(vertices)
     )
@@ -351,22 +351,16 @@ Returns an undirected `Layer` with given `degree_sequence` realized using the Ha
 - `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
 - `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
 """
-@traitfn function Layer(
+@traits function Layer(
     name::Symbol,
-    vertices::Union{V,N},#Vector{MultilayerVertex{nothing}},
+    vertices::Union{Vector{MultilayerVertex{nothing}}, Vector{Node}}, #Union{V,N},#Vector{MultilayerVertex{nothing}},
     degree_sequence::Vector{<:Integer},
     null_graph::G,
-    weighttype::Type{U};
+    weighttype::Type{ <: Real};
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {
-    T<:Integer,
-    U<:Real,
-    G<:AbstractGraph{T},
-    V<:Vector{MultilayerVertex{nothing}},
-    N<:Vector{Node};!IsDirected{G},
-}
+) where { G<:AbstractGraph,  !istrait(IsDirected{G})} # , V<:Vector{MultilayerVertex{nothing}}, N<:Vector{Node}
     descriptor = LayerDescriptor(
         name,
         null_graph,
@@ -380,7 +374,7 @@ Returns an undirected `Layer` with given `degree_sequence` realized using the Ha
 
     edge_list = NTuple{2,MultilayerVertex{nothing}}[]
 
-    if @isdefined(V)
+    if typeof(vertices) <: Vector{MultilayerVertex{nothing}} #@isdefined(V)
         for edge in edges(equivalent_graph)
             src_mv = vertices[src(edge)]
             dst_mv = vertices[dst(edge)]
@@ -428,17 +422,17 @@ Returns a directed `Layer` whose indegree and oudegree sequences are sampled fro
 - `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
 - `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
 """
-@traitfn function Layer(
+@traits function Layer(
     name::Symbol,
     vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},#Vector{MultilayerVertex{nothing}},
     indegree_distribution::UnivariateDistribution,
     outdegree_distribution::UnivariateDistribution,
     null_graph::G,
-    weighttype::Type{U};
+    weighttype::Type{<:Real};
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T};IsDirected{G}}
+) where {G<:AbstractGraph, istrait(IsDirected{G})}
     indegree_sequence, outdegree_sequence = sample_digraphical_degree_sequences(
         indegree_distribution, outdegree_distribution, length(vertices)
     )
@@ -485,22 +479,19 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
 - `default_edge_weight::Function`: Function that takes a pair of `MultilayerVertex`s and returns an edge weight of type `weighttype` or `nothing` (which is compatible with unweighted underlying graphs and corresponds to `one(weighttype)` for weighted underlying graphs). Defaults to `(src, dst) -> nothing`;
 - `default_edge_metadata::Function`: Function that takes a pair of `MultilayerVertex`s and  returns a `Tuple` or a `NamedTuple` containing the edge metadata, that will be called when `add_edge!(mg,src,dst, args...; kwargs...)` is called without the `metadata` keyword argument, and when generating the edges in this constructor. Defaults to  `(src, dst) -> NamedTuple()`;
 """
-@traitfn function Layer(
+@traits function Layer(
     name::Symbol,
-    vertices::Union{V,N}, #Vector{MultilayerVertex{nothing}},
+    vertices::Vector{<:Union{MultilayerVertex{nothing},Node}}, #Vector{MultilayerVertex{nothing}},
     indegree_sequence::Vector{<:Integer},
     outdegree_sequence::Vector{<:Integer},
     null_graph::G,
-    weighttype::Type{U};
+    weighttype::Type{<:Real};
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
 ) where {
-    T<:Integer,
-    U<:Real,
-    G<:AbstractGraph{T},
-    V<:Vector{MultilayerVertex{nothing}},
-    N<:Vector{Node};IsDirected{G},
+    G<:AbstractGraph,
+    istrait(IsDirected{G}),
 }
     descriptor = LayerDescriptor(
         name,
@@ -515,7 +506,7 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
 
     edge_list = NTuple{2,MultilayerVertex{nothing}}[]
 
-    if @isdefined(V)
+    if eltype(vertices) <: MultilayerVertex{nothing} #@isdefined(V)
         for edge in edges(equivalent_graph)
             src_mv = vertices[src(edge)]
             dst_mv = vertices[dst(edge)]
@@ -1804,7 +1795,7 @@ has_node(layer::Layer, n::Node) = MV(n, layer.name) ∈ image(layer.v_V_associat
 
 Return `true` if `v` is a vertex of `layer`.
 """
-function Graphs.has_vertex(layer::Layer, mv::MultilayerVertex)
+function has_vertex(layer::Layer, mv::MultilayerVertex)
     return MV(node(mv), name(layer)) ∈ collect(image(layer.v_V_associations))
 end
 
@@ -1815,7 +1806,7 @@ end
 
 Add vertex to layer `layer`. 
 """
-function Graphs.add_vertex!(layer::Layer, mv::MultilayerVertex)
+function add_vertex!(layer::Layer, mv::MultilayerVertex)
     (isnothing(mv.layer) || mv.layer == layer.name) || throw(
         ErrorException("The multilayer vertex $mv cannot belong to layer $(layer.name)."),
     )
@@ -1827,7 +1818,7 @@ end
 
 Add vertex associated with node `n` to layer `layer`. This method supports the uniform and transparent interfaces. See the [Vertices](@ref) section of the Tutorial.
 """
-function Graphs.add_vertex!(layer::L, n::Node, args...; kwargs...) where {T,L<:Layer{T}}
+function add_vertex!(layer::L, n::Node, args...; kwargs...) where {T,L<:Layer{T}}
     # Check if the vertex is already in the layer
     has_node(layer, n) && return false
 
@@ -1888,7 +1879,7 @@ end
 
 Remove vertex `mv` from layer `layer`.
 """
-function Graphs.rem_vertex!(layer::Layer, mv::MultilayerVertex)
+function rem_vertex!(layer::Layer, mv::MultilayerVertex)
     (isnothing(mv.layer) || mv.layer == layer.name) || return false
     return rem_vertex!(layer, mv.node)
 end
@@ -1896,9 +1887,9 @@ end
 """
     rem_vertex!(layer::Layer, n::Node)
 
-Remove node `n` from `layer`. Modify `layer.v_N_associations` according to how `rem_vertex!` works in [Graph.jl](https://juliagraphs.org/Graphs.jl/dev/core_functions/simplegraphs/#Graphs.SimpleGraphs.rem_vertex!-Tuple{Graphs.SimpleGraphs.AbstractSimpleGraph,%20Integer}).
+Remove node `n` from `layer`. Modify `layer.v_N_associations` according to how `rem_vertex!` works in [Graph.jl](https://juliagraphs.org/Graphs.jl/dev/core_functions/simplegraphs/#Graphs.Simplerem_vertex!-Tuple{SimpleGraphs.AbstractSimpleGraph,%20Integer}).
 """
-function Graphs.rem_vertex!(layer::Layer, n::Node)
+function rem_vertex!(layer::Layer, n::Node)
     !has_node(layer, n) && return false
     success = rem_vertex!(layer, layer.v_V_associations(MV(n, layer.name)))
 
@@ -1932,7 +1923,7 @@ end
 
 Remove vertex `v` from layer `layer`.
 """
-Graphs.rem_vertex!(layer::L, v::T) where {T,L<:Layer{T}} = rem_vertex!(layer.graph, v)
+rem_vertex!(layer::L, v::T) where {T,L<:Layer{T}} = rem_vertex!(layer.graph, v)
 
 """
     get_v(layer::Layer, V::MultilayerVertex{nothing})
@@ -1953,7 +1944,7 @@ end
 
 Return `true` if there is an edge between `s` and `d`, `false` otherwise.
 """
-function Graphs.has_edge(
+function has_edge(
     layer::Layer, s::MultilayerVertex{nothing}, d::MultilayerVertex{nothing}
 )
     return has_edge(
@@ -1968,7 +1959,7 @@ end
 
 Add edge from vertex `src` to vertex `dst` to layer `layer`. Returns true if succeeds. This method supports the uniform and transparent interfaces. See the [Edges](@ref edges_tut_subg) section of the Tutorial.
 """
-function Graphs.add_edge!(
+function add_edge!(
     layer::Layer, src::MultilayerVertex, dst::MultilayerVertex, args...; kwargs...
 )
     # Check if the vertices exist

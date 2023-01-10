@@ -60,3 +60,11 @@ Trait that characterizes multilayer graphs that have multiplex-like behavior (i.
 Check whether `mg` is a multiplex graph.
 """
 is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}} = istrait(IsMultiplex{mg})
+
+
+"""
+    IsUncoupled{X}
+
+Trait that characterizes multilayer graphs that have uncoupled layers (i.e. no inter-layer edges).
+"""
+@traitdef IsUncoupled{X}

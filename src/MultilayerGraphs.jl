@@ -8,7 +8,7 @@
 
 # Implement https://en.wikipedia.org/wiki/Kleitman%E2%80%93Wang_algorithms and https://en.wikipedia.org/wiki/Havel%E2%80%93Hakimi_algorithm for wiring (un)directed configuration models.
 
-# Double check modularity. Also compare with https://juliagraphs.org/Graphs.jl/v1.5/community/#Graphs.modularity-Tuple{AbstractGraph,%20AbstractVector{%3C:Integer}}. We should (probably) correct its implementation or at least compare it with a simpler one made in terms of unpadded supra adjacency matrix (that we have yet to implement).
+# Double check modularity. Also compare with https://juliagraphs.org/Graphs.jl/v1.5/community/#modularity-Tuple{AbstractGraph,%20AbstractVector{%3C:Integer}}. We should (probably) correct its implementation or at least compare it with a simpler one made in terms of unpadded supra adjacency matrix (that we have yet to implement).
 
 # GraphOfGraphs and DiGraphOfGraphs could be improved/redesigned. Also, they don't yet extend Graphs.jl
 
@@ -172,12 +172,14 @@ export
     kleitman_wang_graph_generator
 # tensorfacoriazations.jl
 
-using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections, PrettyTables
+using Base, InteractiveUtils, IterTools, SimpleTraits, WhereTraits, Bijections, PrettyTables
 using Distributions: Uniform
 using LinearAlgebra, Statistics, OMEinsum, TensorOperations, Distributions
 using DataStructures, SparseArrays
-using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
+import Graphs: AbstractGraph, AbstractEdge, has_vertex, nv, vertices, add_vertex!, rem_vertex!, edgetype, has_edge , ne, edges, inneighbors, outneighbors,neighbors, add_edge!, rem_edge!, src, dst, weights, degree, indegree, outdegree, is_directed, inneighbors, eigenvector_centrality, modularity, SimpleGraphs
+using SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs # Graphs, 
 
+include("traits.jl")
 include("node.jl")
 include("vertices/abstractvertex.jl")
 include("vertices/multilayervertex.jl")
@@ -195,19 +197,18 @@ include("representations/abstracttensorrepresentation.jl")
 include("representations/abstractmatrixrepresentation.jl")
 include("representations/weighttensor.jl")
 include("representations/metadatatensor.jl")
-include("representations/supraweightmatrix.jl")
-include("traits.jl")
+include("representations/supraweightmatrix.jl") 
 include("abstractmultilayergraph.jl")
 include("abstractmultilayerugraph.jl")
-include("abstractmultilayerdigraph.jl")
+#= include("abstractmultilayerdigraph.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
-include("abstractmultiplexgraph.jl")
+include("ismultiplex.jl")
 include("abstractmultiplexugraph.jl")
 include("abstractmultiplexdigraph.jl")
 include("multiplexgraph.jl")
 include("multiplexdigraph.jl")
 include("utilities.jl")
-include("tensorsfactorizations.jl")
+include("tensorsfactorizations.jl") =#
 
 end

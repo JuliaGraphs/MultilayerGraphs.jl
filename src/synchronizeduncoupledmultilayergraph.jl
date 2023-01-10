@@ -10,7 +10,7 @@ A concrete type that can represent an undirected multiplex graph with the follow
 
 Its internal fields aren't meant to be modified by the user. Please prefer the provided API.
 """
-mutable struct SynchronizedMultiplexGraph{T,U} <: AbstractMultiplexUGraph{T,U}
+mutable struct SynchronizedUncoupledMultilayerGraph{T,U} <: AbstractMultiplexUGraph{T,U}
     layers::Vector{LayerDescriptor{T,U}} # vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
     interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U, SimpleGraph{T}}} # the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all undirected.
     v_V_associations::Bijection{T,<:MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
@@ -221,7 +221,7 @@ end
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_edge!(
+function rem_edge!(
     mg::AbstractMultiplexUGraph, src::MultilayerVertex, dst::MultilayerVertex
 )
     # Perform routine checks

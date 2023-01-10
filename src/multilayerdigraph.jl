@@ -231,7 +231,7 @@ rem_edge_specialized!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::Multila
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_edge!(
+function rem_edge!(
     mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex
 )
 

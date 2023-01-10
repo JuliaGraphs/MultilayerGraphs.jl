@@ -26,7 +26,7 @@ Base.eltype(subgraph::AbstractSubGraph) = typeof(subgraph).parameters[1]
 
 Return `true` if `v` is a vertex of `subgraph`.
 """
-function Graphs.has_vertex(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
+function has_vertex(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
     return has_vertex(subgraph.graph, v)
 end
 
@@ -35,14 +35,14 @@ end
 
 Return the number of vertices in `subgraph`.
 """
-Graphs.nv(subgraph::AbstractSubGraph) = nv(subgraph.graph)
+nv(subgraph::AbstractSubGraph) = nv(subgraph.graph)
 
 """
     vertices(subgraph::AbstractSubGraph)
 
 Return the collection of the vertices of `subgraph`.
 """
-Graphs.vertices(subgraph::AbstractSubGraph) = vertices(subgraph.graph)
+vertices(subgraph::AbstractSubGraph) = vertices(subgraph.graph)
 
 """
     mv_vertices(subgraph::AbstractSubGraph)
@@ -56,7 +56,7 @@ mv_vertices(subgraph::AbstractSubGraph) = get_rich_mv.(Ref(subgraph), vertices(s
 
 Return the list of inneighbors of `v` within `subgraph`.
 """
-function Graphs.inneighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
+function inneighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
     return inneighbors(subgraph.graph, v)
 end
 
@@ -65,7 +65,7 @@ end
 
 Return the list of inneighbors of `mv` within `subgraph`.
 """
-function Graphs.inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
+function inneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
     return inneighbors(subgraph, get_v(subgraph, mv))
 end
 
@@ -83,7 +83,7 @@ end
 
 Return the list of outneighbors of `v` within `subgraph`.
 """
-function Graphs.outneighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
+function outneighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
     return outneighbors(subgraph.graph, v)
 end
 
@@ -92,7 +92,7 @@ end
  
 Return the list of outneighbors of `mv` within `subgraph`.
 """
-function Graphs.outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
+function outneighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
     return outneighbors(subgraph, subgraph.v_V_associations(get_bare_mv(mv)))
 end
 
@@ -110,7 +110,7 @@ end
 
 Return the list of neighbors of `v` within `subgraph`.
 """
-function Graphs.neighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
+function neighbors(subgraph::S, v::T) where {T,S<:AbstractSubGraph{T}}
     return neighbors(subgraph.graph, v)
 end
 
@@ -119,7 +119,7 @@ end
 
 Return the list of neighbors of `mv` within `subgraph`.
 """
-function Graphs.neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
+function neighbors(subgraph::AbstractSubGraph, mv::MultilayerVertex)
     return outneighbors(subgraph, get_v(subgraph, mv))
 end
 
@@ -210,14 +210,14 @@ end
 
 Return the edge type for `subgraph`.
 """
-Graphs.edgetype(::S) where {T,U,S<:AbstractSubGraph{T,U}} = MultilayerEdge{U}
+edgetype(::S) where {T,U,S<:AbstractSubGraph{T,U}} = MultilayerEdge{U}
 
 """
     has_edge(subgraph::AbstractSubGraph,me::MultilayerEdge)
 
 Return `true` if there is an edge from `src(me)` to `dst(me)` within subgraph, `false` otherwise.
 """
-function Graphs.has_edge(subgraph::AbstractSubGraph, me::MultilayerEdge)
+function has_edge(subgraph::AbstractSubGraph, me::MultilayerEdge)
     return has_edge(subgraph, src(me), dst(me))
 end
 
@@ -226,7 +226,7 @@ end
 
 Return `true` if there is an edge between `s` and `d`, `false` otherwise.
 """
-function Graphs.has_edge(
+function has_edge(
     subgraph::AbstractSubGraph, s::MultilayerVertex, d::MultilayerVertex
 )
     return has_edge(subgraph, get_v(subgraph, s), get_v(subgraph, d))
@@ -237,7 +237,7 @@ end
 
 Return `true` if there is an edge between `s` and `d`, `false` otherwise.
 """
-function Graphs.has_edge(subgraph::S, s::T, d::T) where {T,S<:AbstractSubGraph{T}}
+function has_edge(subgraph::S, s::T, d::T) where {T,S<:AbstractSubGraph{T}}
     return has_edge(subgraph.graph, s, d)
 end
 
@@ -246,14 +246,14 @@ end
 
 Return the number of edges in `subgraph`.
 """
-Graphs.ne(subgraph::AbstractSubGraph) = ne(subgraph.graph)
+ne(subgraph::AbstractSubGraph) = ne(subgraph.graph)
 
 """
     edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}} 
 
 Return an iterator over all the edges of `subgraph`.
 """
-function Graphs.edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
+function edges(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
     return (
         MultilayerEdge(
             get_rich_mv(subgraph, src), get_rich_mv(subgraph, dst), weight, metadata
@@ -266,7 +266,7 @@ end
 
 Add unweighted edge `me` to `subgraph`. Its `weight` and `metadata` fields are passed to the uniform interface of [`add_edge!(::Layer, ::MultilayerVertex, ::MultilayerVertex, ::Tuple)`](@ref).
 """
-function Graphs.add_edge!(
+function add_edge!(
     subgraph::S, me::E
 ) where {T,U<:Real,S<:AbstractSubGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
     return add_edge!(subgraph, src(me), dst(me); weight=weight(me), metadata=metadata(me))
@@ -299,7 +299,7 @@ end
 
 Add edge from `src` to `dst` with weight `weight` and metadata `metadata` to `subgraph`.
 """
-function Graphs.add_edge!(
+function add_edge!(
     subgraph::S,
     src::T,
     dst::T;
@@ -314,7 +314,7 @@ end
 
 Remove edge from `src` to `dst` in `subgraph`.
 """
-function Graphs.rem_edge!(
+function rem_edge!(
     subgraph::AbstractSubGraph, src::MultilayerVertex, dst::MultilayerVertex
 )
     return rem_edge!(subgraph, get_v(subgraph, src), get_v(subgraph, dst))
@@ -325,7 +325,7 @@ end
 
 Remove edge from `src(me)` to `dst(me)` in `subgraph`.
 """
-function Graphs.rem_edge!(subgraph::AbstractSubGraph, me::MultilayerEdge)
+function rem_edge!(subgraph::AbstractSubGraph, me::MultilayerEdge)
     return rem_edge!(subgraph, src(me), dst(me))
 end
 
@@ -334,7 +334,7 @@ end
 
 Remove edge from `src` to `dst` in a directed `subgraph`.
 """
-function Graphs.rem_edge!(subgraph::S, src::T, dst::T) where {T,S<:AbstractSubGraph{T}}
+function rem_edge!(subgraph::S, src::T, dst::T) where {T,S<:AbstractSubGraph{T}}
     has_vertex(subgraph, src) && has_vertex(subgraph, dst) || throw(
         ErrorException(
             "One of the two vertices ($(subgraph.v_V_associations[src]) , $(subgraph.v_V_associations[dst])) (or both) does not belong to the subgraph.",
@@ -379,28 +379,28 @@ end
 
 Return `true` if `subgraph` is directed, `false` otherwise. 
 """
-Graphs.is_directed(subgraph::AbstractSubGraph) = is_directed(subgraph.descriptor.null_graph)
+is_directed(subgraph::AbstractSubGraph) = is_directed(subgraph.descriptor.null_graph)
 
 """
     is_directed(::Type{S}) where {T,U,G,S <: AbstractSubGraph{T,U,G}}
 
 Return `true` if instances of `S` are directed, `false` otherwise. 
 """
-Graphs.is_directed(::Type{S}) where {T,U,G,S<:AbstractSubGraph{T,U,G}} = is_directed(G)
+is_directed(::Type{S}) where {T,U,G,S<:AbstractSubGraph{T,U,G}} = is_directed(G)
 
 """
     adjacency_matrix(subgraph::AbstractSubGraph)
 
 Return the adjacency matrix of `subgraph.graph`.
 """
-Graphs.adjacency_matrix(subgraph::AbstractSubGraph) = adjacency_matrix(subgraph.graph)
+adjacency_matrix(subgraph::AbstractSubGraph) = adjacency_matrix(subgraph.graph)
 
 """
     weights(subgraph::S) where { T,U, G <: AbstractGraph{T}, S <:AbstractSubGraph{T,U,G}} 
 
 Return the weights of `subgraph.graph`, with the eltype converted to `U`.
 """
-function Graphs.weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
+function weights(subgraph::S) where {T,U,S<:AbstractSubGraph{T,U}}
     return U.(weights(subgraph.graph))
 end
 

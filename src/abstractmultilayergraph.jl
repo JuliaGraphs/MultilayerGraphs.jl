@@ -10,7 +10,7 @@
 
 # Base.eltype
 # weighttype
-# Graphs.edgetype
+# edgetype
 
 # has_vertex
 # multilayer_vertices
@@ -132,7 +132,7 @@ Base.eltype(::M) where {T,M<:AbstractMultilayerGraph{T}} = T
 
 Return true if `v` is in mg, else false.
 """
-function Graphs.has_vertex(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T}}
+function has_vertex(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T}}
     return v in domain(mg.v_V_associations)
 end
 
@@ -141,7 +141,7 @@ end
 
 Return true if `mv` is in `mg`, else false.
 """
-function Graphs.has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+function has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
     return get_bare_mv(mv) in image(mg.v_V_associations)
 end
 
@@ -157,14 +157,14 @@ mv_vertices(mg::AbstractMultilayerGraph) = [get_rich_mv(mg, v) for v in vertices
 
 Return the number of vertices in `mg`, excluding the missing vertices.
 """
-Graphs.nv(mg::AbstractMultilayerGraph) = length(mg.v_V_associations)
+nv(mg::AbstractMultilayerGraph) = length(mg.v_V_associations)
 
 """
     vertices(mg::M) where {M<:AbstractMultilayerGraph}
 
 Return the collection of the vertices of `mg`.
 """
-function Graphs.vertices(mg::M) where {M<:AbstractMultilayerGraph}
+function vertices(mg::M) where {M<:AbstractMultilayerGraph}
     return sort(collect(domain(mg.v_V_associations)))
 end
 
@@ -198,7 +198,7 @@ end
 
 Add MultilayerVertex `mv` to multilayer graph `mg`. If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error.
 """
-function Graphs.add_vertex!(
+function add_vertex!(
     mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool=true
 )
     _node = node(mv)
@@ -214,21 +214,21 @@ end
 
 Return the edge type for `mg`.
 """
-Graphs.edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} = MultilayerEdge{U}
+edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} = MultilayerEdge{U}
 
 """
     ne(mg::AbstractMultilayerGraph)
 
 Return the number of edges in `mg`.
 """
-Graphs.ne(mg::AbstractMultilayerGraph) = length(edges(mg))
+ne(mg::AbstractMultilayerGraph) = length(edges(mg))
 
 """
     has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) 
 
 Return true if `mg` has an edge between the source and the destination of `edge` (does not check edge or vertex metadata).
 """
-function Graphs.has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge)
+function has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge)
     return has_edge(mg, get_v(mg, src(edge)), get_v(mg, dst(edge)))
 end
 
@@ -237,7 +237,7 @@ end
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
-function Graphs.has_edge(
+function has_edge(
     mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex
 )
     return has_edge(mg, get_v(mg, src), get_v(mg, dst))
@@ -248,7 +248,7 @@ end
 
 Internal method. Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
-function Graphs.add_edge!(
+function add_edge!(
     mg::M,
     src::T,
     dst::T;
@@ -265,7 +265,7 @@ end
 
 Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
-function Graphs.add_edge!(
+function add_edge!(
     mg::M,
     src::V,
     dst::V;
@@ -280,21 +280,21 @@ end
 
 Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
-Graphs.add_edge!( mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = add_edge_specialized!(mg, me)
+add_edge!( mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = add_edge_specialized!(mg, me)
 
 """
     rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}}
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
+rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
 
 """
     rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = rem_edge_specialized!(mg, src, dst)
+rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = rem_edge_specialized!(mg, src, dst)
 
 
 """
@@ -302,7 +302,7 @@ Graphs.rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::Multil
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge) = rem_edge!(mg, src(me), dst(me))
+rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge) = rem_edge!(mg, src(me), dst(me))
 
 """
     get_halfegde(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where M <: AbstractMultilayerGraph
@@ -651,7 +651,7 @@ end
 
 Get the indegree of vertex `v` in `mg`.
 """
-function Graphs.indegree(mg::AbstractMultilayerGraph, v::MultilayerVertex)
+function indegree(mg::AbstractMultilayerGraph, v::MultilayerVertex)
     return length(inneighbors(mg, v))
 end
 
@@ -660,7 +660,7 @@ end
 
 Get the vector of indegrees of vertices `vs` in `mg`.
 """
-function Graphs.indegree(
+function indegree(
     mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
 )
     return [indegree(mg, x) for x in vs]
@@ -671,7 +671,7 @@ end
 
 Get the outdegree of vertex `v` in `mg`.
 """
-function Graphs.outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+function outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
     return length(outneighbors(mg, mv))
 end
 
@@ -680,7 +680,7 @@ end
 
 Get the vector of outdegrees of vertices `vs` in `mg`.
 """
-function Graphs.outdegree(
+function outdegree(
     mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
 )
     return [outdegree(mg, x) for x in vs]
@@ -691,7 +691,7 @@ end
 
 Get the degree of vertices `vs` in `mg`.
 """
-function Graphs.degree(
+function degree(
     mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
 )
     return [degree(mg, x) for x in vs]
@@ -702,7 +702,7 @@ end
 
 Return the list of inneighbors of `mv` within `mg`.
 """
-function Graphs.inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+function inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
     return inneighbors(mg, get_v(mg, mv))
 end
 
@@ -711,7 +711,7 @@ end
 
 Return the list of outneighbors of `v` within `mg`.
 """
-function Graphs.outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+function outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
     return outneighbors(mg, get_v(mg, mv))
 end
 
@@ -720,7 +720,7 @@ end
 
 Return the list of outneighbors of `v` within `mg`.
 """
-function Graphs.outneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T}}
+function outneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T}}
     _outneighbors = T[]
 
     for helfedge in mg.fadjlist[v]
@@ -735,7 +735,7 @@ end
 
 Get the neighbors of vertex `mv` in `mg`. Reduces to `outneighbors` for both directed and undirected multilayer graphs.
 """
-Graphs.neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = outneighbors(mg, mv)
+neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = outneighbors(mg, mv)
 
 """
     weighttype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}} 
@@ -1077,7 +1077,7 @@ The returned values are: the eigenvector centrality and the relative error at ea
 
 Note: in the limit case of a monoplex graph, this function outputs a eigenvector centrality vector that coincides the one outputted by Graphs.jl's `eigenvector_centrality`.
 """
-function Graphs.eigenvector_centrality(
+function eigenvector_centrality(
     mg::M; weighted::Bool=true, norm::String="1", tol::Float64=1e-6, maxiter::Int64=2000
 ) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     swm_m = nothing
@@ -1140,7 +1140,7 @@ end
 
 Calculate the modularity of `mg`, as shown in [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
-function Graphs.modularity(
+function modularity(
     mg::M, c::Matrix{Int64}; null_model::Union{String,Array{U,4}}="degree"
 ) where {T,U,M<:AbstractMultilayerGraph{T,U}}
     wgt = weight_tensor(mg).array

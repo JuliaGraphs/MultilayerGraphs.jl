@@ -84,4 +84,4 @@ function _set_metadata!(
     return set_props!(g, src, dst, Dict(key => value for (key, value) in pairs(metadata)))
 end
 
-Graphs.weights(g::AbstractMetaGraph{T}) where {T} = adjacency_matrix(g)
+weights(g::AbstractMetaGraph{T}) where {T} = adjacency_matrix(g)
