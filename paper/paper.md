@@ -49,7 +49,7 @@ MultilayerGraphs.jl features specific methods and metrics including the global c
 
 Finally, MultilayerGraphs.jl has been integrated within the [JuliaDynamics](https://github.com/JuliaDynamics) ecosystem so that any `Multilayer(Di)Graph` can be utilised as an argument to the `GraphSpace` constructor in Agents.jl [@Datseris2022]. 
 
-![Logo of MultilayerGraphs.jl. \label{fig:logo}](images/logo.png){ width=35% }
+![Logo of MultilayerGraphs.jl. \label{fig:logo}](images/logo.png){ width=30% }
 
 # Statement of Need
 
