@@ -59,7 +59,7 @@ Multilayer graphs have been adopted to model the structure and dynamics of a wid
 
 At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the [Julia language](https://julialang.org) [@Bezanson2017] apart from MultilayerGraphs.jl itself [@Moroni_Monticone_MultilayerGraphs_2022]. 
 
-![[@DeDomenicoIllustrated2022]  \label{fig:logo}](images/application_biology.png){ width=40% }
+![Diagram illustrating a multi-scale multilayer graph applied to model social systems from the molecular to the population level [@DeDomenicoIllustrated2022].  \label{fig:application-biology}](images/application_biology.png){ width=100% }
 
 # Main Features 
 
