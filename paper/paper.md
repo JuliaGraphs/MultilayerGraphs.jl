@@ -35,6 +35,8 @@ bibliography: paper.bib
 
 A multilayer graph consists of multiple subgraphs called *layers* which can be interconnected through [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) called *interlayers* composed of the vertex sets of two different layers and the edges between them. The vertices in each layer represent a single set of nodes, although not all nodes have to be represented in every layer. 
 
+![Logo of MultilayerGraphs.jl. \label{fig:logo}](images/logo.png){ width=20% }
+
 Formally, a multilayer graph can be defined as a triple $G=(V,E,L)$, where:
 
 - $V$ is the set of vertices;
@@ -108,3 +110,12 @@ Here is a list of related software packages implemented in the [Python language]
 This open-source research software project received no financial support.
 
 # References
+
+# Figures
+
+Figures can be included like this:
+![Logo of MultilayerGraphs.jl \label{fig:logo}](logo.png)
+and referenced from text using \autoref{fig:example}.
+
+Figure sizes can be customized by adding an optional second parameter:
+![Caption for example figure.](figure.png){ width=20% }
