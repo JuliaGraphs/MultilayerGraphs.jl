@@ -35,8 +35,6 @@ bibliography: paper.bib
 
 A multilayer graph consists of multiple subgraphs called *layers* which can be interconnected through [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) called *interlayers* composed of the vertex sets of two different layers and the edges between them. The vertices in each layer represent a single set of nodes, although not all nodes have to be represented in every layer. 
 
-![Logo of MultilayerGraphs.jl. \label{fig:logo}](images/logo.png){ width=20% }
-
 Formally, a multilayer graph can be defined as a triple $G=(V,E,L)$, where:
 
 - $V$ is the set of vertices;
@@ -50,6 +48,8 @@ MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/
 MultilayerGraphs.jl features specific methods and metrics including the global clustering coefficient, the overlay clustering coefficient, the multilayer eigenvector centrality, the multilayer modularity and the Von Neumann entropy.
 
 Finally, MultilayerGraphs.jl has been integrated within the [JuliaDynamics](https://github.com/JuliaDynamics) ecosystem so that any `Multilayer(Di)Graph` can be utilised as an argument to the `GraphSpace` constructor in Agents.jl [@Datseris2022]. 
+
+![Logo of MultilayerGraphs.jl. \label{fig:logo}](images/logo.png){ width=25% }
 
 # Statement of Need
 
