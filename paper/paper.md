@@ -86,8 +86,8 @@ We invite the user to read the documented [example](https://github.com/JuliaGrap
 - how to **install** the package;
 - how to define **layers** and **interlayers** with a variety of constructors and underlying graphs;
 - how to construct a **directed multilayer graph** with those layers and interlayers;
-- how to add nodes, vertices and edges to the multilayer graph;
-- how to compute some multilayer metrics as defined in @DeDomenico2013. 
+- how to add **nodes**, **vertices** and **edges** to the multilayer graph;
+- how to compute some multilayer **metrics** as defined in @DeDomenico2013. 
 
 # Related Packages 
 
