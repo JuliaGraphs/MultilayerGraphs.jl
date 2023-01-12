@@ -2,7 +2,7 @@
 
 ## Title 
 
-MultilayerGraphs.jl: Multilayer Network Science in Julia
+Multilayer Network Science in Julia with MultilayerGraphs.jl
 
 ## Speakers 
 
