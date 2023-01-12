@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.10.24)  12 JAN 2023 19:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.10.24)  13 JAN 2023 00:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -244,10 +244,10 @@ Underfull \hbox (badness 10000) in paragraph at lines 70--72
 
 {/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 Package epstopdf Info: Source file: <fig1.eps>
-(epstopdf)                    date: 2017-10-04 11:21:14
+(epstopdf)                    date: 2023-01-13 00:29:45
 (epstopdf)                    size: 357553 bytes
 (epstopdf)             Output file: <fig1-eps-converted-to.pdf>
-(epstopdf)                    date: 2023-01-12 17:14:30
+(epstopdf)                    date: 2023-01-13 00:29:45
 (epstopdf)                    size: 26206 bytes
 (epstopdf)             Command: <repstopdf --outfile=fig1-eps-converted-to.pdf fig1.eps>
 (epstopdf)             \includegraphics on input line 131.

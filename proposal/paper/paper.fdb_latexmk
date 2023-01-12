@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex paper"] 1673547703 "paper.aux" "paper.bbl" "paper" 1673547704
-  "./splncs04.bst" 1521111746 33694 182740d5d784dd29ee55be34dddd4ccc ""
-  "paper.aux" 1673547674 1510 34502b79beda8a8269ad40774b2db2ad "pdflatex"
-  "paper.bib" 1673547703 17233 b0e8134771cef038144950d9ef191ad9 ""
+["bibtex paper"] 1673566688 "paper.aux" "paper.bbl" "paper" 1673566704
+  "./splncs04.bst" 1673566185 33694 182740d5d784dd29ee55be34dddd4ccc ""
+  "paper.aux" 1673566704 1510 34502b79beda8a8269ad40774b2db2ad "pdflatex"
+  "paper.bib" 1673566185 17233 b0e8134771cef038144950d9ef191ad9 ""
   (generated)
   "paper.bbl"
   "paper.blg"
-["pdflatex"] 1673547674 "/Users/pietro/GitHub/MultilayerGraphs.jl/proposal/paper/paper.tex" "paper.pdf" "paper" 1673547704
-  "/Users/pietro/GitHub/MultilayerGraphs.jl/proposal/paper/paper.tex" 1673547315 6476 cd04fc801ed185fec5a38bc703065fd3 ""
+["pdflatex"] 1673566704 "/Users/pietro/GitHub/MultilayerGraphs.jl/proposal/paper/paper.tex" "paper.pdf" "paper" 1673566704
+  "/Users/pietro/GitHub/MultilayerGraphs.jl/proposal/paper/paper.tex" 1673566704 6476 cd04fc801ed185fec5a38bc703065fd3 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1136849721 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -63,11 +63,11 @@
   "/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1647878959 4410336 7d30a02e9fa9a16d7d1f8d037ba69641 ""
   "/usr/local/texlive/2022/texmf-var/web2c/pdftex/pdflatex.fmt" 1666609799 2826444 5c8f4071b22f563e8f309c991f93db6c ""
   "/usr/local/texlive/2022/texmf.cnf" 1647878952 577 209b46be99c9075fd74d4c0369380e8c ""
-  "fig1.eps" 1507108874 357553 784a1d3035e9550a463f314c33bb157f ""
-  "llncs.cls" 1662370060 43530 d52f921432ec1a201702604aae613d16 ""
-  "paper.aux" 1673547674 1510 34502b79beda8a8269ad40774b2db2ad "pdflatex"
-  "paper.bbl" 1673547704 878 0e6e80fb505662b124301500776a61b2 "bibtex paper"
-  "paper.tex" 1673547315 6476 cd04fc801ed185fec5a38bc703065fd3 ""
+  "fig1.eps" 1673566185 357553 784a1d3035e9550a463f314c33bb157f ""
+  "llncs.cls" 1673566185 43530 d52f921432ec1a201702604aae613d16 ""
+  "paper.aux" 1673566704 1510 34502b79beda8a8269ad40774b2db2ad "pdflatex"
+  "paper.bbl" 1673566688 878 0e6e80fb505662b124301500776a61b2 "bibtex paper"
+  "paper.tex" 1673566704 6476 cd04fc801ed185fec5a38bc703065fd3 ""
   (generated)
   "paper.aux"
   "paper.log"
