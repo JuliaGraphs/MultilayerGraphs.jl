@@ -57,7 +57,7 @@ Papers and abstracts must be submitted via [Easychair](https://easychair.org/con
 
 ### Publication 
 
-WAW 2023 proceedings will be published by Springer LNCS volume. 
+WAW 2023 proceedings will be published by Springer [LNCS volume](http://www.springer.com/computer/lncs?SGWID=0-164-0-0-0). 
 
 ## Contact 
 
