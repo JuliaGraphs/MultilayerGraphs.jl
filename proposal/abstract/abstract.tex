@@ -1,4 +1,4 @@
-% This is samplepaper.tex, a sample chapter demonstrating the
+% This is abstarct.tex, a sample chapter demonstrating the
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.21 of 2022/01/12
 %
@@ -7,7 +7,7 @@
 \usepackage[T1]{fontenc}
 % T1 fonts will be used to generate the final print and online PDFs,
 % so please use T1 fonts in your manuscript whenever possible.
-% Other font encondings may result in incorrect characters.
+% Other font encodings may result in incorrect characters.
 %
 \usepackage{graphicx}
 % Used for displaying a sample figure. If possible, figure files should
@@ -20,26 +20,25 @@
 %
 \begin{document}
 %
-\title{Contribution Title\thanks{Supported by organization x.}}
+\title{Multilayer Network Science in Julia \\ with MultilayerGraphs.jl}
 %
 %\titlerunning{Abbreviated paper title}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
-Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
-Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
+\author{
+    Claudio Moroni\inst{1,2}\orcidID{0000-0003-1274-6937} \\ \and
+    Pietro Monticone\inst{1,2}\orcidID{0000-0002-2731-9623}
+}
 %
-\authorrunning{F. Author et al.}
+\authorrunning{Moroni and Monticone}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
-\institute{Princeton University, Princeton NJ 08544, USA \and
-Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
-\email{lncs@springer.com}\\
-\url{http://www.springer.com/gp/computer-science/lncs} \and
-ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
-\email{\{abc,lncs\}@uni-heidelberg.de}}
+\institute{
+University of Turin, Italy (\url{https://www.unito.it}) \\ \and
+Interdisciplinary Physics Team, Italy (\url{https://github.com/InPhyT})
+}
 %
 \maketitle              % typeset the header of the contribution
 %
@@ -47,7 +46,25 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 The abstract should briefly summarize the contents of the paper in
 150--250 words.
 
-\keywords{First keyword  \and Second keyword \and Another keyword.}
+MultilayerGraphs.jl is a Julia package for the creation, manipulation 
+and analysis of the structure, dynamics and functions of multilayer graphs. 
+A multilayer graph consists of multiple subgraphs called layers which 
+can be interconnected through bipartite graphs called interlayers. 
+
+In order to formally represent multilayer networks, multiple theoretical frameworks have been proposed and adopted to model a wide spectrum of high-dimensional, non-linear, multi-scale, time-dependent complex systems including molecular, neuronal, socio-technical and economic networks. 
+
+The package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as nodes, vertices, layers, interlayers, etc.
+
+MultilayerGraphs.jl is integrated within the [**JuliaGraphs**](https://github.com/JuliaGraphs) ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) with several multilayer-specific methods and metrics and within the [**JuliaDynamics**](https://github.com/JuliaDynamics) ecosystem allowing for agent-based modelling on general multilayer networks via [Agents.jl](https://github.com/JuliaDynamics/Agents.jl).
+
+For a comprehensive exploration of its features and functionalities we recommend to consult the package [README](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/README.md) and [documentation](https://juliagraphs.org/MultilayerGraphs).
+
+\keywords{
+    Discrete Mathematics \and Graph Theory \and Network Science \and \\ 
+    Multilayer Graphs \and Multilayer Networks \and Complex Systems \and \\
+    Computer Science \and Julia Language.
+    }
+
 \end{abstract}
 %
 %
