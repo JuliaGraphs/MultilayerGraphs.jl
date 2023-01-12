@@ -1,6 +1,6 @@
 # WAW 2023
 
-## Main References 
+## Resources
 
 - [Conference Website](https://math.ryerson.ca/waw2023/);
 - [Submission Link](https://easychair.org/conferences/?conf=waw2023).
