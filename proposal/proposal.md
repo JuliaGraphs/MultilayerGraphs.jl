@@ -22,7 +22,7 @@ JuliaCon
 
 **MultilayerGraphs.jl** is a Julia package for the creation, manipulation and analysis of multilayer graphs, which have been adopted to model of a wide range of complex systems from bio-chemical to socio-technical networks.
 
-We will synthetically illustrate some of the main features of the current version of the package and talk about its future developments.
+We will synthetically introduce multilayer graph theory and applications, illustrate some of the main features of the current version of the package and talk about its future developments.
 
 ## Description 
 
@@ -34,12 +34,14 @@ In order to formally represent multilayer networks, several theoretical paradigm
 
 The package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as nodes, vertices, layers, interlayers, etc.
 
-MultilayerGraphs.jl has been integrated with the [**JuliaGraphs**](https://github.com/JuliaGraphs) and the [**JuliaDynamics**](https://github.com/JuliaDynamics) ecosystems through: 
+MultilayerGraphs.jl has been integrated with the [JuliaGraphs](https://github.com/JuliaGraphs) and the [JuliaDynamics](https://github.com/JuliaDynamics) ecosystems through: 
 
-- the extension of [**Graphs.jl**](https://github.com/JuliaGraphs/Graphs.jl) with several methods and metrics including the multilayer eigenvector centrality, the multilayer modularity and the Von Newman entropy; 
-- the compatibility with [**Agents.jl**](https://github.com/JuliaDynamics/Agents.jl) allowing for agent-based modelling on general multilayer networks. 
+- the extension of [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) with several methods and metrics including the multilayer eigenvector centrality, the multilayer modularity and the Von Newman entropy; 
+- the compatibility with [Agents.jl](https://github.com/JuliaDynamics/Agents.jl) allowing for agent-based modelling on general multilayer networks. 
 
-In our talk we will synthetically showcase some of the main features of the current version of the package through a live tutorial including: 
+We will synthetically introduce multilayer graph theory and applications, illustrate some of the main features of the current version of the package and talk about its future developments.
+
+In our talk we will briefly introduce the theory and applications of multilayer graphs and showcase some of the main features of the current version of the package through a quick tutorial including: 
 
 - how to install the package;
 - how to define layers and interlayers with a variety of constructors and underlying graphs;
