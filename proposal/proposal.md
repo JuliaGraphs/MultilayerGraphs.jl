@@ -55,6 +55,12 @@ For a more comprehensive exploration of the package functionalities and further 
 
 ## Notes 
 
+### Multiple Languages 
+
+We're available to submit the same proposal / talk in two languages: 
+- English: "MultilayerGraphs.jl: Multilayer Network Science in Julia"; 
+- Italian: "MultilayerGraphs.jl: Multilayer Network Science in Julia"
+
 ### Statement of Need 
 
 At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the Julia language apart from MultilayerGraphs.jl itself.
