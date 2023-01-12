@@ -1,5 +1,11 @@
 # JuliaCon 2023 Proposal 
 
+**NB**:
+- Session tpe is pretty flexible: it can be changed during the review process either by authors' or reviewers' choice;
+- Make sure to read proposals and watch talks from previous JuliaCons to see what's expected; 
+- It's possible to submit the same talk in multiple languages: you just need to write it in the "Note" section.
+- It's not mandatory to present just a solution to a problem: pointing to a problem to solve would be highly appreciated by the community. It might be very useful to highlight the limitations of the current development of your package (e.g. features you aren't able implement, etc.). 
+
 ## Title 
 
 MultilayerGraphs.jl: Multilayer Network Science in Julia
@@ -7,8 +13,6 @@ MultilayerGraphs.jl: Multilayer Network Science in Julia
 ## Session Type 
 
 Lightning talk (10 minutes). 
-
-Pretty flexible: it can be changed during the review process either by authors' or reviewers' choice. 
 
 ## Track 
 
