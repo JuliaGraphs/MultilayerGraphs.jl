@@ -1,4 +1,4 @@
-# WAW 2023: 18th Workshop on Algorithms and Models for the Web Graph
+# WAW 2023
 
 ![poster](https://math.ryerson.ca/waw2023/images/WAW2023-poster-small.png)
 
