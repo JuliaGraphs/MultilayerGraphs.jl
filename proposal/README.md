@@ -1,7 +1,5 @@
 # WAW 2023
 
-![poster](https://math.ryerson.ca/waw2023/images/WAW2023-poster-small.png)
-
 ## Main References 
 
 - [Conference Website](https://math.ryerson.ca/waw2023/);
@@ -54,3 +52,5 @@ WAW 2023 proceedings will be published by Springer LNCS volume.
 ## Contact 
 
 All questions about submissions should be emailed to Pawel Pralat (pralat@ryerson.ca).
+
+[![poster](https://math.ryerson.ca/waw2023/images/WAW2023-poster.png)](https://math.ryerson.ca/waw2023/)
