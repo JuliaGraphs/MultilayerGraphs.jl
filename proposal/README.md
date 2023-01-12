@@ -47,7 +47,7 @@ Papers and abstracts must be submitted via [Easychair](https://easychair.org/con
 
 - Must be a **maximum of 1 page**; 
 - May be in **any style**;
-- Must be **PDF files**
+- Must be **PDF files**;
 - Should include: 
   - [ ] title;
   - [ ] speakers;
