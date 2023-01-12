@@ -8,7 +8,7 @@ MultilayerGraphs.jl: Multilayer Network Science in Julia
 
 Lightning talk (10 minutes). 
 
-Pretty flexible: it can be changed during the review process. 
+Pretty flexible: it can be changed during the review process either by authors' or reviewers' choice. 
 
 ## Track 
 
