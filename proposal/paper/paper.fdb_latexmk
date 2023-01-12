@@ -1,6 +1,6 @@
 # Fdb version 3
-["pdflatex"] 1673545151 "/Users/pietro/GitHub/MultilayerGraphs.jl/proposal/paper/paper.tex" "paper.pdf" "paper" 1673545152
-  "/Users/pietro/GitHub/MultilayerGraphs.jl/proposal/paper/paper.tex" 1673545151 7506 adff6a0ae6f3004018ce55cadb87893c ""
+["pdflatex"] 1673545677 "/Users/pietro/GitHub/MultilayerGraphs.jl/proposal/paper/paper.tex" "paper.pdf" "paper" 1673545678
+  "/Users/pietro/GitHub/MultilayerGraphs.jl/proposal/paper/paper.tex" 1673545678 7507 cc183fe80e2b2604a6706cb822c975f8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1136849721 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -58,8 +58,8 @@
   "/usr/local/texlive/2022/texmf.cnf" 1647878952 577 209b46be99c9075fd74d4c0369380e8c ""
   "fig1.eps" 1507108874 357553 784a1d3035e9550a463f314c33bb157f ""
   "llncs.cls" 1662370060 43530 d52f921432ec1a201702604aae613d16 ""
-  "paper.aux" 1673545152 1667 0944c486050cd14bf4e223c83dc8b82f "pdflatex"
-  "paper.tex" 1673545151 7506 adff6a0ae6f3004018ce55cadb87893c ""
+  "paper.aux" 1673545678 1667 0944c486050cd14bf4e223c83dc8b82f "pdflatex"
+  "paper.tex" 1673545678 7507 cc183fe80e2b2604a6706cb822c975f8 ""
   (generated)
   "paper.aux"
   "paper.log"
