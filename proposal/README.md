@@ -37,11 +37,23 @@ Papers and abstracts must be submitted via [Easychair](https://easychair.org/con
 
 #### Papers
 
-The papers must be formatted according to Springer LNCS style. The maximum length of papers is at most 15 pages but shorter papers are welcome. The workshop proceedings will be published as a Springer LNCS volume. Selected papers from the workshop will be invited to a special issue. Talks associated with proceedings papers will be 30 minutes.
+- Must be **formatted** according to [Springer LNCS style](http://www.springer.com/computer/lncs?SGWID=0-164-6-793341-0);
+- Must be **at most 15 pages** but shorter papers are welcome;
+- Proceedings will be published as a Springer [LNCS volume](http://www.springer.com/computer/lncs?SGWID=0-164-0-0-0);
+- Selected papers from the workshop will be invited to a **special issue**. 
+- Talks associated with proceedings papers will be **30 minutes**.
 
 #### Abstracts 
 
-Abstracts are a maximum of one page, may be in any style, and must be pdf files. They should include the title, speakers, and a summary of research. All abstracts related to the conference areas will be accepted (at the discretion of the program committee), and published on the conference website (but not published in the proceedings). Talks associated with abstracts will be 20 minutes.
+- Must be a **maximum of 1 page**; 
+- May be in **any style**;
+- Must be **PDF files**
+- Should include: 
+  - [ ] title;
+  - [ ] speakers;
+  - [ ] summary of research. 
+- All abstracts related to the conference areas will be accepted (at the discretion of the program committee), and published on the conference website (but not published in the proceedings);
+- Talks associated with abstracts will be **20 minutes**.
 
 ### Publication 
 
