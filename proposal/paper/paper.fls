@@ -181,6 +181,10 @@ INPUT ./fig1.eps
 INPUT ./fig1-eps-converted-to.pdf
 INPUT ./fig1-eps-converted-to.pdf
 INPUT ./fig1-eps-converted-to.pdf
+INPUT ./paper.bbl
+INPUT paper.bbl
+INPUT ./paper.bbl
+INPUT paper.bbl
 INPUT paper.aux
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc

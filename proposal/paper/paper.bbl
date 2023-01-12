@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{Bianconi2018}
+Bianconi, G.: Multilayer Networks: Structure and Function. Oxford University
+  Press (Jul 2018), \url{https://doi.org/10.1093/oso/9780198753919.001.0001}
+
+\bibitem{DeDomenico2013}
+Domenico, M.D., Sol{\'{e}}-Ribalta, A., Cozzo, E., Kivel\"{a}, M., Moreno, Y.,
+  Porter, M.A., G{\'{o}}mez, S., Arenas, A.: Mathematical formulation of
+  multilayer networks. Physical Review X  \textbf{3}(4) (Dec 2013),
+  \url{https://doi.org/10.1103/physrevx.3.041022}
+
+\bibitem{Kivela2014}
+Kivela, M., Arenas, A., Barthelemy, M., Gleeson, J.P., Moreno, Y., Porter,
+  M.A.: Multilayer networks. Journal of Complex Networks  \textbf{2}(3),
+  203--271 (Jul 2014), \url{https://doi.org/10.1093/comnet/cnu016}
+
+\end{thebibliography}
