@@ -1,12 +1,19 @@
 # WAW 2023: 18th Workshop on Algorithms and Models for the Web Graph
 
+## Main References 
+
+- [Conference Website](https://math.ryerson.ca/waw2023/);
+- [Submission Link](https://easychair.org/conferences/?conf=waw2023).
+
 ## Where 
 
 [Fields Institute for Research in Mathematical Sciences](http://www.fields.utoronto.ca), Toronto, Canada. 
 
 ## When 
 
-2023/05/23 - 2023/05/26
+- **Abstract registration deadline**: 2023/01/20; 
+- **Submission deadline**: 2023/01/20; 
+- **Conference period**: 2023/05/23 - 2023/05/26. 
 
 ## What 
 
@@ -47,12 +54,3 @@ WAW 2023 proceedings will be published by Springer LNCS volume.
 ## Contact 
 
 All questions about submissions should be emailed to Pawel Pralat (pralat@ryerson.ca).
-
-## Sponsors 
-
-- Fields Institute 
-- NAWA
-- SGH Warsaw School of Economics
-- Toronto Metropolitan University
-- Tutte Institute
-- Google
