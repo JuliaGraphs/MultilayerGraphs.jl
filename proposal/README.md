@@ -17,13 +17,11 @@
 
 ## What 
 
-The World Wide Web has become part of our everyday life, and information retrieval and data mining on the Web are now of enormous practical interest. The algorithms supporting these activities combine the view of the Web as a text repository and as a graph, induced in various ways by links among pages, hosts and users.
+WAW 2023 invites original research papers and abstracts on all aspects of algorithmic and mathematical research in the areas pertaining to the World-Wide Web, especially papers that espouse the view of complex data as networks.
 
 ### Aim
 
 To further the understanding of graphs that arise from the Web and various user activities on the Web, and stimulate the development of high-performance algorithms and applications that exploit these graphs. The workshop will also welcome the researchers who are working on graph-theoretic and algorithmic aspects of citation networks, social networks, biological networks, molecular networks, and the Internet.
-
-WAW 2023 invites original research papers and abstracts on all aspects of algorithmic and mathematical research in the areas pertaining to the World-Wide Web, especially papers that espouse the view of complex data as networks.
 
 ### Contents 
 
