@@ -6,7 +6,9 @@ MultilayerGraphs.jl: Multilayer Network Science in Julia
 
 ## Session Type 
 
-Lightning talk (10 minutes)
+Lightning talk (10 minutes). 
+
+Pretty flexible: it can be changed during the review process. 
 
 ## Track 
 
