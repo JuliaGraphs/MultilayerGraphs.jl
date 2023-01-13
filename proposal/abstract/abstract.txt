@@ -1,0 +1,24 @@
+MultilayerGraphs.jl [1] is a Julia package for the creation, manipulation and analysis of the structure, dynamics and functions of multilayer graphs. 
+
+A multilayer graph consists of multiple subgraphs called layers which can be interconnected through bipartite graphs called interlayers composed of the sets of vertices of two different layers and the edges between them. 
+
+In order to formally represent multilayer networks, multiple theoretical paradigms have been proposed and adopted to model a wide spectrum of high-dimensional, multi-scale, time-dependent complex systems including molecular, neuronal, social, ecological and economic networks. 
+
+The package features an implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects a practitioner would expect such as nodes, vertices, layers, interlayers, etc. 
+
+MultilayerGraphs.jl has been integrated within the JuliaGraphs [2]
+and the JuliaDynamics [3] ecosystems through: 
+- the extension of Graphs.jl [4] with several methods and metrics including the multilayer eigenvector centrality, the multilayer modularity and the Von Newman entropy; 
+- the compatibility with Agents.jl [5] allowing for agent-based modelling on general multilayer networks.
+
+For a comprehensive exploration of the package features and functionalities the reader is invited to consult the README [6] and documentation [7].
+
+KEYWORDS: Discrete Mathematics; Graph Theory; Network Science; Multilayer Graphs; Multilayer Networks; Complex Systems; Computer Science; Julia Language.
+
+[1] https://github.com/JuliaGraphs/MultilayerGraphs.jl.
+[2] https://github.com/JuliaGraphs.
+[3] https://github.com/JuliaDynamics.
+[4] https://github.com/JuliaGraphs/Graphs.jl.
+[5] https://github.com/JuliaDynamics/Agents.jl.
+[6] https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/README.md.
+[7] https://juliagraphs.org/MultilayerGraphs.jl.
