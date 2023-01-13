@@ -22,7 +22,7 @@ JuliaCon
 
 **MultilayerGraphs.jl** is a Julia package for the creation, manipulation and analysis of multilayer graphs, which have been adopted to model of a wide range of complex systems from bio-chemical to socio-technical networks.
 
-We will synthetically introduce multilayer graph theory and applications, illustrate some of the main features of the current version of the package and talk about its future developments.
+We will synthetically introduce multilayer network science, illustrate some of the main features of the current version of the package and talk about its future developments.
 
 ## Description 
 
