@@ -42,7 +42,7 @@ end
 
 Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
+function rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
     # Check that the node exists and then that the vertex exists
     has_node(mg, V.node) || return false
     has_vertex(mg, V) || return false
@@ -95,7 +95,7 @@ end
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
-function Graphs.has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerUGraph{T}}
+function has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerUGraph{T}}
     has_vertex(mg, src) || return false
     has_vertex(mg, dst) || return false
 
@@ -118,7 +118,7 @@ end
 
 Return an list of all the edges of `mg`.
 """
-function Graphs.edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
+function edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
     edge_list = MultilayerEdge{U}[]
 
     for (_src_v, halfedges) in enumerate(mg.fadjlist)
@@ -460,7 +460,7 @@ end
 
 Return the degree of MultilayerVertex `v` within `mg`.
 """
-function Graphs.degree(
+function degree(
     mg::M, v::V
 ) where {T,M<:AbstractMultilayerUGraph{T,<:Real},V<:MultilayerVertex}
     return indegree(mg, v)
@@ -471,21 +471,21 @@ end
 
 Return `true` if `mg` is directed, `false` otherwise. 
 """
-Graphs.is_directed(mg::AbstractMultilayerUGraph) = false
+is_directed(mg::AbstractMultilayerUGraph) = false
 
 """
     is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
 
 Return `true` if `mg` is directed, `false` otherwise. 
 """
-Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerUGraph}} = false
+is_directed(mg::M) where {M<:Type{<:AbstractMultilayerUGraph}} = false
 
 """
     inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
 
 Return the list of inneighbors of `v` within `mg`.
 """
-function Graphs.inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
+function inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
     return outneighbors(mg, v)
 end
 

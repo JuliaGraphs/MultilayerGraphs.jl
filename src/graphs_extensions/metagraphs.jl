@@ -85,3 +85,5 @@ function _set_metadata!(
 end
 
 weights(g::AbstractMetaGraph{T}) where {T} = adjacency_matrix(g)
+
+is_directed(g::G) where {G <: AbstractMetaGraph} = is_directed(G)

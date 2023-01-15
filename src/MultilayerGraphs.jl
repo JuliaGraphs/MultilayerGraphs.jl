@@ -176,7 +176,7 @@ using Base, InteractiveUtils, IterTools, SimpleTraits, WhereTraits, Bijections, 
 using Distributions: Uniform
 using LinearAlgebra, Statistics, OMEinsum, TensorOperations, Distributions
 using DataStructures, SparseArrays
-import Graphs: AbstractGraph, AbstractEdge, has_vertex, nv, vertices, add_vertex!, rem_vertex!, edgetype, has_edge , ne, edges, inneighbors, outneighbors,neighbors, add_edge!, rem_edge!, src, dst, weights, degree, indegree, outdegree, is_directed, inneighbors, eigenvector_centrality, modularity, SimpleGraphs
+import Graphs: AbstractGraph, AbstractEdge, has_vertex, nv, vertices, add_vertex!, rem_vertex!, edgetype, has_edge , ne, edges, inneighbors, outneighbors,neighbors, add_edge!, rem_edge!, src, dst, weights, degree, indegree, outdegree, is_directed, inneighbors, eigenvector_centrality, modularity, SimpleGraphs, SimpleGraph, SimpleDiGraph, IsDirected,isgraphical, isdigraphical, adjacency_matrix
 using SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs # Graphs, 
 
 include("traits.jl")
@@ -200,7 +200,7 @@ include("representations/metadatatensor.jl")
 include("representations/supraweightmatrix.jl") 
 include("abstractmultilayergraph.jl")
 include("abstractmultilayerugraph.jl")
-#= include("abstractmultilayerdigraph.jl")
+include("abstractmultilayerdigraph.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
 include("ismultiplex.jl")
@@ -209,6 +209,6 @@ include("abstractmultiplexdigraph.jl")
 include("multiplexgraph.jl")
 include("multiplexdigraph.jl")
 include("utilities.jl")
-include("tensorsfactorizations.jl") =#
+include("tensorsfactorizations.jl")
 
 end
