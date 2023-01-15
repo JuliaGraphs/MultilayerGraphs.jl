@@ -34,6 +34,8 @@ Multilayer graphs have been adopted to model the structure and dynamics of a wid
 
 MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features a peculiar implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects an experienced practitioner would expect such as nodes ([`Node`](@ref)), vertices ([`MultilayerVertex`](@ref)), layers ([`Layer`](@ref)), interlayers ([`Interlayer`](@ref)), etc.
 
+A multilayer graph is composed of layers, i.e. graphs whose vertices represent the same set of nodes (not all nodes need to be represented in every layer), and interlayers, i.e. the bipartite graphs that connect vertices in two different layers. Vertices in a multilayer graph are represented using the `MultilayerVertex` struct, while nodes are represented using the `Node` struct.
+
 `MultilayerGraph` and `MultilayerDiGraph` are fully-fledged Graphs.jl extensions. Both structs are designed to allow for layers and interlayers of any type (as long as they are Graphs.jl extensions themselves) and to permit layers and interlayers of different types. However, it is required that all layers and interlayers in `MultilayerGraph` are undirected, and all layers and interlayers in `MultilayerDiGraph` are directed.
 
 `MultilayerGraph` and `MultilayerDiGraph` support the specification of vertex and edge metadata, provided that the underlying layer or interlayer also supports metadata.
@@ -947,18 +949,7 @@ Read a complete list of analytical methods exclusive to multilayer graphs in the
 
 ### Future Developments
 
-- [Implement graph of layers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/34);
-- [Implement projected monoplex and overlay graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/35);
-- [Implement more default multilayer graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/36) (e.g. multiplex graphs);
-- [Implement configuration models / graph generators for interlayers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/46);
-- [Implement a fully-fledged multilayer configuration model / graph generator](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/48);
-- [Relax the requirement of same `T` and `U` for all `Layer`s and `Interlayer`s that are meant to constitute a `Multilayer(Di)Graph`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/53);
-- [Implement multilayer graph data visualisation functionalities](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54);
-- [Infer `weighttype` from `default_edge_weight`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/58);
-- [Improve error explanations](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/59); 
-- [Improve integration with Agents.jl](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/61);
-- [Allow configuration models to specify a minimum discrepancy between the sampled (di)graphical sequence(s) and the provided distribution](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/62);
-- [Add to `add_layer!` a kwarg that allows the user to specify some new interlayers, skipping the instantiation of the default ones.](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/63).
+All the information regarding the future developments of MultilayerGraphs.jl can be found in the [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues).
 
 ## How to Contribute
 
