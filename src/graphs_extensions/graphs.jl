@@ -1,5 +1,5 @@
 function __add_vertex!(
-    g::SimpleGraphs.AbstractSimpleGraph{T};
+    g::Graphs.SimpleGraphs.AbstractSimpleGraph{T};
     metadata::Union{Tuple,NamedTuple}=NamedTuple(),
 ) where {T<:Integer}
     !isempty(metadata) && println(
@@ -9,13 +9,13 @@ function __add_vertex!(
 end
 
 function _get_vertex_metadata(
-    g::SimpleGraphs.AbstractSimpleGraph{T}, vertex::T
+    g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}, vertex::T
 ) where {T}
     return NamedTuple()
 end
 
 function _add_edge!(
-    g::SimpleGraphs.AbstractSimpleGraph{T},
+    g::Graphs.SimpleGraphs.AbstractSimpleGraph{T},
     src::T,
     dst::T;
     weight::W=nothing,
@@ -30,18 +30,18 @@ function _add_edge!(
 end
 
 function _get_edge_weight(
-    g::SimpleGraphs.AbstractSimpleGraph{T}, src::T, dst::T, weighttype::Type{U}
+    g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}, src::T, dst::T, weighttype::Type{U}
 ) where {T,U<:Real}
     return one(U)
 end
 
 # `_get_edge_metadata` must return NamedTuple() (or maybe `nothing` would be better?) instead of throwing an exception in order for `edges` to consistently work on layers and interlayers 
 function _get_edge_metadata(
-    g::SimpleGraphs.AbstractSimpleGraph{T}, src::T, dst::T
+    g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}, src::T, dst::T
 ) where {T}
     return NamedTuple()
 end
 
-function weights(g::SimpleGraphs.AbstractSimpleGraph{T}) where {T}
+function weights(g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}) where {T}
     return adjacency_matrix(g)
 end

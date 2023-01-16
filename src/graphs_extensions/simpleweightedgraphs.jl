@@ -40,4 +40,4 @@ function _set_weight!!(
     return add_edge!(g, src, dst, weight)
 end
 
-is_directed(g::G) where {G <: AbstractSimpleWeightedGraph} = is_directed(G)
+# is_directed(g::G) where {G <: AbstractSimpleWeightedGraph} = is_directed(G)

@@ -8,3 +8,5 @@
 ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerGraph{T,U},In<:Interlayer{T,U,G}, istrait(IsMultiplex{M})}
      throw(ErrorException("Interlayers are automatically specified in multiplex graphs and they should not be modified in any way. If you need to modify interlayers, perhaps a standard multilayer graph will better suit your use case."))
 end
+
+

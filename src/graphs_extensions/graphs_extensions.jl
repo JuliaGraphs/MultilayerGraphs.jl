@@ -11,7 +11,7 @@ Internal function. It serves as a unified interface between MultilayerGraphs.jl 
 """
 function _edges(
     g::Union{
-        SimpleGraphs.AbstractSimpleGraph{T},
+        Graphs.SimpleGraphs.AbstractSimpleGraph{T},
         AbstractSimpleWeightedGraph{T},
         AbstractMetaGraph{T},
         SimpleValueGraphs.AbstractValGraph{T},

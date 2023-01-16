@@ -813,26 +813,14 @@ end
 
 Evaluate if at least one of the conditions in `conds` is true.
 """
-function or(conds::Tuple{Vararg{Bool}}...)
-    @assert(length(conds) >= 2, "length(conds) <2")
-    if length(conds) == 2
-        conds[1] || conds[2]
-    else
-         conds[1] || or(conds[2:end])
-    end
-end
+or(conds...) = any(conds)
+
 
 """
-    or(conds...)
+    and(conds...)
 
-Evaluate if at least one of the conditions in `conds` is true.
+Evaluate if all conditions in `conds` is true.
 """
-function and(conds::Tuple{Vararg{Bool}}...)
-    @assert(length(conds) >= 2, "length(conds) <2")
-    if length(conds) == 2
-        conds[1] && conds[2]
-    else
-         conds[1] && and(conds[2:end])
-    end
-end
+and(conds...) = all(conds)
+
 
