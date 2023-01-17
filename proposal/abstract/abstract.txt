@@ -11,7 +11,9 @@ and the JuliaDynamics [3] ecosystems through:
 - the extension of Graphs.jl [4] with several methods and metrics including the multilayer eigenvector centrality, the multilayer modularity and the Von Newman entropy; 
 - the compatibility with Agents.jl [5] allowing for agent-based modelling on general multilayer networks.
 
-For a comprehensive exploration of the package features and functionalities the reader is invited to consult the README [6] and documentation [7].
+In our talk we will briefly introduce the theory and applications of multilayer graphs, showcase some of the main features of the current version of the package through a quick tutorial and talk about its planned future developments.
+
+For a more comprehensive exploration of the package functionalities and further details on the future developments the user is invited to consult the package README [6], documentation [7] and issues [8].
 
 KEYWORDS: Discrete Mathematics; Graph Theory; Network Science; Multilayer Graphs; Multilayer Networks; Complex Systems; Computer Science; Julia Language.
 
@@ -22,3 +24,4 @@ KEYWORDS: Discrete Mathematics; Graph Theory; Network Science; Multilayer Graphs
 [5] https://github.com/JuliaDynamics/Agents.jl.
 [6] https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/README.md.
 [7] https://juliagraphs.org/MultilayerGraphs.jl.
+[8] https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues.
