@@ -82,7 +82,7 @@ interlayer_simple_directed_meta = interlayer_metadigraph( # Interlayer construct
     layer_simple_directed_value,                          # Layer 2
     n_edges;                                              # Number of edges
     default_edge_metadata=(src, dst) ->                   # Edge metadata 
-        (edge_metadata = "metadata_of_edge_from_$(src)_to_$(dst)",),
+        (edge_metadata="metadata_of_edge_from_$(src)_to_$(dst)",),
     transfer_vertex_metadata=true, # Boolean deciding layer vertex metadata inheritance
 )
 
