@@ -29,4 +29,4 @@ MultilayerGraphs.jl has been integrated within the [**JuliaGraphs**](https://git
 
 In our talk we will briefly introduce the theory and applications of multilayer graphs, showcase some of the main features of the current version of the package through a quick tutorial and talk about its planned future developments.
 
-For a more comprehensive exploration of the package functionalities and further details on the future developments the user is invited to consult the package [README](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/README.md), [documentation](https://juliagraphs.org/MultilayerGraphs) and [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues).
+For a more comprehensive exploration of the package functionalities and further details on the future developments the reader is invited to consult the package [README](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/README.md), [documentation](https://juliagraphs.org/MultilayerGraphs) and [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues).
