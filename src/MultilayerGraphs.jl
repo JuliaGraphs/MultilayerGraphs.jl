@@ -172,7 +172,7 @@ export
     kleitman_wang_graph_generator
 # tensorfacoriazations.jl
 
-using Base, InteractiveUtils, IterTools, SimpleTraits, WhereTraits, Bijections, PrettyTables
+using Base, InteractiveUtils, IterTools, SimpleTraits, Bijections, PrettyTables
 using Distributions: Uniform
 using LinearAlgebra, Statistics, OMEinsum, TensorOperations, Distributions
 using DataStructures, SparseArrays
@@ -205,11 +205,11 @@ include("abstractmultilayerugraph.jl")
 include("abstractmultilayerdigraph.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
-include("ismultiplex.jl")
+#= include("ismultiplex.jl")
 include("abstractmultiplexugraph.jl")
 include("abstractmultiplexdigraph.jl")
 include("multiplexgraph.jl")
-include("multiplexdigraph.jl")
+include("multiplexdigraph.jl") =#
 include("tensorsfactorizations.jl")
 
 end

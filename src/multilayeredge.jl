@@ -76,14 +76,14 @@ const ME = MultilayerEdge
 
 Return the source `MultilayerVertex` of `e`.
 """
-src(e::AbstractMultilayerEdge) = e.src
+Graphs.src(e::AbstractMultilayerEdge) = e.src
 
 """
     dst(e::AbstractMultilayerEdge)
 
 Return the destination `MultilayerVertex` of `e`.
 """
-dst(e::AbstractMultilayerEdge) = e.dst
+Graphs.dst(e::AbstractMultilayerEdge) = e.dst
 
 """
     weight(e::AbstractMultilayerEdge)

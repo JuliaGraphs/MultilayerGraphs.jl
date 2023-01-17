@@ -1,9 +1,9 @@
-"""
+#= """
     AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} 
 
 Abstract type representing an undirected multilayer graph.
 """
-abstract type AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} end
+abstract type AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} end =#
 
 # Nodes
 
@@ -306,8 +306,8 @@ Add layer `layer` to `mg`.
     U,
     G<:AbstractGraph{T},
     L<:Layer{T,U,G},
-    H<:AbstractGraph{T},
-    M<:AbstractMultilayerGraph{T,U}; !IsDirected{M}
+    M<:AbstractMultilayerGraph{T,U}; 
+    !IsDirected{M}
 }
 
     @assert(eltype(default_interlayers_null_graph) == T, "The eltype of argument default_interlayers_null_graph is not $T, found $(eltype(default_interlayers_null_graph))")
@@ -336,8 +336,8 @@ Specify the interlayer `new_interlayer` as part of `mg`.
 """
 @traitfn function specify_interlayer!(
     mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}, and(!istrait(IsDirected{M}), !istrait(IsMultiplex{M}))}
-    !istrait(IsDirected{typeof(new_interlayer.graph)}) || throw(
+) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}; IsNotMultiplexNotDirected{M} } # and(!istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
+    !is_directed(new_interlayer.graph) || throw( # !istrait(IsDirected{typeof(new_interlayer.graph)})
         ErrorException(
             "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is directed, so it is not compatible with a `AbstractMultilayerUGraph`.",
         ),
@@ -394,10 +394,10 @@ Internal function. Instantiate the Interlayer described by `descriptor` whose ve
 ) where {
     T,
     U,
-    G<:AbstractGraph{T},
-    InD<:InterlayerDescriptor{T,U,G},
-    M<:AbstractMultilayerGraph{T,U}, 
-    !istrait(IsDirected{M})
+    # G<:AbstractGraph{T},
+    InD<:InterlayerDescriptor{T,U}, # G},
+    M<:AbstractMultilayerGraph{T,U};
+    IsDirected{M}
 }
     layer_1_vs = T[]
     layer_2_vs = T[]
@@ -469,19 +469,19 @@ Return the degree of MultilayerVertex `v` within `mg`.
     return indegree(mg, v)
 end
 
-"""
+#= """
     is_directed(mg::AbstractMultilayerUGraph)
 
 Return `true` if `mg` is directed, `false` otherwise. 
 """
-@traitfn Graphs.is_directed(mg::M) where {M<:AbstractMultilayerGraph; !IsDirected{M}}= false
+@traitfn Graphs.is_directed(mg::M) where {M<:AbstractMultilayerGraph; !IsDirected{M}} = false
 
 """
     is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
 
 Return `true` if `mg` is directed, `false` otherwise. 
 """
-@traitfn Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerGraph}; !IsDirected{M} }  = false
+@traitfn Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerGraph}; !IsDirected{M} }  = false =#
 
 """
     inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}

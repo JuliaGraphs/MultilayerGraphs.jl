@@ -80,7 +80,7 @@ function _set_metadata!(
     end
 end
 
-weights(g::SimpleValueGraphs.AbstractValGraph{T}) where {T} = adjacency_matrix(g)
+# weights(g::SimpleValueGraphs.AbstractValGraph{T}) where {T} = adjacency_matrix(g)
 
 
 # is_directed(g::G) where {G <: SimpleValueGraphs.AbstractValGraph} = is_directed(G)

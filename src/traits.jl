@@ -37,7 +37,7 @@ Trait that discerns between graphs that sport edge and vertex metadata.
 
 Check whether `g` supports edge AND vertex metadata.
 """
-is_meta(g::G) where {G<:AbstractGraph} = is_meta(typeof(g))
+is_meta(g::G) where {G<:AbstractGraph} = is_meta(G)
 
 """
     is_meta(g::G) where {G<:Type{<:AbstractGraph}}
@@ -47,6 +47,16 @@ Check whether `g` supports edge AND vertex metadata.
 is_meta(g::G) where {G<:Type{<:AbstractGraph}} = istrait(IsMeta{g})
 
 
+
+# IsMultiplex{X}
+
+#= """
+    is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}}
+
+Check whether `mg` is a multiplex graph.
+"""
+is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}} = istrait(IsMultiplex{mg}) =#
+
 """
     IsMultiplex{X}
 
@@ -54,12 +64,35 @@ Trait that characterizes multilayer graphs that have multiplex-like behavior (i.
 """
 @traitdef IsMultiplex{X}
 
-"""
-    is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}}
+# IsMultiplexDirected
+@traitdef IsMultiplexDirected{X}
 
-Check whether `mg` is a multiplex graph.
-"""
-is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}} = istrait(IsMultiplex{mg})
+is_multiplex_directed(X) = !istrait(IsMultiplex{X}) && istrait(IsDirected{X})
+@traitimpl IsMultiplexDirected{X} <- is_multiplex_directed(X)
+
+# IsMultiplexNotDirected
+@traitdef IsMultiplexNotDirected{X}
+
+is_multiplex_not_directed(X) = istrait(IsMultiplex{X}) && !istrait(IsDirected{X})
+@traitimpl IsMultiplexNotDirected{X} <- is_multiplex_not_directed(X)
+# IsNotMultiplexDirected
+@traitdef IsNotMultiplexDirected{X}
+
+is_not_multiplex_directed(X) =  !istrait(IsMultiplex{X}) && istrait(IsDirected{X})
+@traitimpl IsNotMultiplexDirected{X} <- is_not_multiplex_directed(X)
+
+# IsNotMultiplexNotDirected
+@traitdef IsNotMultiplexNotDirected{X}
+
+is_not_multiplex_not_directed(X) = !istrait(IsMultiplex{X}) && !istrait(IsDirected{X})
+@traitimpl IsNotMultiplexNotDirected{X} <- is_not_multiplex_not_directed(X)
+
+
+
+
+
+
+# IsUncoupled
 
 
 """
@@ -68,3 +101,4 @@ is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}} = istrait(IsMultiplex{mg})
 Trait that characterizes multilayer graphs that have uncoupled layers (i.e. no inter-layer edges).
 """
 @traitdef IsUncoupled{X}
+

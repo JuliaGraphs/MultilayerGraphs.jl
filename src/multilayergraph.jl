@@ -3,7 +3,7 @@
 
 A concrete type that can represent a general multilayer graph. Its internal fields aren't meant to be modified by the user. Please prefer the provided API.
 """
-mutable struct MultilayerGraph{T,U} <: AbstractMultilayerUGraph{T,U}
+mutable struct MultilayerGraph{T,U} <: AbstractMultilayerGraph{T,U}
     layers::Vector{LayerDescriptor{T,U}} # vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
     interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}} # the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all undirected.
     v_V_associations::Bijection{T,<:MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
@@ -15,6 +15,13 @@ end
 # Traits
 @traitimpl IsWeighted{MultilayerGraph}
 @traitimpl IsMeta{MultilayerGraph}
+
+"""
+    is_directed(m::M) where { M <: Type{ <: MultilayerGraph}}
+
+Return `false`
+"""
+Graphs.is_directed(mg::M) where {M<:Type{<:MultilayerGraph}}  = false
 
 # Constructors
 """

@@ -42,6 +42,7 @@ function _get_edge_metadata(
     return NamedTuple()
 end
 
-function weights(g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}) where {T}
+#= function Graphs.weights(g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}) where {T}
     return adjacency_matrix(g)
 end
+ =#
