@@ -36,7 +36,7 @@ layer_simple_directed_weighted = layer_simpleweighteddigraph(  # Layer construct
 # Create a simple directed value layer
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
 n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
-default_vertex_metadata = v -> ("vertex_$(v)_metadata")        # Vertex metadata 
+default_vertex_metadata = v -> ("vertex_$(v)_metadata",)        # Vertex metadata 
 default_edge_metadata = (s, d) -> (rand(),)                    # Edge metadata 
 layer_simple_directed_value = Layer(                           # Layer constructor
     :layer_simple_directed_value,                              # Layer name
@@ -82,7 +82,7 @@ interlayer_simple_directed_meta = interlayer_metadigraph( # Interlayer construct
     layer_simple_directed_value,                          # Layer 2
     n_edges;                                              # Number of edges
     default_edge_metadata=(src, dst) ->                   # Edge metadata 
-        (edge_metadata = "metadata_of_edge_from_$(src)_to_$(dst)"),
+        (edge_metadata="metadata_of_edge_from_$(src)_to_$(dst)",),
     transfer_vertex_metadata=true, # Boolean deciding layer vertex metadata inheritance
 )
 
@@ -105,28 +105,28 @@ multilayerdigraph = MultilayerDiGraph( # Constructor
 )
 
 # Layers and interlayer can be accessed as properties using their names
-multilayerdigraph.layer_simplevaldigraph
+multilayerdigraph.layer_simple_directed_value
 
 # Create a node 
 new_node_1 = Node("new_node_1")
 # Add the node to the multilayer graph 
 add_node!(multilayerdigraph, new_node_1)
 # Create a vertex representing the node 
-new_vertex_1 = MV(           # Constructor (alias for "MultilayerVertex")
-    new_node_1,              # Node represented by the vertex
-    :layer_simplevaldigraph, # Layer containing the vertex 
-    ("new_metadata"),         # Vertex metadata 
+new_vertex_1 = MV(                # Constructor (alias for "MultilayerVertex")
+    new_node_1,                   # Node represented by the vertex
+    :layer_simple_directed_value, # Layer containing the vertex 
+    ("new_metadata",),            # Vertex metadata 
 )
 # Add the vertex 
 add_vertex!(
-    multilayerdigraph, # MultilayerDiGraph the vertex will be added to
+    multilayerdigraph,  # MultilayerDiGraph the vertex will be added to
     new_vertex_1,       # MultilayerVertex to add
 )
 
 # Create another node in another layer 
 new_node_2 = Node("new_node_2")
 # Create another vertex representing the new node
-new_vertex_2 = MV(new_node_2, :layer_simpledigraph)
+new_vertex_2 = MV(new_node_2, :layer_simple_directed)
 # Add the new vertex
 add_vertex!(
     multilayerdigraph,
@@ -137,7 +137,7 @@ add_vertex!(
 new_edge = MultilayerEdge( # Constructor 
     new_vertex_1,          # Source vertex
     new_vertex_2,          # Destination vertex 
-    ("some_edge_metadata"), # Edge metadata 
+    ("some_edge_metadata",), # Edge metadata 
 )
 # Add the edge 
 add_edge!(
