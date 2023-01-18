@@ -9,7 +9,7 @@ A concrete type that can represent a general (directed) multiplex graph. Differe
 
 Its internal fields aren't meant to be modified by the user. Please prefer the provided API.
 """
-mutable struct MultiplexDiGraph{T,U} <: AbstractMultilayerGraph{T,U}
+mutable struct MultiplexDiGraph{T,U} <: AbstractMultiplexGraph{T,U}
 layers::Vector{LayerDescriptor{T,U}} # vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
 interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}} # the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all undirected.
 v_V_associations::Bijection{T,<:MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
@@ -40,21 +40,19 @@ function MultiplexDiGraph(
 layers::Vector{<:Layer{T,U}};
 default_interlayers_null_graph::H=SimpleGraph{T}()
 ) where {T,U,H<:AbstractGraph{T}}
-multilplexgraph = MultiplexDiGraph(T, U)
+multilplexdigraph = MultiplexDiGraph(T, U)
 
 for layer in deepcopy(layers)
     add_layer!(
-        multilplexgraph,
+        multilplexdigraph,
         layer;
         default_interlayers_null_graph=default_interlayers_null_graph,
         default_interlayers_structure="multiplex",
     )
 end
 
-return multilplexgraph
+return multilplexdigraph
 end
-
-@traitimpl IsMultiplex{MultiplexDiGraph}
 
 
 """

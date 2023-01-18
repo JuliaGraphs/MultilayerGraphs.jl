@@ -9,15 +9,23 @@ abstract type AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} end 
 
 # Vertices
 """
-    add_vertex_specialized!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
+    _add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
 
-Add MultilayerVertex `V` to multilayer graph `mg`, provided that `node(V)` is a `Node` of `mg`. Return true if succeeds.
+Add MultilayerVertex `V` to multilayer graph `mg`.  If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error. Return true if succeeds. 
 """
-@traitfn function add_vertex_specialized!(
-    mg::M, V::MultilayerVertex
+@traitfn function _add_vertex!(
+    mg::M, V::MultilayerVertex,  add_node::Bool=true
 ) where {T,U, M<:AbstractMultilayerGraph{T,U}; !IsDirected{M}}
-    !has_node(mg, node(V)) && return false
     has_vertex(mg, V) && return false
+    if add_node
+        _node = node(mv)
+        if add_node && !has_node(mg, _node)
+            add_node!(mg, _node)
+        end
+    else
+        !has_node(mg, node(V)) && return false
+    end
+    
 
     n_nodes = nn(mg)
 
@@ -38,11 +46,11 @@ Add MultilayerVertex `V` to multilayer graph `mg`, provided that `node(V)` is a 
 end
 
 """
-    rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
+    _rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
 
 Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
 """
-@traitfn function Graphs.rem_vertex!(mg::M, V::MultilayerVertex) where {M <: AbstractMultilayerGraph; !IsDirected{M}}
+@traitfn function _rem_vertex!(mg::M, V::MultilayerVertex) where {M <: AbstractMultilayerGraph; !IsDirected{M}}
     # Check that the node exists and then that the vertex exists
     has_node(mg, V.node) || return false
     has_vertex(mg, V) || return false
@@ -299,13 +307,14 @@ Add layer `layer` to `mg`.
 @traitfn function add_layer!(
     mg::M,
     new_layer::L;
-    default_interlayers_null_graph::AbstractGraph=SimpleGraph{T}(),
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
     default_interlayers_structure::String="multiplex",
 ) where {
     T,
     U,
     G<:AbstractGraph{T},
     L<:Layer{T,U,G},
+    H <: AbstractGraph{T},
     M<:AbstractMultilayerGraph{T,U}; 
     !IsDirected{M}
 }
@@ -336,7 +345,7 @@ Specify the interlayer `new_interlayer` as part of `mg`.
 """
 @traitfn function specify_interlayer!(
     mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}; IsNotMultiplexNotDirected{M} } # and(!istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
+) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}; !IsDirected{M} } # and(!istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
     !is_directed(new_interlayer.graph) || throw( # !istrait(IsDirected{typeof(new_interlayer.graph)})
         ErrorException(
             "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is directed, so it is not compatible with a `AbstractMultilayerUGraph`.",
@@ -397,7 +406,7 @@ Internal function. Instantiate the Interlayer described by `descriptor` whose ve
     # G<:AbstractGraph{T},
     InD<:InterlayerDescriptor{T,U}, # G},
     M<:AbstractMultilayerGraph{T,U};
-    IsDirected{M}
+    !IsDirected{M}
 }
     layer_1_vs = T[]
     layer_2_vs = T[]

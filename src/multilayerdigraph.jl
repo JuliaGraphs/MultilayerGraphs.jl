@@ -213,7 +213,36 @@ end
 
 # Nodes
 
+"""
+    add_node!(mg::MultilayerDiGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
+
+Add node `n` to `mg`. Return true if succeeds. Additionally, add a corresponding vertex to all layers whose name is listed in `add_vertex_to_layers`. If `add_vertex_to_layers == :all`, then a corresponding vertex is added to all layers.
+"""
+add_node!(mg::MultilayerDiGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[]) = _add_node!(mg, n; add_vertex_to_layers = add_vertex_to_layers)
+
+"""
+    rem_node!(mg::MultilayerDiGraph, n::Node)
+
+Remove node `n` to `mg`. Return true if succeeds.
+"""
+rem_node!(mg::MultilayerDiGraph, n::Node) = _rem_node!(mg, n)
+
 # Vertices
+
+"""
+    add_vertex!(mg::MultilayerDiGraph, mv::MultilayerVertex; add_node::Bool = true)
+
+Add MultilayerVertex `mv` to multilayer graph `mg`. If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error.
+"""
+Graphs.add_vertex!(mg::MultilayerDiGraph, mv::MultilayerVertex; add_node::Bool=true) = _add_vertex!(mg, mv; add_node = add_node)
+
+"""
+    rem_vertex!(mg::MultilayerDiGraph, V::MultilayerVertex)
+
+Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
+"""
+rem_vertex!(mg::MultilayerDiGraph, V::MultilayerVertex) = _rem_vertex!(mg, V) 
+
 
 # Edges    
 """

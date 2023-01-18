@@ -205,11 +205,9 @@ include("abstractmultilayerugraph.jl")
 include("abstractmultilayerdigraph.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
-#= include("ismultiplex.jl")
-include("abstractmultiplexugraph.jl")
-include("abstractmultiplexdigraph.jl")
+include("abstractmultiplexgraph.jl")
 include("multiplexgraph.jl")
-include("multiplexdigraph.jl") =#
+include("multiplexdigraph.jl")
 include("tensorsfactorizations.jl")
 
 end

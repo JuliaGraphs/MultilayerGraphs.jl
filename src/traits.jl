@@ -48,7 +48,7 @@ is_meta(g::G) where {G<:Type{<:AbstractGraph}} = istrait(IsMeta{g})
 
 
 
-# IsMultiplex{X}
+#= # IsMultiplex{X}
 
 #= """
     is_multiplex(mg::M) where {M<:Type{<:AbstractGraph}}
@@ -67,7 +67,7 @@ Trait that characterizes multilayer graphs that have multiplex-like behavior (i.
 # IsMultiplexDirected
 @traitdef IsMultiplexDirected{X}
 
-is_multiplex_directed(X) = !istrait(IsMultiplex{X}) && istrait(IsDirected{X})
+is_multiplex_directed(X) = istrait(IsMultiplex{X}) && istrait(IsDirected{X})
 @traitimpl IsMultiplexDirected{X} <- is_multiplex_directed(X)
 
 # IsMultiplexNotDirected
@@ -87,14 +87,7 @@ is_not_multiplex_directed(X) =  !istrait(IsMultiplex{X}) && istrait(IsDirected{X
 is_not_multiplex_not_directed(X) = !istrait(IsMultiplex{X}) && !istrait(IsDirected{X})
 @traitimpl IsNotMultiplexNotDirected{X} <- is_not_multiplex_not_directed(X)
 
-
-
-
-
-
 # IsUncoupled
-
-
 """
     IsUncoupled{X}
 
@@ -102,3 +95,4 @@ Trait that characterizes multilayer graphs that have uncoupled layers (i.e. no i
 """
 @traitdef IsUncoupled{X}
 
+ =#

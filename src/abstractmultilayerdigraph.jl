@@ -11,15 +11,22 @@ abstract type AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 # Nodes
 # Vertices
 """
-    add_vertex_specialized!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
+    _add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerDiGraph{T,U}}
 
-Add MultilayerVertex `V` to multilayer graph `mg`, provided that `node(V)` is a `Node` of `mg`. Return true if succeeds. 
+Add MultilayerVertex `V` to multilayer graph `mg`.  If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error. Return true if succeeds. 
 """
-@traitfn function add_vertex_specialized!(
-    mg::M, V::MultilayerVertex
+@traitfn function _add_vertex!(
+    mg::M, V::MultilayerVertex,  add_node::Bool=true
 ) where {T,U, M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
-    !has_node(mg, V.node) && return false
     has_vertex(mg, V) && return false
+    if add_node
+        _node = node(mv)
+        if add_node && !has_node(mg, _node)
+            add_node!(mg, _node)
+        end
+    else
+        !has_node(mg, node(V)) && return false
+    end
 
     n_nodes = nn(mg)
 
@@ -41,11 +48,11 @@ Add MultilayerVertex `V` to multilayer graph `mg`, provided that `node(V)` is a 
 end
 
 """
-    rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
+    _rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 
 Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
 """
-@traitfn function Graphs.rem_vertex!(mg::M, V::MultilayerVertex) where {M <: AbstractMultilayerGraph; IsDirected{M}}
+@traitfn function _rem_vertex!(mg::M, V::MultilayerVertex) where {M <: AbstractMultilayerGraph; IsDirected{M}}
     # Check that the node exists and then that the vertex exists
     has_node(mg, V.node) || return false
     has_vertex(mg, V) || return false
@@ -313,7 +320,7 @@ Add layer `layer` to `mg`.
 @traitfn function add_layer!(
     mg::M,
     new_layer::L;
-    default_interlayers_null_graph::AbstractGraph=SimpleGraph{T}(),
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
     default_interlayers_structure::String="multiplex",
 ) where {
     T,
@@ -349,7 +356,7 @@ Specify the interlayer `new_interlayer` as part of `mg`.
 """
 @traitfn function specify_interlayer!(
     mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}; IsNotMultiplexDirected{M} } # and(istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
+) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}; IsDirected{M} } # and(istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
     is_directed(new_interlayer.graph) || throw( #istrait(IsDirected{typeof(new_interlayer.graph)})
         ErrorException(
             "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is undirected, so it is not compatible with a `AbstractMultilayerDiGraph`.",
@@ -498,7 +505,7 @@ end
 Return the degree of MultilayerVertex `v` within `mg`.
 """
 @traitfn function Graphs.degree(
-    mg::M, v::V
+    mg::M, mv::V
 ) where {M<:AbstractMultilayerGraph, V<:MultilayerVertex;  IsDirected{M}}
     return indegree(mg, mv) + outdegree(mg, mv)
 end

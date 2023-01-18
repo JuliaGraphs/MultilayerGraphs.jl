@@ -84,11 +84,11 @@ Return true if `n` is a node of `mg`.
 has_node(mg::AbstractMultilayerGraph, n::Node) = n in image(mg.idx_N_associations)
 
 """
-    add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
+    _add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
 
 Add node `n` to `mg`. Return true if succeeds. Additionally, add a corresponding vertex to all layers whose name is listed in `add_vertex_to_layers`. If `add_vertex_to_layers == :all`, then a corresponding vertex is added to all layers.
 """
-function add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
+function _add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
     !has_node(mg, n) || return false
 
     maximum_idx =
@@ -111,11 +111,11 @@ function add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::U
 end
 
 """
-    rem_node!(mg::AbstractMultilayerGraph, n::Node)
+    _rem_node!(mg::AbstractMultilayerGraph, n::Node)
 
 Remove node `n` to `mg`. Return true if succeeds.
 """
-function rem_node!(mg::AbstractMultilayerGraph, n::Node)
+function _rem_node!(mg::AbstractMultilayerGraph, n::Node)
     has_node(mg, n) || return false
 
     idx_tbr = mg.idx_N_associations(n)
@@ -202,12 +202,12 @@ function set_metadata!(
     return true
 end
 
-"""
+#= """
     add_vertex!(mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool = true)
 
 Add MultilayerVertex `mv` to multilayer graph `mg`. If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error.
 """
-function Graphs.add_vertex!(
+function _add_vertex!(
     mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool=true
 )
     _node = node(mv)
@@ -215,7 +215,7 @@ function Graphs.add_vertex!(
         add_node!(mg, _node)
     end
     return add_vertex_specialized!(mg, mv)
-end
+end =#
 
 # Edges
 """
@@ -654,8 +654,8 @@ end
 
 Get the indegree of vertex `v` in `mg`.
 """
-function Graphs.indegree(mg::AbstractMultilayerGraph, v::MultilayerVertex)
-    return length(inneighbors(mg, v))
+function Graphs.indegree(mg::AbstractMultilayerGraph, mv::V) where {V <: MultilayerVertex}
+    return length(inneighbors(mg, mv))
 end
 
 """
@@ -664,8 +664,8 @@ end
 Get the vector of indegrees of vertices `vs` in `mg`.
 """
 function Graphs.indegree(
-    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
-)
+    mg::AbstractMultilayerGraph, vs::AbstractVector{V} = vertices(mg)
+) where {V <:MultilayerVertex}
     return [indegree(mg, x) for x in vs]
 end
 
