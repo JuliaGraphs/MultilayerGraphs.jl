@@ -301,7 +301,7 @@ end
 
 # Layers and Interlayers
 """
-    add_layer!(
+    add_layer_directedness!(
         mg::M, 
         new_layer::L; 
         default_interlayers_null_graph::H = SimpleGraph{T}(), 
@@ -317,7 +317,7 @@ Add layer `layer` to `mg`.
 - `default_interlayers_null_graph::H`: upon addition of a new `Layer`, all the `Interlayer`s between the new and the existing `Layer`s are immediately created. This keyword argument specifies their `null_graph` See the `Layer` constructor for more information. Defaults to `SimpleGraph{T}()`;
 - `default_interlayers_structure::String`: The structure of the `Interlayer`s created by default. May either be "multiplex" to have diagonally-coupled only interlayers, or "empty" for empty interlayers. Defaults to "multiplex".
 """
-@traitfn function add_layer!(
+@traitfn function add_layer_directedness!(
     mg::M,
     new_layer::L;
     default_interlayers_null_graph::H=SimpleGraph{T}(),
@@ -346,7 +346,7 @@ Add layer `layer` to `mg`.
     )
 end
 
-"""
+#= """
     specify_interlayer!(
         mg::M,
         new_interlayer::In
@@ -365,7 +365,7 @@ Specify the interlayer `new_interlayer` as part of `mg`.
 
     return _specify_interlayer!(mg, new_interlayer;)
 end
-
+ =#
 """
     get_subgraph(mg::M, descriptor::LD) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, LD <: LayerDescriptor{T,U}}
 

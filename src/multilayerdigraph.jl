@@ -253,6 +253,95 @@ Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `
 Graphs.add_edge!(mg::M, me::E) where {T,U, M <: MultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = _add_edge!(mg, me)
 
 
+"""
+    rem_edge!(mg::MultilayerDiGraph, me::MultilayerEdge)
+
+Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
+"""
+Graphs.rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex) = _rem_edge!(mg, src, dst)
+
+
+# Layers and Interlayers
+"""
+    add_layer!(
+        mg::M, 
+        new_layer::L; 
+        default_interlayers_null_graph::H = SimpleGraph{T}(), 
+        default_interlayers_structure::String ="multiplex"
+    ) where {T,U,G<:AbstractGraph{T},M<:MultilayerDiGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+    
+Add layer `layer` to `mg`.
+
+# ARGUMENTS
+    
+- `mg::M`: the `MultilayerDiGraph` which the new layer will be added to;
+- `new_layer::L`: the new `Layer` to add to `mg`;
+- `default_interlayers_null_graph::H`: upon addition of a new `Layer`, all the `Interlayer`s between the new and the existing `Layer`s are immediately created. This keyword argument specifies their `null_graph` See the `Layer` constructor for more information. Defaults to `SimpleGraph{T}()`;
+- `default_interlayers_structure::String`: The structure of the `Interlayer`s created by default. May either be "multiplex" to have diagonally-coupled only interlayers, or "empty" for empty interlayers. Defaults to "multiplex".
+"""
+@traitfn function add_layer!(
+    mg::M,
+    new_layer::L;
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {
+    T,
+    U,
+    G<:AbstractGraph{T},
+    L<:Layer{T,U,G},
+    H<:AbstractGraph{T},
+    M<:MultilayerDiGraph{T,U}; 
+    IsDirected{M}
+}
+
+    return add_layer_directedness!(
+        mg,
+        new_layer;
+        default_interlayers_null_graph=default_interlayers_null_graph,
+        default_interlayers_structure=default_interlayers_structure,
+    )
+
+end
+
+"""
+    specify_interlayer!(
+        mg::M,
+        new_interlayer::In
+    ) where {T,U,G<:AbstractGraph{T},M<:MultilayerDiGraph{T,U},In<:Interlayer{T,U,G}}
+
+Specify the interlayer `new_interlayer` as part of `mg`.
+"""
+@traitfn function specify_interlayer!(
+    mg::M, new_interlayer::In
+) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:MultilayerDiGraph{T,U}; IsDirected{M} } # and(istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
+    is_directed(new_interlayer.graph) || throw( #istrait(IsDirected{typeof(new_interlayer.graph)})
+        ErrorException(
+            "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is undirected, so it is not compatible with a `MultilayerDiGraph`.",
+        ),
+    )
+
+    return _specify_interlayer!(mg, new_interlayer;)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #= """
     add_edge_specialized!(mg::M, me::E) where {T,U, M <: MultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 

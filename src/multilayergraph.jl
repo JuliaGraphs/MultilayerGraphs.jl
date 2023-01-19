@@ -15,8 +15,8 @@ end
 # Traits
 @traitimpl IsWeighted{MultilayerGraph}
 @traitimpl IsMeta{MultilayerGraph}
-# @traitimpl IsNotMultiplexNotDirected{MultilayerGraph}
-is_not_multiplex_directed(X::M) where {M <: MultilayerGraph} = false
+#= # @traitimpl IsNotMultiplexNotDirected{MultilayerGraph}
+is_not_multiplex_directed(X::M) where {M <: MultilayerGraph} = false =#
 
 """
     is_directed(m::M) where { M <: Type{ <: MultilayerGraph}}
@@ -241,11 +241,74 @@ Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `
 Graphs.add_edge!(mg::M, me::E) where {T,U, M <: MultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = _add_edge!(mg, me)
 
 """
-    rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
+    rem_edge!(mg::MultilayerGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = _rem_edge!(mg, src, dst)
+Graphs.rem_edge!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = _rem_edge!(mg, src, dst)
+
+
+# Layers and Interlayers
+"""
+    add_layer!( mg::M,
+        new_layer::L; 
+        default_interlayers_null_graph::H = SimpleGraph{T}(), 
+        default_interlayers_structure::String ="multiplex"
+    ) where {T,U,G<:AbstractGraph{T},L<:Layer{T,U,G}, H <: AbstractGraph{T}, M<:MultilayerGraph{T,U}; !IsDirected{M}}
+
+Add layer `layer` to `mg`.
+
+# ARGUMENTS
+
+- `mg::M`: the `MultilayerGraph` which the new layer will be added to;
+- `new_layer::L`: the new `Layer` to add to `mg`;
+- `default_interlayers_null_graph::H = SimpleGraph{T}()`: upon addition of a new `Layer`, all the `Interlayer`s between the new and the existing `Layer`s are immediately created. This keyword argument specifies their `null_graph` See the `Layer` constructor for more information. Defaults to `SimpleGraph{T}()`;
+- `default_interlayers_structure::String = "multiplex"`: The structure of the `Interlayer`s created by default. May either be "multiplex" to have diagonally-coupled only interlayers, or "empty" for empty interlayers. Defaults to "multiplex".
+"""
+@traitfn function add_layer!(
+    mg::M,
+    new_layer::L;
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {
+    T,
+    U,
+    G<:AbstractGraph{T},
+    L<:Layer{T,U,G},
+    H <: AbstractGraph{T},
+    M<:MultilayerGraph{T,U}; 
+    !IsDirected{M}
+}
+
+    return add_layer_directedness!(
+        mg,
+        new_layer;
+        default_interlayers_null_graph=default_interlayers_null_graph,
+        default_interlayers_structure=default_interlayers_structure,
+    )
+end
+
+
+"""
+    specify_interlayer!(
+        mg::M,
+        new_interlayer::In
+    ) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:MultilayerGraph{T,U}; !IsDirected{M}}
+
+Specify the interlayer `new_interlayer` as part of `mg`.
+"""
+@traitfn function specify_interlayer!(
+    mg::M, new_interlayer::In
+) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:MultilayerGraph{T,U}; !IsDirected{M} } # and(!istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
+    !is_directed(new_interlayer.graph) || throw( # !istrait(IsDirected{typeof(new_interlayer.graph)})
+        ErrorException(
+            "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is directed, so it is not compatible with a `MultilayerGraph`.",
+        ),
+    )
+
+    return _specify_interlayer!(mg, new_interlayer;)
+end
+
 
 #= """
     add_edge_specialized!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
