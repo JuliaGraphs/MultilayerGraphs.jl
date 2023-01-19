@@ -23,6 +23,7 @@ rem_node!(mg::AbstractSynchronizedEdgeColoredGraph, n::Node) = _rem_node!(mg, n)
 ## add_vertex! and rem_vertex! are not implemented, since oly nodes can be added/removed to/from synchronized graphs
 
 
+# Edges
 
 
 
