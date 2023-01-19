@@ -227,12 +227,27 @@ Graphs.add_vertex!(mg::MultilayerGraph, mv::MultilayerVertex; add_node::Bool=tru
 
 Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
 """
-rem_vertex!(mg::MultilayerGraph, V::MultilayerVertex) = _rem_vertex!(mg, V) 
+Graphs.rem_vertex!(mg::MultilayerGraph, V::MultilayerVertex) = _rem_vertex!(mg, V) 
 
 
 # Edges
 
+
 """
+    add_edge!(mg::M, me::E) where {T,U, M <: MultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+
+Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
+"""
+Graphs.add_edge!(mg::M, me::E) where {T,U, M <: MultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = _add_edge!(mg, me)
+
+"""
+    rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
+
+Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
+"""
+Graphs.rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = _rem_edge!(mg, src, dst)
+
+#= """
     add_edge_specialized!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 
 Add MultilayerEdge `me` to the MultilayerGraph `mg`. Return true if succeeds, false otherwise.
@@ -244,7 +259,49 @@ add_edge_specialized!(mg::M, me::E) where {T,U,M<:MultilayerGraph{T,U},E<:Multil
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-rem_edge_specialized!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)  = rem_edge_undirected!(mg, src, dst)
+rem_edge_specialized!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)  = rem_edge_undirected!(mg, src, dst) =#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #= """

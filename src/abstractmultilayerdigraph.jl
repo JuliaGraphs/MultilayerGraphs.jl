@@ -16,11 +16,11 @@ abstract type AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 Add MultilayerVertex `V` to multilayer graph `mg`.  If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error. Return true if succeeds. 
 """
 @traitfn function _add_vertex!(
-    mg::M, V::MultilayerVertex,  add_node::Bool=true
+    mg::M, V::MultilayerVertex;  add_node::Bool=true
 ) where {T,U, M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
     has_vertex(mg, V) && return false
     if add_node
-        _node = node(mv)
+        _node = node(V)
         if add_node && !has_node(mg, _node)
             add_node!(mg, _node)
         end
@@ -170,11 +170,11 @@ end
 
 
 """
-    add_edge_directed!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+    _add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 
 Add MultilayerEdge `me` to the AbstractMultilayerDiGraph `mg`. Return true if succeeds, false otherwise.
 """
-@traitfn function add_edge_directed!(
+@traitfn function _add_edge!(
     mg::M, me::E
 ) where {T,U,E<:MultilayerEdge{<:Union{U,Nothing}},M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
     _src = get_bare_mv(src(me))
@@ -208,11 +208,11 @@ end
 
 
 """
-    rem_edge!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
+    _rem_edge!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-@traitfn function rem_edge_directed!(
+@traitfn function _rem_edge!(
     mg::M, src::MultilayerVertex, dst::MultilayerVertex
 ) where {M<:AbstractMultilayerGraph; IsDirected{M}}
 

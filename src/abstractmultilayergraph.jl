@@ -278,12 +278,13 @@ function Graphs.add_edge!(
     return add_edge!(mg, ME(src, dst, weight, metadata))
 end
 
-"""
+#= """
     add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 
 Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
 Graphs.add_edge!( mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = add_edge_specialized!(mg, me)
+ =#
 
 """
     rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}}
@@ -292,12 +293,12 @@ Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherw
 """
 Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
 
-"""
+#= """
     rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = rem_edge_specialized!(mg, src, dst)
+Graphs.rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = rem_edge_specialized!(mg, src, dst) =#
 
 
 """

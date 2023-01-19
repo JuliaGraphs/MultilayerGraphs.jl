@@ -89,7 +89,7 @@ function add_edge_specialized!(
     mg::M, me::E
 ) where {T,U,M<:MultiplexGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
     layer(_src) == layer(_dst) || throw(ArgumentError("Cannot add an edge between two `MultilayerVertex`s that belong to two different layers in a multiplex graph"))
-    add_edge_undirected!(mg, me)
+    _add_edge!(mg, me)
 end
 
 
@@ -102,7 +102,7 @@ Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherw
 function rem_edge_specialized!(
     mg::MultiplexGraph, src::MultilayerVertex, dst::MultilayerVertex)
     (layer(src) != layer(dst) && node(src) == node(dst)) && throw(ArgumentError("Cannot remove an edge between two `MultilayerVertex`s that belong to two different layers in a multiplex graph"))
-    rem_edge_undirected!(mg, src, dst)
+    _rem_edge!(mg, src, dst)
 
 end
 
