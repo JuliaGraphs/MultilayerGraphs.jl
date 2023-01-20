@@ -38,9 +38,9 @@ rem_node!(mg::AbstractSynchronizedEdgeColoredGraph, n::Node) = _rem_node!(mg, n)
 Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
 function Graphs.add_edge!(mg::M, me::E) where {T,U, M <: AbstractSynchronizedEdgeColoredGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} 
-    layer(src(me)) == layer(dst(me)) && throw(ArgumentErorr("Cannot add an interlayer edge to an edge colored graph"))
+    layer(src(me)) == layer(dst(me)) || throw(ArgumentError("Cannot add an interlayer edge to an edge colored graph"))
     _add_edge!(mg, me)
-
+end
 """
     rem_edge!(mg::AbstractSynchronizedEdgeColoredGraph, me::MultilayerEdge)
 

@@ -98,11 +98,11 @@ function _add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::
 
     if add_vertex_to_layers == :all
         for layer_name in mg.layers_names
-            add_vertex!(mg, MV(n, layer_name))
+            _add_vertex!(mg, MV(n, layer_name))
         end
     elseif add_vertex_to_layers isa Vector{Symbol}
         for layer_name in add_vertex_to_layers
-            add_vertex!(mg, MV(n, layer_name))
+            _add_vertex!(mg, MV(n, layer_name))
         end
     end
 
@@ -118,10 +118,6 @@ Remove node `n` to `mg`. Return true if succeeds.
 function _rem_node!(mg::AbstractMultilayerGraph, n::Node)
     has_node(mg, n) || return false
 
-    idx_tbr = mg.idx_N_associations(n)
-
-    delete!(mg.idx_N_associations, idx_tbr)
-
     Vs_tbr = MultilayerVertex[]
     for V in image(mg.v_V_associations)
         if V.node == n
@@ -129,7 +125,16 @@ function _rem_node!(mg::AbstractMultilayerGraph, n::Node)
         end
     end
 
-    rem_vertex!.(Ref(mg), Vs_tbr)
+    for mv in Vs_tbr
+        _rem_vertex!(mg, mv)
+    end
+
+    idx_tbr = mg.idx_N_associations(n)
+
+    delete!(mg.idx_N_associations, idx_tbr)
+
+
+
 
     return true
 end
@@ -415,7 +420,7 @@ function _add_layer!(
 
     # Add vertices
     for vertex in mv_vertices(new_layer)
-        add_vertex!(mg, vertex)
+        _add_vertex!(mg, vertex)
     end
 
     # Add edges

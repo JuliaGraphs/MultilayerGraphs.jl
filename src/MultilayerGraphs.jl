@@ -160,6 +160,12 @@ export
     MultilayerGraph,
     # multilayerdigraph.jl
     MultilayerDiGraph,
+    # abstract_synchronized_edge_colored_graph.jl
+    AbstractSynchronizedEdgeColoredGraph,
+    # synchronized_edge_colored_graph.jl
+    SynchronizedEdgeColoredGraph,
+    # synchronized_edge_colored_di_graph.jl
+    SynchronizedEdgeColoredDiGraph,
     # utilities
     multilayer_kronecker_delta,
     δk,
@@ -201,10 +207,13 @@ include("representations/weighttensor.jl")
 include("representations/metadatatensor.jl")
 include("representations/supraweightmatrix.jl") 
 include("abstractmultilayergraph.jl")
-include("abstractmultilayerugraph.jl")
-include("abstractmultilayerdigraph.jl")
+include("undirected.jl")
+include("directed.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
+include("special_multilayergraphs/synchronized_edge_colored/abstract_synchronized_edge_colored_graph.jl")
+include("special_multilayergraphs/synchronized_edge_colored/synchronized_edge_colored_graph.jl")
+include("special_multilayergraphs/synchronized_edge_colored/synchronized_edge_colored_di_graph.jl")
 include("abstractmultiplexgraph.jl")
 include("multiplexgraph.jl")
 include("multiplexdigraph.jl")
