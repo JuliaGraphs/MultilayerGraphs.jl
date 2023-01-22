@@ -1,10 +1,3 @@
-#= """
-    AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} 
-
-Abstract type representing an undirected multilayer graph.
-"""
-abstract type AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} end =#
-
 # Nodes
 
 # Vertices
@@ -179,9 +172,7 @@ Add MultilayerEdge `me` to the AbstractMultilayerUGraph `mg`. Return true if suc
         end
         return true
     else
-        #=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
-                set_weight!(mg, src, dst, _weight)
-                set_metadata!(mg, src, dst, _metadata) =#
+
         @debug "An edge between $(src(me)) and $(dst(me)) already exists"  
         
         return false
@@ -333,25 +324,6 @@ Add layer `layer` to `mg`.
     )
 end
 
-#= """
-    specify_interlayer!(
-        mg::M,
-        new_interlayer::In
-    ) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}; !IsDirected{M}}
-
-Specify the interlayer `new_interlayer` as part of `mg`.
-"""
-@traitfn function specify_interlayer!(
-    mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}; !IsDirected{M} } # and(!istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
-    !is_directed(new_interlayer.graph) || throw( # !istrait(IsDirected{typeof(new_interlayer.graph)})
-        ErrorException(
-            "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is directed, so it is not compatible with a `AbstractMultilayerUGraph`.",
-        ),
-    )
-
-    return _specify_interlayer!(mg, new_interlayer;)
-end =#
 
 """
     get_subgraph(mg::M, descriptor::LD) where {T,U, M <: AbstractMultilayerUGraph{T,U}, LD <: LayerDescriptor{T,U}}
@@ -475,20 +447,6 @@ Return the degree of MultilayerVertex `v` within `mg`.
 ) where {M<:AbstractMultilayerGraph, V<:MultilayerVertex; !IsDirected{M}}
     return indegree(mg, v)
 end
-
-#= """
-    is_directed(mg::AbstractMultilayerUGraph)
-
-Return `true` if `mg` is directed, `false` otherwise. 
-"""
-@traitfn Graphs.is_directed(mg::M) where {M<:AbstractMultilayerGraph; !IsDirected{M}} = false
-
-"""
-    is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
-
-Return `true` if `mg` is directed, `false` otherwise. 
-"""
-@traitfn Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerGraph}; !IsDirected{M} }  = false =#
 
 """
     inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}

@@ -225,10 +225,15 @@ MultilayerDiGraph(
      perform_checks::Bool = false
 ) where {T,U}
 
+SynchronizedEdgeColoredGraph{T,U}
 
-MultiplexGraph
+SynchronizedEdgeColoredGraph(
+    layers::Vector{<:Layer{T,U}},
+) where {T,U}
 
-MultiplexDiGraph
+SynchronizedEdgeColoredDiGraph{T,U}
+
+
 
 nodes(mg::AbstractMultilayerGraph)
 nn(mg::AbstractMultilayerGraph) 

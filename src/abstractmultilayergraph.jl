@@ -45,20 +45,6 @@ abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} en
 fadjlist(mg::AbstractMultilayerGraph) = mg.fadjlist
 
 
-#= """
-    is_directed(mg::AbstractMultilayerGraph)
-
-Return `true` if `mg` is directed, `false` otherwise. 
-"""
-@traitfn Graphs.is_directed(mg::M) where {M<:AbstractMultilayerGraph; IsDirected{M}} = true
-
-"""
-    is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
-
-Return `true` if `mg` is directed, `false` otherwise. 
-"""
-Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerGraph}}  = is_directed() =#
-
 # Nodes
 """
     nodes(mg::AbstractMultilayerGraph
@@ -105,8 +91,7 @@ function _add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::
             _add_vertex!(mg, MV(n, layer_name))
         end
     end
-
-
+    
     return true
 end
 
@@ -132,9 +117,6 @@ function _rem_node!(mg::AbstractMultilayerGraph, n::Node)
     idx_tbr = mg.idx_N_associations(n)
 
     delete!(mg.idx_N_associations, idx_tbr)
-
-
-
 
     return true
 end
@@ -207,21 +189,6 @@ function set_metadata!(
     return true
 end
 
-#= """
-    add_vertex!(mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool = true)
-
-Add MultilayerVertex `mv` to multilayer graph `mg`. If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error.
-"""
-function _add_vertex!(
-    mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool=true
-)
-    _node = node(mv)
-    if add_node && !has_node(mg, _node)
-        add_node!(mg, _node)
-    end
-    return add_vertex_specialized!(mg, mv)
-end =#
-
 # Edges
 """
     edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
@@ -283,13 +250,6 @@ function Graphs.add_edge!(
     return add_edge!(mg, ME(src, dst, weight, metadata))
 end
 
-#= """
-    add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
-
-Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
-"""
-Graphs.add_edge!( mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = add_edge_specialized!(mg, me)
- =#
 
 """
     rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}}
@@ -297,13 +257,6 @@ Graphs.add_edge!( mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
 Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
-
-#= """
-    rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
-
-Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
-"""
-Graphs.rem_edge!(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = rem_edge_specialized!(mg, src, dst) =#
 
 
 """
@@ -855,8 +808,6 @@ function weight_tensor(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 
                 dst_n_idx = mg.idx_N_associations(dst_bare_V.node)
                 dst_layer_idx = get_layer_idx(mg, dst_bare_V.layer)
-                #=                 vec_idx = cartIndexTovecIndex( (src_n_idx,dst_n_idx,src_layer_idx ,dst_layer_idx ) ,_size)
-                                v_V_associations[vec_idx] =  =#
                 _weight_tensor[src_n_idx, dst_n_idx, src_layer_idx, dst_layer_idx] = weight(
                     halfedge
                 )

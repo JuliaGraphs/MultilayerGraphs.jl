@@ -1,10 +1,3 @@
-#= """
-    AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} 
-
-Abstract type representing an undirected multilayer graph.
-"""
-abstract type AbstractMultilayerDiGraph{T,U} <: AbstractMultilayerGraph{T,U} end =#
-
 # General MultilayerDiGraph Utilities
 @traitfn badjlist(mg::M) where {M <: AbstractMultilayerGraph; IsDirected{M}} = mg.badjlist
 
@@ -198,11 +191,7 @@ Add MultilayerEdge `me` to the AbstractMultilayerDiGraph `mg`. Return true if su
         @debug "An edge between $(src(me)) and $(dst(me)) already exists"  
         return false
     end
-    #=     else
-            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-        end =#
         
-
     return true
 end
 
@@ -346,26 +335,6 @@ Add layer `layer` to `mg`.
     )
 end
 
-#= """
-    specify_interlayer!(
-        mg::M,
-        new_interlayer::In
-    ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}}
-
-Specify the interlayer `new_interlayer` as part of `mg`.
-"""
-@traitfn function specify_interlayer!(
-    mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:AbstractMultilayerGraph{T,U}; IsDirected{M} } # and(istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
-    is_directed(new_interlayer.graph) || throw( #istrait(IsDirected{typeof(new_interlayer.graph)})
-        ErrorException(
-            "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is undirected, so it is not compatible with a `AbstractMultilayerDiGraph`.",
-        ),
-    )
-
-    return _specify_interlayer!(mg, new_interlayer;)
-end
- =#
 """
     get_subgraph(mg::M, descriptor::LD) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, LD <: LayerDescriptor{T,U}}
 
@@ -441,9 +410,6 @@ Internal function. Instantiate the Interlayer described by `descriptor` whose ve
 
     layers_vs = vcat(layer_1_vs, layer_2_vs)
 
-    #=     shortest_name, longest_name = length(layer_1_vs) >= length(layer_2_vs) ?  (descriptor.layer_2, descriptor.layer_1) : (descriptor.layer_1, descriptor.layer_2)
-        shortest_vs = shortest_name == descriptor.layer_1 ? layer_1_vs : layer_2_vs =#
-
     edge_list = MultilayerEdge{U}[]
 
     for (src_v, halfedges_from_src) in
@@ -510,19 +476,6 @@ Return the degree of MultilayerVertex `v` within `mg`.
     return indegree(mg, mv) + outdegree(mg, mv)
 end
 
-#= """
-    is_directed(mg::AbstractMultilayerDiGraph)
-
-Return `true` if `mg` is directed, `false` otherwise. 
-"""
-@traitfn Graphs.is_directed(mg::M) where {M<:AbstractMultilayerGraph; IsDirected{M}} = true
-
-"""
-    is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
-
-Return `true` if `mg` is directed, `false` otherwise. 
-"""
-@traitfn Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerGraph}; !IsDirected{M} }  = true =#
 
 """
     inneighbors(mg::M, v::T
