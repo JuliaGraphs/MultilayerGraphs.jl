@@ -148,14 +148,12 @@ export
     overlay_clustering_coefficient,
     eigenvector_centrality,
     modularity,
-    # abstractmultilayerugraph.jl
-    AbstractMultilayerUGraph,
+    # undirected.jl
     set_weight!,
     add_layer!,
     specify_interlayer!,
     von_neumann_entropy,
-    # abstractmultilayerdigraph.jl
-    AbstractMultilayerDiGraph,
+    # directed.jl
     # multilayergraph.jl
     MultilayerGraph,
     # multilayerdigraph.jl
@@ -163,9 +161,9 @@ export
     # abstract_synchronized_edge_colored_graph.jl
     AbstractSynchronizedEdgeColoredGraph,
     # synchronized_edge_colored_graph.jl
-    SynchronizedEdgeColoredGraph,
+    NodeAlignedEdgeColoredGraph,
     # synchronized_edge_colored_di_graph.jl
-    SynchronizedEdgeColoredDiGraph,
+    NodeAlignedEdgeColoredDiGraph,
     # utilities
     multilayer_kronecker_delta,
     δk,
@@ -211,9 +209,9 @@ include("undirected.jl")
 include("directed.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
-include("special_multilayergraphs/synchronized_edge_colored/abstract_synchronized_edge_colored_graph.jl")
-include("special_multilayergraphs/synchronized_edge_colored/synchronized_edge_colored_graph.jl")
-include("special_multilayergraphs/synchronized_edge_colored/synchronized_edge_colored_di_graph.jl")
+include("special_multilayergraphs/node_aligned_edge_colored/abstract_node_aligned_edge_colored_graph.jl")
+include("special_multilayergraphs/node_aligned_edge_colored/node_aligned_edge_colored_graph.jl")
+include("special_multilayergraphs/node_aligned_edge_colored/node_aligned_edge_colored_di_graph.jl")
 include("tensorsfactorizations.jl")
 
 end

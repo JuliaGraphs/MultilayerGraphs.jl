@@ -1,10 +1,4 @@
 # Base extensions
-#= """
-    getindex(od::O, key::Int64) where {O <: OrderedDict}
-
-Return the `key`th pair of `od`, following `od`'s order.
-"""
-Base.getindex(od::O, key::Int64) where {O<:OrderedDict} = collect(values(od))[key] =#
 
 # Non package-specific utilities
 """

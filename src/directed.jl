@@ -114,7 +114,7 @@ end
 
 # Edges
 """
-    has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerDiGraph{T}}
+    has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}; IsDirected{M}}
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
@@ -139,7 +139,7 @@ end
 
 # Overloads that make AbstractMultilayerDiGraph an extension of Graphs.jl. These are all well-inferred.
 """
-    edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
+    edges(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
 
 Return an list of all the edges of `mg`.
 """
@@ -163,7 +163,7 @@ end
 
 
 """
-    _add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+    _add_edge!(mg::M, me::E) where {T,U,E<:MultilayerEdge{<:Union{U,Nothing}},M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
 
 Add MultilayerEdge `me` to the AbstractMultilayerDiGraph `mg`. Return true if succeeds, false otherwise.
 """
@@ -197,7 +197,9 @@ end
 
 
 """
-    _rem_edge!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
+    _rem_edge!(
+    mg::M, src::MultilayerVertex, dst::MultilayerVertex
+) where {M<:AbstractMultilayerGraph; IsDirected{M}}
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
@@ -230,7 +232,9 @@ end
 
 
 """
-    set_weight!(mg::M, src::MultilayerVertex{L1}, dst::MultilayerVertex{L2}, weight::U) where {L1 <: Symbol, L2 <: Symbol, T,U, M <: AbstractMultilayerGraph{T,U}}
+    set_weight!(
+        mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U
+    ) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
 
 Set the weight of the edge between `src` and `dst` to `weight`. Return true if succeeds (i.e. if the edge exists and the underlying graph chosen for the Layer/Interlayer where the edge lies is weighted under the `IsWeighted` trait).
 """
@@ -259,7 +263,12 @@ Set the weight of the edge between `src` and `dst` to `weight`. Return true if s
 end
 
 """
-    set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
+    set_metadata!(
+        mg::M,
+        src::MultilayerVertex,
+        dst::MultilayerVertex,
+        metadata::Union{Tuple,NamedTuple},
+    ) where {M<:AbstractMultilayerGraph; IsDirected{M}}
 
 Set the metadata of the edge between `src` and `dst` to `metadata`. Return true if succeeds (i.e. if the edge exists and the underlying graph chosen for the Layer/Interlayer where the edge lies supports metadata at the edge level  under the `IsMeta` trait).
 """
@@ -291,11 +300,19 @@ end
 # Layers and Interlayers
 """
     add_layer_directedness!(
-        mg::M, 
-        new_layer::L; 
-        default_interlayers_null_graph::H = SimpleGraph{T}(), 
-        default_interlayers_structure::String ="multiplex"
-    ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+        mg::M,
+        new_layer::L;
+        default_interlayers_null_graph::H=SimpleGraph{T}(),
+        default_interlayers_structure::String="multiplex",
+    ) where {
+        T,
+        U,
+        G<:AbstractGraph{T},
+        L<:Layer{T,U,G},
+        H<:AbstractGraph{T},
+        M<:AbstractMultilayerGraph{T,U}; 
+        IsDirected{M}
+    }
     
 Add layer `layer` to `mg`.
 
@@ -336,7 +353,9 @@ Add layer `layer` to `mg`.
 end
 
 """
-    get_subgraph(mg::M, descriptor::LD) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, LD <: LayerDescriptor{T,U}}
+    get_subgraph(
+        mg::M, descriptor::LD
+    ) where {T,U,LD<:LayerDescriptor{T,U}, M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
 
 Internal function. Instantiate the Layer described by `descriptor` whose vertices and edges are contained in `mg`.
 """
@@ -374,7 +393,15 @@ Internal function. Instantiate the Layer described by `descriptor` whose vertice
 end
 
 """
-    get_subgraph(mg::M, descriptor::InD) where {T,U, G<: AbstractGraph{T}, M <: AbstractMultilayerDiGraph{T,U}, InD <: InterlayerDescriptor{T,U,G}}
+    get_subgraph(
+        mg::M, descriptor::InD
+    ) where {
+        T,
+        U,
+        # G<:AbstractGraph{T},
+        InD<:InterlayerDescriptor{T,U},# G},
+        M<:AbstractMultilayerGraph{T,U}; 
+        Is
 
 Internal function. Instantiate the Interlayer described by `descriptor` whose vertices and edges are contained in `mg`.
 """
@@ -466,7 +493,9 @@ end
 
 # Graphs.jl's internals extra overrides
 """
-    degree(mg::M, v::V) where {T,M<:AbstractMultilayerDiGraph{T,<:Real},V<:MultilayerVertex}
+    degree(
+        mg::M, mv::V
+    ) where {M<:AbstractMultilayerGraph, V<:MultilayerVertex;  IsDirected{M}}
 
 Return the degree of MultilayerVertex `v` within `mg`.
 """
@@ -478,8 +507,7 @@ end
 
 
 """
-    inneighbors(mg::M, v::T
-) where {T, M<:AbstractMultilayerGraph{T,<:Real}}
+    inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerGraph; IsDirected{M}}
 
 
 Return the list of inneighbors of `v` within `mg`.
@@ -495,7 +523,8 @@ Return the list of inneighbors of `v` within `mg`.
 end
 
 """
-    get_overlay_monoplex_graph(mg::M) where {M<: AbstractMultilayerDiGraph}
+    get_overlay_monoplex_graph(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
+    
 Get overlay monoplex graph (i.e. the graph that has the same nodes as `mg` but the link between node `i` and `j` has weight equal to the sum of all edges weights between the various vertices representing `i` and `j` in `mg`, accounting for both layers and interlayers). See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
 @traitfn function get_overlay_monoplex_graph(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
