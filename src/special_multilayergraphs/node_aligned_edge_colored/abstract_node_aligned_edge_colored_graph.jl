@@ -8,7 +8,7 @@ An abstract type representing an edge-colored and synchronized (i.e. every node 
 -  All Interlayers automatically added by `add_layer!` are empty simple graphs.
 - `specify_interlayer!` is not available.
 """
-abstract type AbstractSynchronizedEdgeColoredGraph{T,U}  <: AbstractMultilayerGraph{T,U} end
+abstract type AbstractSynchronizedEdgeColoredGraph{T,U} <: AbstractMultilayerGraph{T,U} end
 
 # Nodes
 """
@@ -16,8 +16,9 @@ abstract type AbstractSynchronizedEdgeColoredGraph{T,U}  <: AbstractMultilayerGr
 
 Add node `n` to `mg`. Return true if succeeds. Additionally, add a corresponding vertex to all layers.
 """
-add_node!(mg::AbstractSynchronizedEdgeColoredGraph, n::Node) = _add_node!(mg, n; add_vertex_to_layers = :all) 
-
+function add_node!(mg::AbstractSynchronizedEdgeColoredGraph, n::Node)
+    return _add_node!(mg, n; add_vertex_to_layers=:all)
+end
 
 """
     rem_node!(mg::AbstractSynchronizedEdgeColoredGraph, n::Node)
@@ -26,10 +27,8 @@ Remove node `n` to `mg`. Return true if succeeds.
 """
 rem_node!(mg::AbstractSynchronizedEdgeColoredGraph, n::Node) = _rem_node!(mg, n)
 
-
 # Vertices
 ## add_vertex! and rem_vertex! are not implemented, since oly nodes can be added/removed to/from synchronized graphs
-
 
 # Edges
 """
@@ -37,16 +36,25 @@ rem_node!(mg::AbstractSynchronizedEdgeColoredGraph, n::Node) = _rem_node!(mg, n)
 
 Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
-function Graphs.add_edge!(mg::M, me::E) where {T,U, M <: AbstractSynchronizedEdgeColoredGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} 
-    layer(src(me)) == layer(dst(me)) || throw(ArgumentError("Cannot add an interlayer edge to an edge colored graph"))
-    _add_edge!(mg, me)
+function Graphs.add_edge!(
+    mg::M, me::E
+) where {
+    T,U,M<:AbstractSynchronizedEdgeColoredGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}
+}
+    layer(src(me)) == layer(dst(me)) ||
+        throw(ArgumentError("Cannot add an interlayer edge to an edge colored graph"))
+    return _add_edge!(mg, me)
 end
 """
     rem_edge!(mg::AbstractSynchronizedEdgeColoredGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::AbstractSynchronizedEdgeColoredGraph, src::MultilayerVertex, dst::MultilayerVertex) = _rem_edge!(mg, src, dst)
+function Graphs.rem_edge!(
+    mg::AbstractSynchronizedEdgeColoredGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+    return _rem_edge!(mg, src, dst)
+end
 
 # Layers and Interlayers
 """
@@ -62,23 +70,9 @@ Add layer `layer` to the synchronized edge-colored graph `mg`.
 - `new_layer::L`: the new `Layer` to add to `mg`;
 """
 function add_layer!(
-    mg::M,
-    new_layer::L
+    mg::M, new_layer::L
 ) where {
-    T,
-    U,
-    G<:AbstractGraph{T},
-    L<:Layer{T,U,G},
-    M<:AbstractSynchronizedEdgeColoredGraph{T,U}
+    T,U,G<:AbstractGraph{T},L<:Layer{T,U,G},M<:AbstractSynchronizedEdgeColoredGraph{T,U}
 }
-
-    return add_layer_directedness!(
-        mg,
-        new_layer;
-        default_interlayers_structure="empty"
-    )
-
+    return add_layer_directedness!(mg, new_layer; default_interlayers_structure="empty")
 end
-
-
-

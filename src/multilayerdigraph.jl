@@ -22,7 +22,7 @@ end
 
 Return `false`
 """
-Graphs.is_directed(mg::M) where {M<:Type{<:MultilayerDiGraph}}  = true
+Graphs.is_directed(mg::M) where {M<:Type{<:MultilayerDiGraph}} = true
 
 # Constructors
 """
@@ -218,7 +218,13 @@ end
 
 Add node `n` to `mg`. Return true if succeeds. Additionally, add a corresponding vertex to all layers whose name is listed in `add_vertex_to_layers`. If `add_vertex_to_layers == :all`, then a corresponding vertex is added to all layers.
 """
-add_node!(mg::MultilayerDiGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[]) = _add_node!(mg, n; add_vertex_to_layers = add_vertex_to_layers)
+function add_node!(
+    mg::MultilayerDiGraph,
+    n::Node;
+    add_vertex_to_layers::Union{Vector{Symbol},Symbol}=Symbol[],
+)
+    return _add_node!(mg, n; add_vertex_to_layers=add_vertex_to_layers)
+end
 
 """
     rem_node!(mg::MultilayerDiGraph, n::Node)
@@ -234,15 +240,18 @@ rem_node!(mg::MultilayerDiGraph, n::Node) = _rem_node!(mg, n)
 
 Add MultilayerVertex `mv` to multilayer graph `mg`. If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error.
 """
-Graphs.add_vertex!(mg::MultilayerDiGraph, mv::MultilayerVertex; add_node::Bool=true) = _add_vertex!(mg, mv; add_node = add_node)
+function Graphs.add_vertex!(
+    mg::MultilayerDiGraph, mv::MultilayerVertex; add_node::Bool=true
+)
+    return _add_vertex!(mg, mv; add_node=add_node)
+end
 
 """
     rem_vertex!(mg::MultilayerDiGraph, V::MultilayerVertex)
 
 Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_vertex!(mg::MultilayerDiGraph, V::MultilayerVertex) = _rem_vertex!(mg, V) 
-
+Graphs.rem_vertex!(mg::MultilayerDiGraph, V::MultilayerVertex) = _rem_vertex!(mg, V)
 
 # Edges    
 """
@@ -250,16 +259,22 @@ Graphs.rem_vertex!(mg::MultilayerDiGraph, V::MultilayerVertex) = _rem_vertex!(mg
 
 Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
-Graphs.add_edge!(mg::M, me::E) where {T,U, M <: MultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}} = _add_edge!(mg, me)
-
+function Graphs.add_edge!(
+    mg::M, me::E
+) where {T,U,M<:MultilayerDiGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
+    return _add_edge!(mg, me)
+end
 
 """
     rem_edge!(mg::MultilayerDiGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex) = _rem_edge!(mg, src, dst)
-
+function Graphs.rem_edge!(
+    mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+    return _rem_edge!(mg, src, dst)
+end
 
 # Layers and Interlayers
 """
@@ -290,17 +305,14 @@ Add layer `layer` to `mg`.
     G<:AbstractGraph{T},
     L<:Layer{T,U,G},
     H<:AbstractGraph{T},
-    M<:MultilayerDiGraph{T,U}; 
-    IsDirected{M}
+    M<:MultilayerDiGraph{T,U};IsDirected{M},
 }
-
     return add_layer_directedness!(
         mg,
         new_layer;
         default_interlayers_null_graph=default_interlayers_null_graph,
         default_interlayers_structure=default_interlayers_structure,
     )
-
 end
 
 """
@@ -313,7 +325,9 @@ Specify the interlayer `new_interlayer` as part of `mg`.
 """
 @traitfn function specify_interlayer!(
     mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:MultilayerDiGraph{T,U}; IsDirected{M} } # and(istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
+) where {
+    T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G},M<:MultilayerDiGraph{T,U};IsDirected{M}
+} # and(istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
     is_directed(new_interlayer.graph) || throw( #istrait(IsDirected{typeof(new_interlayer.graph)})
         ErrorException(
             "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is undirected, so it is not compatible with a `MultilayerDiGraph`.",

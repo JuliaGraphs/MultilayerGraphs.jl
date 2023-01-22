@@ -22,14 +22,12 @@ end
 @traitimpl IsWeighted{NodeAlignedEdgeColoredGraph}
 @traitimpl IsMeta{NodeAlignedEdgeColoredGraph}
 
-
 """
     is_directed(m::M) where { M <: Type{ <: NodeAlignedEdgeColoredGraph}}
 
 Return `false`
 """
-Graphs.is_directed(mg::M) where {M<:Type{<:NodeAlignedEdgeColoredGraph}}  = false
-
+Graphs.is_directed(mg::M) where {M<:Type{<:NodeAlignedEdgeColoredGraph}} = false
 
 # Constructors
 """
@@ -43,23 +41,15 @@ Construct a NodeAlignedEdgeColoredGraph with layers given by `layers`. The inter
 
 - `layers::Vector{<:Layer{T,U}}`: The (ordered) list of layers the multilayer graph will have;
 """
-function NodeAlignedEdgeColoredGraph(
-    layers::Vector{<:Layer{T,U}},
-) where {T,U}
-
+function NodeAlignedEdgeColoredGraph(layers::Vector{<:Layer{T,U}}) where {T,U}
     multilayergraph = NodeAlignedEdgeColoredGraph(T, U)
 
     for layer in deepcopy(layers)
-        add_layer!(
-            multilayergraph,
-            layer
-        )
+        add_layer!(multilayergraph, layer)
     end
-
 
     return multilayergraph
 end
-
 
 """
     NodeAlignedEdgeColoredGraph(T::Type{<:Number}, U::Type{<:Number})

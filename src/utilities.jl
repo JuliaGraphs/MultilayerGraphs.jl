@@ -809,12 +809,9 @@ Evaluate if at least one of the conditions in `conds` is true.
 """
 or(conds...) = any(conds)
 
-
 """
     and(conds...)
 
 Evaluate if all conditions in `conds` is true.
 """
 and(conds...) = all(conds)
-
-

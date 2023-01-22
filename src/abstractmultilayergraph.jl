@@ -44,7 +44,6 @@ abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} en
 # General MultilayerGraph Utilities
 fadjlist(mg::AbstractMultilayerGraph) = mg.fadjlist
 
-
 # Nodes
 """
     nodes(mg::AbstractMultilayerGraph
@@ -74,7 +73,11 @@ has_node(mg::AbstractMultilayerGraph, n::Node) = n in image(mg.idx_N_association
 
 Add node `n` to `mg`. Return true if succeeds. Additionally, add a corresponding vertex to all layers whose name is listed in `add_vertex_to_layers`. If `add_vertex_to_layers == :all`, then a corresponding vertex is added to all layers.
 """
-function _add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
+function _add_node!(
+    mg::AbstractMultilayerGraph,
+    n::Node;
+    add_vertex_to_layers::Union{Vector{Symbol},Symbol}=Symbol[],
+)
     !has_node(mg, n) || return false
 
     maximum_idx =
@@ -91,7 +94,7 @@ function _add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::
             _add_vertex!(mg, MV(n, layer_name))
         end
     end
-    
+
     return true
 end
 
@@ -134,14 +137,18 @@ Base.eltype(::M) where {T,M<:AbstractMultilayerGraph{T}} = T
 
 Return true if `v` is in mg, else false.
 """
-Graphs.has_vertex(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T}} = v in domain(mg.v_V_associations)
+function Graphs.has_vertex(mg::M, v::T) where {T,M<:AbstractMultilayerGraph{T}}
+    return v in domain(mg.v_V_associations)
+end
 
 """
     has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex) 
 
 Return true if `mv` is in `mg`, else false.
 """
-Graphs.has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex) = get_bare_mv(mv) in image(mg.v_V_associations)
+function Graphs.has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+    return get_bare_mv(mv) in image(mg.v_V_associations)
+end
 
 """
     mv_vertices(mg::AbstractMultilayerGraph)
@@ -162,7 +169,9 @@ Graphs.nv(mg::AbstractMultilayerGraph) = length(mg.v_V_associations)
 
 Return the collection of the vertices of `mg`.
 """
-Graphs.vertices(mg::M) where {M<:AbstractMultilayerGraph} = sort(collect(domain(mg.v_V_associations)))
+function Graphs.vertices(mg::M) where {M<:AbstractMultilayerGraph}
+    return sort(collect(domain(mg.v_V_associations)))
+end
 
 """
     get_metadata(mg::AbstractMultilayerGraph, bare_mv::MultilayerVertex)
@@ -209,14 +218,20 @@ Graphs.ne(mg::AbstractMultilayerGraph) = length(edges(mg))
 
 Return true if `mg` has an edge between the source and the destination of `edge` (does not check edge or vertex metadata).
 """
-Graphs.has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) = has_edge(mg, get_v(mg, src(edge)), get_v(mg, dst(edge)))
+function Graphs.has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge)
+    return has_edge(mg, get_v(mg, src(edge)), get_v(mg, dst(edge)))
+end
 
 """
     has_edge(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
-Graphs.has_edge(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) = has_edge(mg, get_v(mg, src), get_v(mg, dst))
+function Graphs.has_edge(
+    mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex
+)
+    return has_edge(mg, get_v(mg, src), get_v(mg, dst))
+end
 
 """
     add_edge!(mg::M, src::T, dst::T; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}} 
@@ -250,21 +265,23 @@ function Graphs.add_edge!(
     return add_edge!(mg, ME(src, dst, weight, metadata))
 end
 
-
 """
     rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}}
 
 Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}} = rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
-
+function Graphs.rem_edge!(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}}
+    return rem_edge!(mg, mg.v_V_associations[src], mg.v_V_associations[dst])
+end
 
 """
     rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
 
 Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-Graphs.rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge) = rem_edge!(mg, src(me), dst(me))
+function Graphs.rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
+    return rem_edge!(mg, src(me), dst(me))
+end
 
 """
     get_halfegde(mg::M, src::MultilayerVertex, dst::MultilayerVertex) where M <: AbstractMultilayerGraph
@@ -613,7 +630,7 @@ end
 
 Get the indegree of vertex `v` in `mg`.
 """
-function Graphs.indegree(mg::AbstractMultilayerGraph, mv::V) where {V <: MultilayerVertex}
+function Graphs.indegree(mg::AbstractMultilayerGraph, mv::V) where {V<:MultilayerVertex}
     return length(inneighbors(mg, mv))
 end
 
@@ -623,8 +640,8 @@ end
 Get the vector of indegrees of vertices `vs` in `mg`.
 """
 function Graphs.indegree(
-    mg::AbstractMultilayerGraph, vs::AbstractVector{V} = vertices(mg)
-) where {V <:MultilayerVertex}
+    mg::AbstractMultilayerGraph, vs::AbstractVector{V}=vertices(mg)
+) where {V<:MultilayerVertex}
     return [indegree(mg, x) for x in vs]
 end
 
@@ -1261,7 +1278,6 @@ function to_string(x::AbstractMultilayerGraph)
 end
 Base.show(io::IO, x::AbstractMultilayerGraph) = print(io, to_string(x))
 
-
 """
     getproperty(mg::AbstractMultilayerGraph, f::Symbol)
 """
@@ -1301,4 +1317,3 @@ function Base.getproperty(mg::AbstractMultilayerGraph, f::Symbol)
         end
     end
 end
-

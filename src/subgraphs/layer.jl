@@ -307,7 +307,7 @@ Returns an undirected `Layer` whose degree sequence is sampled from `degree_dist
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {U<:Real, G<:AbstractGraph; !IsDirected{G}}
+) where {U<:Real,G<:AbstractGraph;!IsDirected{G}}
     degree_sequence = sample_graphical_degree_sequence(
         degree_distribution, length(vertices)
     )
@@ -353,14 +353,14 @@ Returns an undirected `Layer` with given `degree_sequence` realized using the Ha
 """
 @traitfn function Layer(
     name::Symbol,
-    vertices::Union{Vector{MultilayerVertex{nothing}}, Vector{Node}}, #Union{V,N},#Vector{MultilayerVertex{nothing}},
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}}, #Union{V,N},#Vector{MultilayerVertex{nothing}},
     degree_sequence::Vector{<:Integer},
     null_graph::G,
-    weighttype::Type{ <: Real};
+    weighttype::Type{<:Real};
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where { G<:AbstractGraph;  !IsDirected{G}} # , V<:Vector{MultilayerVertex{nothing}}, N<:Vector{Node}
+) where {G <: AbstractGraph; !IsDirected{G}} # , V<:Vector{MultilayerVertex{nothing}}, N<:Vector{Node}
     descriptor = LayerDescriptor(
         name,
         null_graph,
@@ -432,7 +432,7 @@ Returns a directed `Layer` whose indegree and oudegree sequences are sampled fro
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {G<:AbstractGraph; IsDirected{G}}
+) where {G <: AbstractGraph; IsDirected{G}}
     indegree_sequence, outdegree_sequence = sample_digraphical_degree_sequences(
         indegree_distribution, outdegree_distribution, length(vertices)
     )
@@ -489,10 +489,7 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {
-    G<:AbstractGraph;
-    IsDirected{G}
-}
+) where {G <: AbstractGraph; IsDirected{G}}
     descriptor = LayerDescriptor(
         name,
         null_graph,

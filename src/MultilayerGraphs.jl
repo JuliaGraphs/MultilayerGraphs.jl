@@ -203,15 +203,21 @@ include("representations/abstracttensorrepresentation.jl")
 include("representations/abstractmatrixrepresentation.jl")
 include("representations/weighttensor.jl")
 include("representations/metadatatensor.jl")
-include("representations/supraweightmatrix.jl") 
+include("representations/supraweightmatrix.jl")
 include("abstractmultilayergraph.jl")
 include("undirected.jl")
 include("directed.jl")
 include("multilayergraph.jl")
 include("multilayerdigraph.jl")
-include("special_multilayergraphs/node_aligned_edge_colored/abstract_node_aligned_edge_colored_graph.jl")
-include("special_multilayergraphs/node_aligned_edge_colored/node_aligned_edge_colored_graph.jl")
-include("special_multilayergraphs/node_aligned_edge_colored/node_aligned_edge_colored_di_graph.jl")
+include(
+    "special_multilayergraphs/node_aligned_edge_colored/abstract_node_aligned_edge_colored_graph.jl",
+)
+include(
+    "special_multilayergraphs/node_aligned_edge_colored/node_aligned_edge_colored_graph.jl"
+)
+include(
+    "special_multilayergraphs/node_aligned_edge_colored/node_aligned_edge_colored_di_graph.jl",
+)
 include("tensorsfactorizations.jl")
 
 end
