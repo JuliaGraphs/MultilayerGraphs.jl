@@ -214,9 +214,6 @@ include("multilayerdigraph.jl")
 include("special_multilayergraphs/synchronized_edge_colored/abstract_synchronized_edge_colored_graph.jl")
 include("special_multilayergraphs/synchronized_edge_colored/synchronized_edge_colored_graph.jl")
 include("special_multilayergraphs/synchronized_edge_colored/synchronized_edge_colored_di_graph.jl")
-include("abstractmultiplexgraph.jl")
-include("multiplexgraph.jl")
-include("multiplexdigraph.jl")
 include("tensorsfactorizations.jl")
 
 end
