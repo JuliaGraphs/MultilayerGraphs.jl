@@ -9,7 +9,7 @@ using Documenter
     if f isa Function
         for method in methods
             tv, decls, file, line = arg_decl_parts(m)
-            
+
 end =#
 
 DocMeta.setdocmeta!(
