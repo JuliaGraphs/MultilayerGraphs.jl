@@ -3,7 +3,7 @@
 
 A concrete type that can represent a general multilayer graph. Its internal fields aren't meant to be modified by the user. Please prefer the provided API.
 """
-mutable struct MultilayerGraph{T,U} <: AbstractMultilayerUGraph{T,U}
+mutable struct MultilayerGraph{T,U} <: AbstractMultilayerGraph{T,U}
     layers::Vector{LayerDescriptor{T,U}} # vector containing all the layers of the multilayer graph. Their underlying graphs must be all undirected.
     interlayers::OrderedDict{Set{Symbol},InterlayerDescriptor{T,U}} # the ordered dictionary containing all the interlayers of the multilayer graph. Their underlying graphs must be all undirected.
     v_V_associations::Bijection{T,<:MultilayerVertex} # A Bijection from Bijections.jl that associates numeric vertices to `MultilayerVertex`s.
@@ -14,6 +14,14 @@ end
 
 # Traits
 @traitimpl IsWeighted{MultilayerGraph}
+@traitimpl IsMeta{MultilayerGraph}
+
+"""
+    is_directed(m::M) where { M <: Type{ <: MultilayerGraph}}
+
+Return `false`
+"""
+Graphs.is_directed(mg::M) where {M<:Type{<:MultilayerGraph}} = false
 
 # Constructors
 """
@@ -30,7 +38,7 @@ Construct a MultilayerGraph with layers given by `layers`. The interlayers will 
 
 - `layers::Vector{<:Layer{T,U}}`: The (ordered) list of layers the multilayer graph will have;
 - `specified_interlayers::Vector{<:Interlayer{T,U}}`: The list of interlayers specified by the user. Note that the user does not need to specify all interlayers, as the unspecified ones will be automatically constructed using the indications given by the `default_interlayers_null_graph` and `default_interlayers_structure` keywords;
-- `default_interlayers_null_graph::H = SimpleGraph{T}()`: Sets the underlying graph for the interlayers that are to be automatically specified. Defaults to `SimpleGraph{T}()`. See the `Layer` constructors for more information;
+- `default_interlayers_null_graph::H = SimpleGraph{T}()`: Sets the underlying graph for the interlayers that are to be automatically specified. Defaults to `SimpleGraph{T}()`. See the `Interlayer` constructors for more information;
 - `default_interlayers_structure::String = "multiplex"`: Sets the structure of the interlayers that are to be automatically specified. May be "multiplex" for diagonally coupled interlayers, or "empty" for empty interlayers (no edges).  "multiplex". See the `Interlayer` constructors for more information.
 """
 function MultilayerGraph(
@@ -187,139 +195,124 @@ function MultilayerGraph(
     )
 end
 
-# General MultilayerGraph Utilities
-fadjlist(mg::MultilayerGraph) = mg.fadjlist
-
 # Nodes
 
+"""
+    add_node!(mg::MultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
+
+Add node `n` to `mg`. Return true if succeeds. Additionally, add a corresponding vertex to all layers whose name is listed in `add_vertex_to_layers`. If `add_vertex_to_layers == :all`, then a corresponding vertex is added to all layers.
+"""
+function add_node!(
+    mg::MultilayerGraph,
+    n::Node;
+    add_vertex_to_layers::Union{Vector{Symbol},Symbol}=Symbol[],
+)
+    return _add_node!(mg, n; add_vertex_to_layers=add_vertex_to_layers)
+end
+
+"""
+    rem_node!(mg::MultilayerGraph, n::Node)
+
+Remove node `n` to `mg`. Return true if succeeds.
+"""
+rem_node!(mg::MultilayerGraph, n::Node) = _rem_node!(mg, n)
+
 # Vertices
+
+"""
+    add_vertex!(mg::MultilayerGraph, mv::MultilayerVertex; add_node::Bool = true)
+
+Add MultilayerVertex `mv` to multilayer graph `mg`. If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error.
+"""
+function Graphs.add_vertex!(mg::MultilayerGraph, mv::MultilayerVertex; add_node::Bool=true)
+    return _add_vertex!(mg, mv; add_node=add_node)
+end
+
+"""
+    rem_vertex!(mg::MultilayerGraph, V::MultilayerVertex)
+
+Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
+"""
+Graphs.rem_vertex!(mg::MultilayerGraph, V::MultilayerVertex) = _rem_vertex!(mg, V)
 
 # Edges
 
 """
-    add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+    add_edge!(mg::M, me::E) where {T,U, M <: MultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 
-Add MultilayerEdge `me` to the MultilayerGraph `mg`. Return true if succeeds, false otherwise.
+Add a MultilayerEdge between `src` and `dst` with weight `weight` and metadata `metadata`. Return true if succeeds, false otherwise.
 """
 function Graphs.add_edge!(
     mg::M, me::E
-) where {T,U,M<:AbstractMultilayerUGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
-    _src = get_bare_mv(src(me))
-    _dst = get_bare_mv(dst(me))
-    has_vertex(mg, _src) ||
-        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, _dst) ||
-        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
-
-    # Add edge to `edge_dict`
-    src_V_idx = get_v(mg, _src)
-    dst_V_idx = get_v(mg, _dst)
-
-    _weight = isnothing(weight(me)) ? one(U) : weight(me)
-    _metadata = metadata(me)
-
-    if !has_edge(mg, _src, _dst)
-        if src_V_idx != dst_V_idx
-            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-            push!(mg.fadjlist[dst_V_idx], HalfEdge(_src, _weight, _metadata))
-        else
-            push!(mg.fadjlist[src_V_idx], HalfEdge(_dst, _weight, _metadata))
-        end
-        return true
-    else
-        #=         # Should we modify weight and metadata or should we return false? This may be something to decide ecosystem-wise
-                set_weight!(mg, src, dst, _weight)
-                set_metadata!(mg, src, dst, _metadata) =#
-        @debug "Edge already exists" me [
-            edge for edge in edges(mg) if
-            node(src(edge)) == Node("node_1") && node(dst(edge)) == Node("node_1")
-        ]
-        return false
-    end
+) where {T,U,M<:MultilayerGraph{T,U},E<:MultilayerEdge{<:Union{U,Nothing}}}
+    return _add_edge!(mg, me)
 end
 
 """
-    rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex)
+    rem_edge!(mg::MultilayerGraph, me::MultilayerEdge)
 
-Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
+Remove edge from `src(me)` to `dst(me)` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_edge!(
-    mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex
-)
-    # Perform routine checks
-    has_vertex(mg, src) ||
-        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
-    has_vertex(mg, dst) ||
-        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
-
-    has_edge(mg, src, dst) || return false
-
-    src_V_idx = get_v(mg, src)
-    dst_V_idx = get_v(mg, dst)
-
-    _src = get_bare_mv(src)
-    _dst = get_bare_mv(dst)
-
-    if get_bare_mv(src) != get_bare_mv(dst)
-        src_idx_tbr = findfirst(
-            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
-        )
-        deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
-
-        dst_idx_tbr = findfirst(halfedge -> halfedge.vertex == _src, mg.fadjlist[dst_V_idx])
-        deleteat!(mg.fadjlist[dst_V_idx], dst_idx_tbr)
-    else
-        src_idx_tbr = findfirst(
-            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
-        )
-        deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
-    end
-
-    return true
+function Graphs.rem_edge!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
+    return _rem_edge!(mg, src, dst)
 end
 
 # Layers and Interlayers
-
-# Graphs.jl's extensions
-
-# Multilayer-specific methods
-# "empty graph" could be the correct way of calling a graph with no edges: https://math.stackexchange.com/questions/320859/what-is-the-term-for-a-graph-on-n-vertices-with-no-edges
-
-# Base overloads
 """
-    Base.getproperty(mg::M, f::Symbol) where { M <: MultilayerGraph }
-"""
-function Base.getproperty(mg::MultilayerGraph, f::Symbol)#  where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-    if f in (
-        :v_V_associations,
-        :fadjlist,
-        :idx_N_associations,
-        :layers,
-        :interlayers,
-        :v_metadata_dict,
-    ) # :weight_tensor, :supra_weight_matrix, 
-        Base.getfield(mg, f)
-    elseif f == :edge_list
-        return edges(mg)
-    elseif f == :subgraphs
-        return merge(mg.layers, mg.interlayers)
-    elseif f == :layers_names
-        return [layer.name for layer in mg.layers]
-    elseif f == :interlayers_names
-        return [interlayer.name for interlayer in values(mg.interlayers)]
-    elseif f == :subgraphs_names
-        return vcat(mg.layers_names, mg.interlayers_names)
-    else
-        for descriptor in mg.layers
-            if descriptor.name == f
-                return get_subgraph(mg, descriptor)
-            end
-        end
+    add_layer!( mg::M,
+        new_layer::L; 
+        default_interlayers_null_graph::H = SimpleGraph{T}(), 
+        default_interlayers_structure::String ="multiplex"
+    ) where {T,U,G<:AbstractGraph{T},L<:Layer{T,U,G}, H <: AbstractGraph{T}, M<:MultilayerGraph{T,U}; !IsDirected{M}}
 
-        for descriptor in values(mg.interlayers)
-            if descriptor.name == f
-                return get_subgraph(mg, descriptor)
-            end
-        end
-    end
+Add layer `layer` to `mg`.
+
+# ARGUMENTS
+
+- `mg::M`: the `MultilayerGraph` which the new layer will be added to;
+- `new_layer::L`: the new `Layer` to add to `mg`;
+- `default_interlayers_null_graph::H = SimpleGraph{T}()`: upon addition of a new `Layer`, all the `Interlayer`s between the new and the existing `Layer`s are immediately created. This keyword argument specifies their `null_graph` See the `Layer` constructor for more information. Defaults to `SimpleGraph{T}()`;
+- `default_interlayers_structure::String = "multiplex"`: The structure of the `Interlayer`s created by default. May either be "multiplex" to have diagonally-coupled only interlayers, or "empty" for empty interlayers. Defaults to "multiplex".
+"""
+@traitfn function add_layer!(
+    mg::M,
+    new_layer::L;
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {
+    T,
+    U,
+    G<:AbstractGraph{T},
+    L<:Layer{T,U,G},
+    H<:AbstractGraph{T},
+    M<:MultilayerGraph{T,U};!IsDirected{M},
+}
+    return add_layer_directedness!(
+        mg,
+        new_layer;
+        default_interlayers_null_graph=default_interlayers_null_graph,
+        default_interlayers_structure=default_interlayers_structure,
+    )
+end
+
+"""
+    specify_interlayer!(
+        mg::M,
+        new_interlayer::In
+    ) where {T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G}, M<:MultilayerGraph{T,U}; !IsDirected{M}}
+
+Specify the interlayer `new_interlayer` as part of `mg`.
+"""
+@traitfn function specify_interlayer!(
+    mg::M, new_interlayer::In
+) where {
+    T,U,G<:AbstractGraph{T},In<:Interlayer{T,U,G},M<:MultilayerGraph{T,U};!IsDirected{M}
+} # and(!istrait(IsDirected{M}), !istrait(IsMultiplex{M}))
+    !is_directed(new_interlayer.graph) || throw( # !istrait(IsDirected{typeof(new_interlayer.graph)})
+        ErrorException(
+            "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is directed, so it is not compatible with a `MultilayerGraph`.",
+        ),
+    )
+
+    return _specify_interlayer!(mg, new_interlayer;)
 end

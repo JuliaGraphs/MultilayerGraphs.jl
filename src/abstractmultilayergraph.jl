@@ -10,7 +10,7 @@
 
 # Base.eltype
 # weighttype
-# Graphs.edgetype
+# edgetype
 
 # has_vertex
 # multilayer_vertices
@@ -27,8 +27,22 @@
     AbstractMultilayerGraph{T <: Integer, U <: Real} <: AbstractGraph{T}
 
 An abstract type for multilayer graphs. It is a subtype of AbstractGraph and its concrete subtypes may extend Graphs.jl.
+
+Its concrete subtypes must have the following fields:
+
+- `idx_N_associations::Bijection{Int64,Node}`:;
+- `v_V_associations::Bijection{T,<:MultilayerVertex}`:;
+- `v_metadata_dict::Dict{T,<:Union{<:Tuple,<:NamedTuple}}`:;
+- `layers`: an indexable collection of `Layer`s.
+- `interlayers`:a collection of `Interlayer`s;
+- `layers_names`: a collection of the names of the layers.
+- `subgraphs_names`: a collection of the names of all the subgraphs.
+- `fadjlist::Vector{Vector{HalfEdge{<:MultilayerVertex,<:Union{Nothing,U}}}}`: the forward adjacency list.
 """
 abstract type AbstractMultilayerGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
+
+# General MultilayerGraph Utilities
+fadjlist(mg::AbstractMultilayerGraph) = mg.fadjlist
 
 # Nodes
 """
@@ -55,11 +69,15 @@ Return true if `n` is a node of `mg`.
 has_node(mg::AbstractMultilayerGraph, n::Node) = n in image(mg.idx_N_associations)
 
 """
-    add_node!(mg::AbstractMultilayerGraph, n::Node)
+    _add_node!(mg::AbstractMultilayerGraph, n::Node; add_vertex_to_layers::Union{Vector{Symbol}, Symbol} = Symbol[])
 
-Add node `n` to `mg`. Return true if succeeds.
+Add node `n` to `mg`. Return true if succeeds. Additionally, add a corresponding vertex to all layers whose name is listed in `add_vertex_to_layers`. If `add_vertex_to_layers == :all`, then a corresponding vertex is added to all layers.
 """
-function add_node!(mg::AbstractMultilayerGraph, n::Node)
+function _add_node!(
+    mg::AbstractMultilayerGraph,
+    n::Node;
+    add_vertex_to_layers::Union{Vector{Symbol},Symbol}=Symbol[],
+)
     !has_node(mg, n) || return false
 
     maximum_idx =
@@ -67,20 +85,26 @@ function add_node!(mg::AbstractMultilayerGraph, n::Node)
 
     mg.idx_N_associations[maximum_idx + 1] = n
 
+    if add_vertex_to_layers == :all
+        for layer_name in mg.layers_names
+            _add_vertex!(mg, MV(n, layer_name))
+        end
+    elseif add_vertex_to_layers isa Vector{Symbol}
+        for layer_name in add_vertex_to_layers
+            _add_vertex!(mg, MV(n, layer_name))
+        end
+    end
+
     return true
 end
 
 """
-    rem_node!(mg::AbstractMultilayerGraph, n::Node)
+    _rem_node!(mg::AbstractMultilayerGraph, n::Node)
 
 Remove node `n` to `mg`. Return true if succeeds.
 """
-function rem_node!(mg::AbstractMultilayerGraph, n::Node)
+function _rem_node!(mg::AbstractMultilayerGraph, n::Node)
     has_node(mg, n) || return false
-
-    idx_tbr = mg.idx_N_associations(n)
-
-    delete!(mg.idx_N_associations, idx_tbr)
 
     Vs_tbr = MultilayerVertex[]
     for V in image(mg.v_V_associations)
@@ -89,7 +113,13 @@ function rem_node!(mg::AbstractMultilayerGraph, n::Node)
         end
     end
 
-    rem_vertex!.(Ref(mg), Vs_tbr)
+    for mv in Vs_tbr
+        _rem_vertex!(mg, mv)
+    end
+
+    idx_tbr = mg.idx_N_associations(n)
+
+    delete!(mg.idx_N_associations, idx_tbr)
 
     return true
 end
@@ -166,21 +196,6 @@ function set_metadata!(
     mg.v_metadata_dict[get_v(mg, mv)] = metadata
 
     return true
-end
-
-"""
-    add_vertex!(mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool = true)
-
-Add MultilayerVertex `mv` to multilayer graph `mg`. If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error.
-"""
-function Graphs.add_vertex!(
-    mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool=true
-)
-    _node = node(mv)
-    if add_node && !has_node(mg, _node)
-        add_node!(mg, _node)
-    end
-    return add_vertex_specialized!(mg, mv)
 end
 
 # Edges
@@ -375,7 +390,7 @@ function _add_layer!(
 
     # Add vertices
     for vertex in mv_vertices(new_layer)
-        add_vertex!(mg, vertex)
+        _add_vertex!(mg, vertex)
     end
 
     # Add edges
@@ -615,8 +630,8 @@ end
 
 Get the indegree of vertex `v` in `mg`.
 """
-function Graphs.indegree(mg::AbstractMultilayerGraph, v::MultilayerVertex)
-    return length(inneighbors(mg, v))
+function Graphs.indegree(mg::AbstractMultilayerGraph, mv::V) where {V<:MultilayerVertex}
+    return length(inneighbors(mg, mv))
 end
 
 """
@@ -625,8 +640,8 @@ end
 Get the vector of indegrees of vertices `vs` in `mg`.
 """
 function Graphs.indegree(
-    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
-)
+    mg::AbstractMultilayerGraph, vs::AbstractVector{V}=vertices(mg)
+) where {V<:MultilayerVertex}
     return [indegree(mg, x) for x in vs]
 end
 
@@ -810,8 +825,6 @@ function weight_tensor(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 
                 dst_n_idx = mg.idx_N_associations(dst_bare_V.node)
                 dst_layer_idx = get_layer_idx(mg, dst_bare_V.layer)
-                #=                 vec_idx = cartIndexTovecIndex( (src_n_idx,dst_n_idx,src_layer_idx ,dst_layer_idx ) ,_size)
-                                v_V_associations[vec_idx] =  =#
                 _weight_tensor[src_n_idx, dst_n_idx, src_layer_idx, dst_layer_idx] = weight(
                     halfedge
                 )
@@ -1264,3 +1277,43 @@ function to_string(x::AbstractMultilayerGraph)
            """
 end
 Base.show(io::IO, x::AbstractMultilayerGraph) = print(io, to_string(x))
+
+"""
+    getproperty(mg::AbstractMultilayerGraph, f::Symbol)
+"""
+function Base.getproperty(mg::AbstractMultilayerGraph, f::Symbol)
+    if f in (
+        :v_V_associations,
+        :fadjlist,
+        :idx_N_associations,
+        :layers,
+        :interlayers,
+        :v_metadata_dict,
+    ) # :weight_tensor, :supra_weight_matrix, 
+        Base.getfield(mg, f)
+    elseif f == :badjlist && is_directed(mg)
+        Base.getfield(mg, f)
+    elseif f == :edge_list
+        return edges(mg)
+    elseif f == :subgraphs
+        return merge(mg.layers, mg.interlayers)
+    elseif f == :layers_names
+        return [layer.name for layer in mg.layers]
+    elseif f == :interlayers_names
+        return [interlayer.name for interlayer in values(mg.interlayers)]
+    elseif f == :subgraphs_names
+        return vcat(mg.layers_names, mg.interlayers_names)
+    else
+        for descriptor in mg.layers
+            if descriptor.name == f
+                return get_subgraph(mg, descriptor)
+            end
+        end
+
+        for descriptor in values(mg.interlayers)
+            if descriptor.name == f
+                return get_subgraph(mg, descriptor)
+            end
+        end
+    end
+end

@@ -37,7 +37,7 @@ Trait that discerns between graphs that sport edge and vertex metadata.
 
 Check whether `g` supports edge AND vertex metadata.
 """
-is_meta(g::G) where {G<:AbstractGraph} = is_meta(typeof(g))
+is_meta(g::G) where {G<:AbstractGraph} = is_meta(G)
 
 """
     is_meta(g::G) where {G<:Type{<:AbstractGraph}}
