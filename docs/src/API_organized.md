@@ -246,12 +246,12 @@ mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_neighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 <!-- add_vertex!(mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool) -->
-rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
+<!-- rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex) -->
 <!-- rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex) -->
 has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) 
 has_edge( subgraph::AbstractMultilayerGraph, s::MultilayerVertex, d::MultilayerVertex)
 ne(mg::AbstractMultilayerGraph)
-edges(mg::AbstractMultilayerUGraph)
+<!-- edges(mg::AbstractMultilayerUGraph) -->
 <!-- edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
 edges(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}} -->
 edges
@@ -266,25 +266,25 @@ get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVe
 <!-- set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where { T,U, M <: AbstractMultilayerUGraph{T,U}}
 set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}} -->
 set_weight!
-is_directed(mg::AbstractMultilayerUGraph)
-is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
-is_directed(mg::AbstractMultilayerDiGraph)
-is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
+<!-- is_directed(mg::AbstractMultilayerUGraph) -->
+<!-- is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}} -->
+<!-- is_directed(mg::AbstractMultilayerDiGraph)
+is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}} -->
 has_node(mg::AbstractMultilayerGraph, n::Node)
 <!-- set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
-set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
+<!-- set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) -->
 set_metadata!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) -->
 set_metadata!
 nl(mg::AbstractMultilayerGraph)
 nIn(mg::AbstractMultilayerGraph)
 has_layer(mg::AbstractMultilayerGraph, layer_name::Symbol)
 
-add_layer!(mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+<!-- add_layer!(mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}} -->
 
-add_layer!(
+<!-- add_layer!(
     mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}} -->
 
 specify_interlayer!
 
@@ -327,7 +327,7 @@ modularity(
 ) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 
 
-von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
+<!-- von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}} -->
 ```
 
 ### [Representations](@id representations_eu)
@@ -419,7 +419,7 @@ AbstractMultilayerGraph{T <: Integer, U <: Real}
 fadjlist
 has_vertex(mg::M, v::T) where {T, M <: AbstractMultilayerGraph{T}}
 vertices(mg::AbstractMultilayerGraph)
-inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
+<!-- inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}} -->
 inneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T,<:Real}}
 inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 outneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T}}
@@ -430,8 +430,8 @@ has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T}; IsDirect
 has_edge
 add_edge!(mg::M,src::T,dst::T;weight::Union{Nothing,U}=one(U),metadata::Union{Tuple,NamedTuple}=NamedTuple(),) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}
-AbstractMultilayerUGraph{T,U}
-AbstractMultilayerDiGraph{T,U}
+<!-- AbstractMultilayerUGraph{T,U} -->
+<!-- AbstractMultilayerDiGraph{T,U} -->
 AbstractMultiplexUGraph
 AbstractMultiplexDiGraph
 ```
