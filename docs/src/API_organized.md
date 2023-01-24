@@ -1,6 +1,6 @@
 # API
 
-This page provides a list of exported methods organized by topic and audience. Methods that act on vertices, edges, and layers are grouped together. Some methods are intended for developers who want to use the `Graphs.jl` library as part of their code, while others are meant for end-users.
+This page provides a list of exported methods organized by topic and audience. Methods that act on vertices, edges, and layers are grouped together. Some methods are intended for developers who want to use the `Graphs.jl` library as part of their code, while others are meant for end-users. hello
 
 ## End-User
 
@@ -252,8 +252,8 @@ has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge)
 has_edge( subgraph::AbstractMultilayerGraph, s::MultilayerVertex, d::MultilayerVertex)
 ne(mg::AbstractMultilayerGraph)
 <!-- edges(mg::AbstractMultilayerUGraph) -->
-<!-- edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-edges(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}} -->
+<!-- edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}} -->
+edges(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
 edges
 add_edge!(mg::M, src::V, dst::V; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}, V <: MultilayerVertex}
 add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
