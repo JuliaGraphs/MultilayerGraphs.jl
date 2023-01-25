@@ -5,7 +5,7 @@ function __add_vertex!(
     !isempty(metadata) && println(
         "Trying to add a vertex with metadata to a graph of type $(typeof(g)). Metadata $(metadata) will be ignored.",
     )
-    return Graphs.add_vertex!(g)
+    return add_vertex!(g)
 end
 
 function _get_vertex_metadata(
@@ -26,7 +26,7 @@ function _add_edge!(
     !isempty(metadata) && @warn (
         "Trying to add an edge with metadata to a graph of type $(typeof(g)). Metadata $(metadata) will be ignored."
     )
-    return Graphs.add_edge!(g, src, dst)
+    return add_edge!(g, src, dst)
 end
 
 function _get_edge_weight(
@@ -40,8 +40,4 @@ function _get_edge_metadata(
     g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}, src::T, dst::T
 ) where {T}
     return NamedTuple()
-end
-
-function Graphs.weights(g::Graphs.SimpleGraphs.AbstractSimpleGraph{T}) where {T}
-    return adjacency_matrix(g)
 end

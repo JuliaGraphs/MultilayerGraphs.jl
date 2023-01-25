@@ -1,7 +1,16 @@
+using Revise
+using SimpleTraits
 using Distributions
 using Graphs
 using MultilayerGraphs
 using Documenter
+
+#= function end_user_filter(f) 
+    if f isa Function
+        for method in methods
+            tv, decls, file, line = arg_decl_parts(m)
+
+end =#
 
 DocMeta.setdocmeta!(
     MultilayerGraphs, :DocTestSetup, :(using MultilayerGraphs); recursive=true
@@ -17,7 +26,7 @@ makedocs(;
         canonical="https://juliagraphs.org/MultilayerGraphs.jl",
         assets=String[],
     ),
-    pages=["Home" => "index.md", "API" => "API.md"],
+    pages=["Home" => "index.md", "API" => "API_organized.md"],
     clean=false,
 )
 
