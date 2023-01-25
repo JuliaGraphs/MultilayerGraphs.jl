@@ -225,13 +225,13 @@ MultilayerDiGraph(
      perform_checks::Bool = false
 ) where {T,U}
 
-SynchronizedEdgeColoredGraph{T,U}
+NodeAlignedEdgeColoredGraph{T,U}
 
-SynchronizedEdgeColoredGraph(
+NodeAlignedEdgeColoredGraph(
     layers::Vector{<:Layer{T,U}},
 ) where {T,U}
 
-SynchronizedEdgeColoredDiGraph{T,U}
+NodeAlignedEdgeColoredDiGraph{T,U}
 
 
 
@@ -253,7 +253,7 @@ has_edge( subgraph::AbstractMultilayerGraph, s::MultilayerVertex, d::MultilayerV
 ne(mg::AbstractMultilayerGraph)
 <!-- edges(mg::AbstractMultilayerUGraph) -->
 <!-- edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}} -->
-edges(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
+edges(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 edges
 add_edge!(mg::M, src::V, dst::V; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}, V <: MultilayerVertex}
 add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
