@@ -33,42 +33,42 @@ struct MultilayerVertex{S} <: AbstractMultilayerVertex{S}
     end
 end
 
-"""
+#= """
     MultilayerVertex(node::Node, layer::Symbol)
 
 Return `MultilayerVertex(node, layer, NamedTuple())`
-"""
+""" =#
 MultilayerVertex(node::Node, layer::Symbol) = MultilayerVertex(node, layer, NamedTuple())
 
-"""
+#= """
     MultilayerVertex(node::Node, not::Nothing)
 
 Return `MultilayerVertex(node, nothing, NamedTuple())`.
-"""
+""" =#
 MultilayerVertex(node::Node, not::Nothing) = MultilayerVertex(node, nothing, NamedTuple())
 
-"""
+#= """
     MultilayerVertex(node::Node, metadata::Union{Tuple,NamedTuple})
 
 Return `MultilayerVertex(node, nothing, metadata)`.
-"""
+""" =#
 function MultilayerVertex(node::Node, metadata::Union{Tuple,NamedTuple})
     return MultilayerVertex(node, nothing, metadata)
 end
 
-"""
+#= """
     MultilayerVertex(node::Node)
 
 Return `MultilayerVertex(node, nothing, NamedTuple())`.
-"""
+""" =#
 MultilayerVertex(node::Node) = MultilayerVertex(node, nothing, NamedTuple())
 
 # Shorter alias for MultilayerVertex
-"""
+#= """
     MV
 
 Alias for `MultilayerVertex`
-"""
+""" =#
 const MV = MultilayerVertex
 
 # Base overrides

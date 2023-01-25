@@ -284,7 +284,6 @@ function add_edge_standard!(
     weight::W=nothing,
     metadata::Union{Tuple,NamedTuple}=NamedTuple(),
 ) where {T,U<:Real,W<:Union{U,Nothing},S<:AbstractSubGraph{T,U}}
-    #  @debug "" subgraph src dst weight metadata
     return add_edge!(
         subgraph,
         get_v(subgraph, src),
