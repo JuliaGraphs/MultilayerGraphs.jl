@@ -499,6 +499,9 @@ all_interlayers = [
     @testset "abstractmultilayerdigraph" begin
         include("abstractmultilayerdigraph.jl")
     end
+    @testset "node_aligned_edge_colored_graphs" begin
+        include("node_aligned_edge_colored_graph.jl")
+    end
     @testset "agents_jl_integration" begin
         include("agents_jl_integration.jl")
     end

@@ -6,7 +6,7 @@ An abstract type representing a node.
 abstract type AbstractNode end
 
 """
-    struct Node <: AbstractNode
+    Node <: AbstractNode
 
 A custom concrete type representing a node of a multilayer graph.
 """

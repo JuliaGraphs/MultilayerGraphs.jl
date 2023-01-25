@@ -1,10 +1,4 @@
 # Base extensions
-#= """
-    getindex(od::O, key::Int64) where {O <: OrderedDict}
-
-Return the `key`th pair of `od`, following `od`'s order.
-"""
-Base.getindex(od::O, key::Int64) where {O<:OrderedDict} = collect(values(od))[key] =#
 
 # Non package-specific utilities
 """
@@ -807,3 +801,17 @@ function get_valtypes(init_function::Function)
         NamedTuple{returned_namedtuple_type[1]}(type_pars)
     end
 end
+
+"""
+    or(conds...)
+
+Evaluate if at least one of the conditions in `conds` is true.
+"""
+or(conds...) = any(conds)
+
+"""
+    and(conds...)
+
+Evaluate if all conditions in `conds` is true.
+"""
+and(conds...) = all(conds)
