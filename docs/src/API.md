@@ -171,131 +171,85 @@ graph(subgraph::AbstractSubGraph)
 ### [Multilayer-Specific Methods](@id msm_eu)
 
 ```@docs
-MultilayerGraph{T,U}
+AbstractMultilayerGraph{T <: Integer, U <: Real}
 
-MultilayerDiGraph{T,U}
-
-MultilayerGraph(T::Type{<:Number}, U::Type{<:Number})
-
-MultilayerDiGraph(T::Type{<:Number}, U::Type{<:Number})
-
-MultilayerGraph(
-    layers::Vector{<:Layer{T,U}},
-    specified_interlayers::Vector{<:Interlayer{T,U}};
-    default_interlayers_null_graph::H = SimpleGraph{T}(),
-    default_interlayers_structure::String="multiplex",
-) where {T,U, H <: AbstractGraph{T}}
-
-MultilayerDiGraph(
-    layers::Vector{<:Layer{T,U}},
-    specified_interlayers::Vector{<:Interlayer{T,U}};
-    default_interlayers_null_graph::H = SimpleGraph{T}(),
-    default_interlayers_structure::String="multiplex",
-) where {T,U, H <: AbstractGraph{T}}
-
-MultilayerGraph(
-    empty_layers::Vector{<:Layer{T,U}},
-    empty_interlayers::Vector{<:Interlayer{T,U}},
-    degree_distribution::UnivariateDistribution;
-    allow_self_loops::Bool = false,
-    default_interlayers_null_graph::H = SimpleGraph{T}(),
-) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
-
-MultilayerDiGraph(
-    empty_layers::Vector{<:Layer{T,U}},
-    empty_interlayers::Vector{<:Interlayer{T,U}},
-    indegree_distribution::UnivariateDistribution,
-    outdegree_distribution::UnivariateDistribution;
-    allow_self_loops::Bool = false,
-    default_interlayers_null_graph::H = SimpleGraph{T}(),
-) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
-
-MultilayerGraph(
-    empty_multilayergraph::MultilayerGraph{T,U}, 
-    degree_sequence::Vector{<:Integer}; 
-    allow_self_loops::Bool = false, 
-    perform_checks::Bool = true
-) where {T,U}
-
-MultilayerDiGraph(
-    empty_multilayerdigraph::MultilayerDiGraph{T,U}, 
-    indegree_sequence::Vector{<:Integer},
-    outdegree_sequence::Vector{<:Integer};
-    allow_self_loops::Bool = false,
-     perform_checks::Bool = false
-) where {T,U}
-
+has_node(mg::AbstractMultilayerGraph, n::Node)
 nodes(mg::AbstractMultilayerGraph)
-nn(mg::AbstractMultilayerGraph) 
-add_node!(mg::AbstractMultilayerGraph, n::Node)
-rem_node!(mg::AbstractMultilayerGraph, n::Node)
+nn(mg::AbstractMultilayerGraph)
+
 has_vertex(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 nv(mg::M) where {M <: AbstractMultilayerGraph }
 mv_vertices(mg::AbstractMultilayerGraph)
+get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
+set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
+
 mv_inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_outneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 mv_neighbors( mg::AbstractMultilayerGraph, mv::MultilayerVertex)
-add_vertex!(mg::AbstractMultilayerGraph, mv::MultilayerVertex; add_node::Bool)
-rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
-rem_vertex!(mg::AbstractMultilayerDiGraph, V::MultilayerVertex)
 has_edge(mg::AbstractMultilayerGraph, edge::MultilayerEdge) 
-has_edge( subgraph::AbstractMultilayerGraph, s::MultilayerVertex, d::MultilayerVertex)
+has_edge(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 ne(mg::AbstractMultilayerGraph)
-edges(mg::AbstractMultilayerUGraph)
-edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-edges(mg::M) where {T,U,M<:AbstractMultilayerDiGraph{T,U}}
+edges(::Type{IsDirected{M}}, mg::M) where {T, U, M<:AbstractMultilayerGraph{T, U}}
+edges(::Type{Not{IsDirected{M}}}, mg::M) where {T, U, M<:AbstractMultilayerGraph{T, U}}
 add_edge!(mg::M, src::V, dst::V; weight::Union{Nothing, U} = one(U), metadata::Union{Tuple,NamedTuple} = NamedTuple() ) where {T,U, M <: AbstractMultilayerGraph{T,U}, V <: MultilayerVertex}
-add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
-add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerDiGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
 rem_edge!(mg::AbstractMultilayerGraph, me::MultilayerEdge)
-rem_edge!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
-rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
-get_metadata(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 get_metadata(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
 get_weight(mg::AbstractMultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex)
-set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where { T,U, M <: AbstractMultilayerUGraph{T,U}}
-set_weight!(mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where { T,U, M <: AbstractMultilayerDiGraph{T,U}}
-is_directed(mg::AbstractMultilayerUGraph)
-is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
-is_directed(mg::AbstractMultilayerDiGraph)
-is_directed(m::M) where { M <: Type{ <: AbstractMultilayerDiGraph}}
-has_node(mg::AbstractMultilayerGraph, n::Node)
-set_metadata!(mg::AbstractMultilayerGraph, mv::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) 
-set_metadata!(mg::AbstractMultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
-set_metadata!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple})
+set_weight!(::Type{SimpleTraits.Not{Graphs.IsDirected{M}}}, mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where {T, U, M<:AbstractMultilayerGraph{T, U}}
+set_weight!(::Type{Graphs.IsDirected{M}}, mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U) where {T, U, M<:AbstractMultilayerGraph{T, U}}
+set_metadata!(::Type{SimpleTraits.Not{Graphs.IsDirected{M}}}, mg::M, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) where {M<:AbstractMultilayerGraph}
+set_metadata!(::Type{Graphs.IsDirected{M}}, mg::M, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple, NamedTuple}) where {M<:AbstractMultilayerGraph}
+
+
 nl(mg::AbstractMultilayerGraph)
 nIn(mg::AbstractMultilayerGraph)
 has_layer(mg::AbstractMultilayerGraph, layer_name::Symbol)
 
-add_layer!(mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+add_layer!(
+    mg::M,
+    new_layer::L;
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {
+    T,
+    U,
+    G<:AbstractGraph{T},
+    L<:Layer{T,U,G},
+    H<:AbstractGraph{T},
+    M<:MultilayerGraph{T,U}
+}
 
 add_layer!(
-    mg::M, new_layer::L; default_interlayers_null_graph::H = SimpleGraph{T}(), default_interlayers_structure::String ="multiplex"
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
-
-specify_interlayer!(
     mg::M,
-    new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerDiGraph{T,U},In<:Interlayer{T,U,G}}
+    new_layer::L;
+    default_interlayers_null_graph::H=SimpleDiGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {
+    T,
+    U,
+    G<:AbstractGraph{T},
+    L<:Layer{T,U,G},
+    H<:AbstractGraph{T},
+    M<:MultilayerDiGraph{T,U}
+}
 
-specify_interlayer!(
-    mg::M,
-    new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},In<:Interlayer{T,U,G}}
+specify_interlayer!(::Type{SimpleTraits.Not{Graphs.IsDirected{M}}}, mg::M, new_interlayer::In) where {T, U, G<:Graphs.AbstractGraph{T}, In<:Interlayer{T, U, G}, M<:MultilayerGraph{T, U}}
+ specify_interlayer!(::Type{Graphs.IsDirected{M}}, mg::M, new_interlayer::In) where {T, U, G<:Graphs.AbstractGraph{T}, In<:Interlayer{T, U, G}, M<:MultilayerDiGraph{T, U}}
 
 get_interlayer(
     mg::AbstractMultilayerGraph, layer_1_name::Symbol, layer_2_name::Symbol
 )
 
 
-indegree( mg::AbstractMultilayerGraph, v::MultilayerVertex) 
+indegree(mg::AbstractMultilayerGraph, mv::V) where {V <: MultilayerVertex}
 indegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg))
 
 outdegree(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 outdegree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg))
 
-degree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)) 
+degree(mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex})
+degree(::Type{Graphs.IsDirected{M}}, mg::M, mv::V) where {M<:AbstractMultilayerGraph, V<:MultilayerVertex}
+degree(::Type{SimpleTraits.Not{Graphs.IsDirected{M}}}, mg::M, v::V) where {M<:AbstractMultilayerGraph, V<:MultilayerVertex}
 
 mean_degree(mg::AbstractMultilayerGraph)
 
@@ -323,8 +277,124 @@ modularity(
 ) where {T,U,M<:AbstractMultilayerGraph{T,U}}
 
 
-von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
+von_neumann_entropy(::Type{SimpleTraits.Not{Graphs.IsDirected{M}}}, mg::M) where {T, U, M<:AbstractMultilayerGraph{T, U}}
+
 ```
+
+### Concrete Multilayer Graphs
+#### [(General) Multilayer Graphs](@id General_Multilayer_Graphs_eu)
+##### [MultilayerGraph](@id Multilayer_Graph)
+```@docs
+MultilayerGraph{T,U}
+
+MultilayerGraph(T::Type{<:Number}, U::Type{<:Number})
+
+MultilayerGraph(
+    layers::Vector{<:Layer{T,U}},
+    specified_interlayers::Vector{<:Interlayer{T,U}};
+    default_interlayers_null_graph::H = SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {T,U, H <: AbstractGraph{T}}
+
+MultilayerGraph(
+    empty_layers::Vector{<:Layer{T,U}},
+    empty_interlayers::Vector{<:Interlayer{T,U}},
+    degree_distribution::UnivariateDistribution;
+    allow_self_loops::Bool = false,
+    default_interlayers_null_graph::H = SimpleGraph{T}(),
+) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
+
+MultilayerGraph(
+    empty_multilayergraph::MultilayerGraph{T,U}, 
+    degree_sequence::Vector{<:Integer}; 
+    allow_self_loops::Bool = false, 
+    perform_checks::Bool = true
+) where {T,U}
+
+add_node!(mg::MultilayerGraph, n::Node; add_vertex_to_layers)
+rem_node!(mg::MultilayerGraph, n::Node)
+
+add_vertex!(mg::MultilayerGraph, mv::MultilayerVertex; add_node::Bool=true)
+rem_vertex!(mg::MultilayerGraph, V::MultilayerVertex)
+
+add_edge!(mg::M, me::E) where {T, U, M<:MultilayerGraph{T, U}, E<:(MultilayerEdge{<:Union{Nothing, U}})}
+rem_edge!(mg::MultilayerGraph, src::MultilayerVertex, dst::MultilayerVertex) 
+
+is_directed(mg::M) where {M<:Type{<:MultilayerGraph}}
+
+```
+##### [MultilayerDiGraph](@id Multilayer_Di_Graph_eu)
+```@docs
+MultilayerDiGraph{T,U}
+
+MultilayerDiGraph(T::Type{<:Number}, U::Type{<:Number})
+
+MultilayerDiGraph(
+    layers::Vector{<:Layer{T,U}},
+    specified_interlayers::Vector{<:Interlayer{T,U}};
+    default_interlayers_null_graph::H = SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {T,U, H <: AbstractGraph{T}}
+
+MultilayerDiGraph(
+    empty_layers::Vector{<:Layer{T,U}},
+    empty_interlayers::Vector{<:Interlayer{T,U}},
+    indegree_distribution::UnivariateDistribution,
+    outdegree_distribution::UnivariateDistribution;
+    allow_self_loops::Bool = false,
+    default_interlayers_null_graph::H = SimpleGraph{T}(),
+) where {T <: Integer, U <: Real, H <: AbstractGraph{T}}
+
+MultilayerDiGraph(
+    empty_multilayerdigraph::MultilayerDiGraph{T,U}, 
+    indegree_sequence::Vector{<:Integer},
+    outdegree_sequence::Vector{<:Integer};
+    allow_self_loops::Bool = false,
+     perform_checks::Bool = false
+) where {T,U}
+
+add_node!(mg::MultilayerDiGraph, n::Node; add_vertex_to_layers)
+rem_node!(mg::MultilayerDiGraph, n::Node)
+
+add_vertex!(mg::MultilayerDiGraph, mv::MultilayerVertex; add_node::Bool=true)
+rem_vertex!(mg::MultilayerDiGraph, V::MultilayerVertex)
+
+add_edge!(mg::M, me::E) where {T, U, M<:MultilayerDiGraph{T, U}, E<:(MultilayerEdge{<:Union{Nothing, U}})}
+rem_edge!(mg::MultilayerDiGraph, src::MultilayerVertex, dst::MultilayerVertex)
+
+is_directed(mg::M) where {M<:Type{<:MultilayerDiGraph}}
+```
+
+#### [Node Aligned Edge Colored Graphs](@id Node_Aligned_Edge_Colored_Graphs_eu)
+```@docs
+AbstractNodeAlignedEdgeColoredGraph
+
+add_node!(mg::AbstractNodeAlignedEdgeColoredGraph, n::Node)
+rem_node!(mg::AbstractNodeAlignedEdgeColoredGraph, n::Node)
+
+add_edge!(mg::M, me::E) where {T, U, M<:AbstractNodeAlignedEdgeColoredGraph{T, U}, E<:(MultilayerEdge{<:Union{Nothing, U}})}
+rem_edge!(mg::AbstractNodeAlignedEdgeColoredGraph, src::MultilayerVertex, dst::MultilayerVertex)
+
+add_layer!(mg::M, new_layer::L) where {T, U, G<:Graphs.AbstractGraph{T}, L<:Layer{T, U, G}, M<:AbstractNodeAlignedEdgeColoredGraph{T, U}}
+```
+##### [NodeAlignedEdgeColoredGraph](@id Node_Aligned_Edge_Colored_Graph_eu)
+```@docs
+NodeAlignedEdgeColoredGraph{T,U}
+
+NodeAlignedEdgeColoredGraph(layers::Vector{<:Layer{T,U}}) where {T,U}
+
+is_directed(mg::M) where {M<:Type{<:NodeAlignedEdgeColoredGraph}}
+```
+
+##### [NodeAlignedEdgeColoredDiGraph](@id Node_Aligned_Edge_Colored_Di_Graph_eu)
+```@docs
+NodeAlignedEdgeColoredDiGraph{T,U}
+
+NodeAlignedEdgeColoredDiGraph(layers::Vector{<:Layer{T,U}}) where {T,U}
+
+is_directed(mg::M) where {M<:Type{<:NodeAlignedEdgeColoredDiGraph}}
+```
+
 
 ### [Representations](@id representations_eu)
 ```@docs
@@ -411,20 +481,18 @@ AbstractInterlayer
 ### [Multilayer-Specific Methods](@id msm_dev)
 
 ```@docs
-AbstractMultilayerGraph{T <: Integer, U <: Real}
 has_vertex(mg::M, v::T) where {T, M <: AbstractMultilayerGraph{T}}
 vertices(mg::AbstractMultilayerGraph)
-inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
-inneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T,<:Real}}
+inneighbors(::Type{SimpleTraits.Not{Graphs.IsDirected{M}}}, mg::M, v::T) where {T, M<:AbstractMultilayerGraph}
+inneighbors(::Type{Graphs.IsDirected{M}}, mg::M, v::T) where {T, M<:AbstractMultilayerGraph}
 inneighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 outneighbors(mg::M, v::T) where {T, M<:AbstractMultilayerGraph{T}}
 neighbors(mg::AbstractMultilayerGraph, mv::MultilayerVertex)
 edgetype(::M) where {T,U,M<:AbstractMultilayerGraph{T,U}}
-has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerUGraph{T}}
-has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerDiGraph{T}}
-rem_edge!(mg::M, src::T, dst::T) where {T, M <: AbstractMultilayerGraph{T}
-AbstractMultilayerUGraph{T,U}
-AbstractMultilayerDiGraph{T,U}
+has_edge(::Type{Not{IsDirected{M}}}, mg::M, src::T, dst::T) where {T, M<:(AbstractMultilayerGraph{T})}
+has_edge(::Type{IsDirected{M}}, mg::M, src::T, dst::T) where {T, M<:(AbstractMultilayerGraph{T})}
+ add_edge!(mg::M, src::T, dst::T; weight, metadata) where {T, U, M<:AbstractMultilayerGraph{T, U}}
+rem_edge!(mg::M, src::T, dst::T) where {T, M<:(AbstractMultilayerGraph{T})}
 ```
 
 ### [Representations](@id representations_dev)

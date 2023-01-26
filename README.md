@@ -48,8 +48,6 @@ pkg> add MultilayerGraphs
 
 ## Usage
 
-Here we are going to synthetically illustrate some of the main features of MultilayerGraphs.jl. For a more comprehensive exploration of the package functionalities we strongly recommend consulting the [documentation](https://juliagraphs.org/MultilayerGraphs.jl). 
-
 Let's begin by importing the necessary dependencies and setting the relevant constants.
 
 ```julia
@@ -99,7 +97,7 @@ Similar constructors, more flexible at the cost of ease of use, enable a finer t
 # Create a simple directed value layer
 n_vertices = rand(1:n_nodes)                                   # Number of vertices 
 n_edges = rand(n_vertices:(n_vertices * (n_vertices - 1) - 1)) # Number of edges 
-default_vertex_metadata = v -> ("vertex_$(v)_metadata")        # Vertex metadata 
+default_vertex_metadata = v -> ("vertex_$(v)_metadata",)       # Vertex metadata 
 default_edge_metadata = (s, d) -> (rand(),)                    # Edge metadata 
 layer_simple_directed_value = Layer(                           # Layer constructor
     :layer_simple_directed_value,                              # Layer name
@@ -151,7 +149,7 @@ interlayer_simple_directed_meta = interlayer_metadigraph( # Interlayer construct
     layer_simple_directed_value,                          # Layer 2
     n_edges;                                              # Number of edges
     default_edge_metadata=(src, dst) ->                   # Edge metadata 
-        (edge_metadata="metadata_of_edge_from_$(src)_to_$(dst)"),
+        (edge_metadata="metadata_of_edge_from_$(src)_to_$(dst)",),
     transfer_vertex_metadata=true # Boolean deciding layer vertex metadata inheritance
 )
 
@@ -176,10 +174,10 @@ multilayerdigraph = MultilayerDiGraph( # Constructor
 )
 
 # Layers and interlayer can be accessed as properties using their names
-multilayerdigraph.layer_simplevaldigraph
+multilayerdigraph.layer_simple_directed_value
 ```
 
-Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph. The user may add vertices that do or do not represent nodes which are already present in the multilayergraph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph. The vertex-level metadata are effectively considered only if the graph underlying the relevant layer or interlayer supports them, otherwise they are discarded. The same holds for edge-level metadata and/or weight. 
+Then we proceed by showing how to add nodes, vertices and edges to a directed multilayer graph. The user may add vertices that do or do not represent nodes which are already present in the multilayer graph. In the latter case, we have to create a node first and then add the vertex representing such node to the multilayer graph. The vertex-level metadata are effectively considered only if the graph underlying the relevant layer or interlayer supports them, otherwise they are discarded. The same holds for edge-level metadata and/or weight. 
 
 ```julia
 # Create a node 
@@ -187,10 +185,10 @@ new_node_1 = Node("new_node_1")
 # Add the node to the multilayer graph 
 add_node!(multilayerdigraph, new_node_1)
 # Create a vertex representing the node 
-new_vertex_1 = MV(           # Constructor (alias for "MultilayerVertex")
-    new_node_1,              # Node represented by the vertex
-    :layer_simplevaldigraph, # Layer containing the vertex 
-    ("new_metadata")         # Vertex metadata 
+new_vertex_1 = MV(                # Constructor (alias for "MultilayerVertex")
+    new_node_1,                   # Node represented by the vertex
+    :layer_simple_directed_value, # Layer containing the vertex 
+    ("new_metadata",)             # Vertex metadata 
 )
 # Add the vertex 
 add_vertex!(
@@ -201,7 +199,7 @@ add_vertex!(
 # Create another node in another layer 
 new_node_2 = Node("new_node_2")
 # Create another vertex representing the new node
-new_vertex_2 = MV(new_node_2, :layer_simpledigraph)
+new_vertex_2 = MV(new_node_2, :layer_simple_directed_value)
 # Add the new vertex
 add_vertex!(
     multilayerdigraph,
@@ -209,10 +207,10 @@ add_vertex!(
     add_node=true # Add the associated node before adding the vertex
 )
 # Create an edge 
-new_edge = MultilayerEdge( # Constructor 
-    new_vertex_1,          # Source vertex
-    new_vertex_2,          # Destination vertex 
-    ("some_edge_metadata") # Edge metadata 
+new_edge = MultilayerEdge(  # Constructor 
+    new_vertex_1,           # Source vertex
+    new_vertex_2,           # Destination vertex 
+    ("some_edge_metadata",) # Edge metadata 
 )
 # Add the edge 
 add_edge!(
@@ -239,24 +237,13 @@ modularity(
 
 ## Future Developments 
 
-- [ ] [Implement graph of layers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/34);
-- [ ] [Implement projected monoplex and overlay graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/35);
-- [ ] [Implement more default multilayer graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/36) (e.g. multiplex graphs);
-- [ ] [Implement configuration models / graph generators for interlayers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/46);
-- [ ] [Implement a fully-fledged multilayer configuration model / graph generator](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/48);
-- [ ] [Relax the requirement of same `T` and `U` for all `Layer`s and `Interlayer`s that are meant to constitute a `Multilayer(Di)Graph`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/53);
-- [ ] [Implement multilayer graph data visualisation functionalities](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54);
-- [ ] [Infer `weighttype` from `default_edge_weight`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/58);
-- [ ] [Improve error explanations](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/59); 
-- [ ] [Improve integration with Agents.jl](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/61);
-- [ ] [Allow configuration models to specify a minimum discrepancy between the sampled (di)graphical sequence(s) and the provided distribution](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/62);
-- [ ] [Add to `add_layer!` a kwarg that allows the user to specify some new interlayers, skipping the instantiation of the default ones.](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/63).
+All the information regarding the future developments of MultilayerGraphs.jl can be found in the [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues).
 
 ## How to Contribute 
 
 The ongoing development of this package would greatly benefit from the valuable feedback of the esteemed members of the [JuliaGraph](https://github.com/orgs/JuliaGraphs/people) community, as well as from graph theorists, network scientists, and any users who may have general questions or suggestions. 
 
-We therefore encourage you to participate in [discussions](https://github.com/JuliaGraphs/MultilayerGraphs.jl/discussions), raise [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues), or submit [pull requests](https://github.com/JuliaGraphs/MultilayerGraphs.jl/pulls). Your contributions are most welcome!
+We therefore encourage you to participate in [discussions](https://github.com/JuliaGraphs/MultilayerGraphs.jl/discussions), raise [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues), or submit [pull requests](https://github.com/JuliaGraphs/MultilayerGraphs.jl/pulls). Your contributions are welcome!
 
 ## How to Cite
 
@@ -266,11 +253,21 @@ This will help to give appropriate credit to the [contributors](https://github.c
 
 ## Announcements 
 
-The package and its features were announced on the following platforms:
+### v0.1
 
-- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988)
-- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22)
-- [Twitter](https://twitter.com/In_Phy_T/status/1560594513189638146)
+MultilayerGraphs.jl (v0.1) and its features were announced on the following platforms:
+
+- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988);
+- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22);
+- [Twitter](https://twitter.com/In_Phy_T/status/1560594513189638146).
+
+### v1.1
+
+MultilayerGraphs.jl (v1.1) and its features were announced on the following platforms:
+
+- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-v1-1-multilayer-network-science-in-julia/92680);
+- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-v11-multilayer-network-science-in-julia-2oa3);
+- [Twitter](https://twitter.com/In_Phy_T/status/1612460371939581955).
 
 ## Related Packages 
 

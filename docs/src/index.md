@@ -34,6 +34,8 @@ Multilayer graphs have been adopted to model the structure and dynamics of a wid
 
 MultilayerGraphs.jl is an integral part of the [JuliaGraphs](https://github.com/JuliaGraphs) ecosystem extending [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl) so all the methods and metrics exported by Graphs.jl work for multilayer graphs, but due to the special nature of multilayer graphs the package features a peculiar implementation that maps a standard integer-labelled vertex representation to a more user-friendly framework exporting all the objects an experienced practitioner would expect such as nodes ([`Node`](@ref)), vertices ([`MultilayerVertex`](@ref)), layers ([`Layer`](@ref)), interlayers ([`Interlayer`](@ref)), etc.
 
+A multilayer graph is composed of layers, i.e. graphs whose vertices represent the same set of nodes (not all nodes need to be represented in every layer), and interlayers, i.e. the bipartite graphs that connect vertices in two different layers. Vertices in a multilayer graph are represented using the `MultilayerVertex` struct, while nodes are represented using the `Node` struct.
+
 `MultilayerGraph` and `MultilayerDiGraph` are fully-fledged Graphs.jl extensions. Both structs are designed to allow for layers and interlayers of any type (as long as they are Graphs.jl extensions themselves) and to permit layers and interlayers of different types. However, it is required that all layers and interlayers in `MultilayerGraph` are undirected, and all layers and interlayers in `MultilayerDiGraph` are directed.
 
 `MultilayerGraph` and `MultilayerDiGraph` support the specification of vertex and edge metadata, provided that the underlying layer or interlayer also supports metadata.
@@ -937,6 +939,14 @@ Similarly, there is a [`MetadataTensor`](@ref), that may be created via `metadat
 
 The package also exports a [`SupraWeightMatrix`](@ref) which is a supra (weighted) adjacency matrix with the same indexing functionality as above. You may instantiate it via `supra_weight_matrix(multilayergraph)`.
 
+
+#### Sub-ecosystem
+Special applications may not require all the representational generality enabled by `Multilayer(Di)Graph`s, and, on the contrary, could benefit from the simpler interface and higher performance that come with restricted subtypes of multilayer graphs (e.g. multiplex graphs, edge-colored graph, etc).
+
+MultilayerGraphs.jl, via an apporoach that combines type-hierarchy with traits, allows for implementing custom multilayer graphs (similar to what Graphs.jl does). This feature has been initially proven with the implementation of [`NodeAlignedEdgeColoredGraph`](@ref) and [`NodeAlignedEdgeColoredDiGraph`](@ref), which aim at representing edge-colored graphs by naturally mapping them to multilayer graphs.
+
+The sub-ecosystem capability is still under construction, see [Systematize the sub-ecosytem feature](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/113).
+
 #### Multilayer-specific analytical tools
 
 Read a complete list of analytical methods exclusive to multilayer graphs in the dedicated [API section](@ref msm_eu) (here "exclusive" means that wither those methods do not exists for standard graphs, or that they had to be reimplemented and so may present some caveats). Refer to their docstrings for more information.
@@ -947,18 +957,7 @@ Read a complete list of analytical methods exclusive to multilayer graphs in the
 
 ### Future Developments
 
-- [Implement graph of layers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/34);
-- [Implement projected monoplex and overlay graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/35);
-- [Implement more default multilayer graphs](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/36) (e.g. multiplex graphs);
-- [Implement configuration models / graph generators for interlayers](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/46);
-- [Implement a fully-fledged multilayer configuration model / graph generator](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/48);
-- [Relax the requirement of same `T` and `U` for all `Layer`s and `Interlayer`s that are meant to constitute a `Multilayer(Di)Graph`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/53);
-- [Implement multilayer graph data visualisation functionalities](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/54);
-- [Infer `weighttype` from `default_edge_weight`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/58);
-- [Improve error explanations](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/59); 
-- [Improve integration with Agents.jl](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/61);
-- [Allow configuration models to specify a minimum discrepancy between the sampled (di)graphical sequence(s) and the provided distribution](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/62);
-- [Add to `add_layer!` a kwarg that allows the user to specify some new interlayers, skipping the instantiation of the default ones.](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/63).
+All the information regarding the future developments of MultilayerGraphs.jl can be found in the [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues).
 
 ## How to Contribute
 
@@ -972,13 +971,23 @@ If you utilize this package in your project, please consider citing this reposit
 
 This will help to give appropriate credit to the [contributors](https://github.com/JuliaGraphs/MultilayerGraphs.jl/graphs/contributors) and support the continued development of the package.
 
-## Announcements
+## Announcements 
 
-The package and its features were announced on the following platforms:
+### v0.1
 
-- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988)
-- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22)
-- [Twitter](https://twitter.com/In_Phy_T/status/1560594513189638146)
+MultilayerGraphs.jl (v0.1) and its features were announced on the following platforms:
+
+- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-a-package-to-construct-handle-and-analyse-multilayer-graphs/85988);
+- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-a-package-to-construct-handle-and-analyse-multilayer-graphs-3k22);
+- [Twitter](https://twitter.com/In_Phy_T/status/1560594513189638146).
+
+### v1.1
+
+MultilayerGraphs.jl (v1.1) and its features were announced on the following platforms:
+
+- [Discourse](https://discourse.julialang.org/t/ann-multilayergraphs-jl-v1-1-multilayer-network-science-in-julia/92680);
+- [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-v11-multilayer-network-science-in-julia-2oa3);
+- [Twitter](https://twitter.com/In_Phy_T/status/1612460371939581955).
 
 ## Related Packages 
 

@@ -278,10 +278,10 @@ end
         degree_distribution::UnivariateDistribution,
         null_graph::G,
         weighttype::Type{U};
-        default_vertex_metadata::Function = mv -> NamedTuple(),
-        default_edge_weight::Function = (src, dst) -> nothing,
-        default_edge_metadata::Function = (src, dst) -> NamedTuple(),
-    ) where {T<:Integer, U <: Real, G<:AbstractGraph{T}; !IsDirected{G}}
+        default_vertex_metadata::Function=mv -> NamedTuple(),
+        default_edge_weight::Function=(src, dst) -> nothing,
+        default_edge_metadata::Function=(src, dst) -> NamedTuple(),
+    ) where {U<:Real, G<:AbstractGraph, !istrait(IsDirected{G})}
 
 Returns an undirected `Layer` whose degree sequence is sampled from `degree_distribution`. Graph realization is performed using the Havel-Hakimi algorithm.
 
@@ -307,7 +307,7 @@ Returns an undirected `Layer` whose degree sequence is sampled from `degree_dist
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T};!IsDirected{G}}
+) where {U<:Real,G<:AbstractGraph;!IsDirected{G}}
     degree_sequence = sample_graphical_degree_sequence(
         degree_distribution, length(vertices)
     )
@@ -353,20 +353,14 @@ Returns an undirected `Layer` with given `degree_sequence` realized using the Ha
 """
 @traitfn function Layer(
     name::Symbol,
-    vertices::Union{V,N},#Vector{MultilayerVertex{nothing}},
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}}, #Union{V,N},#Vector{MultilayerVertex{nothing}},
     degree_sequence::Vector{<:Integer},
     null_graph::G,
-    weighttype::Type{U};
+    weighttype::Type{<:Real};
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {
-    T<:Integer,
-    U<:Real,
-    G<:AbstractGraph{T},
-    V<:Vector{MultilayerVertex{nothing}},
-    N<:Vector{Node};!IsDirected{G},
-}
+) where {G <: AbstractGraph; !IsDirected{G}} # , V<:Vector{MultilayerVertex{nothing}}, N<:Vector{Node}
     descriptor = LayerDescriptor(
         name,
         null_graph,
@@ -380,7 +374,7 @@ Returns an undirected `Layer` with given `degree_sequence` realized using the Ha
 
     edge_list = NTuple{2,MultilayerVertex{nothing}}[]
 
-    if @isdefined(V)
+    if typeof(vertices) <: Vector{MultilayerVertex{nothing}} #@isdefined(V)
         for edge in edges(equivalent_graph)
             src_mv = vertices[src(edge)]
             dst_mv = vertices[dst(edge)]
@@ -434,11 +428,11 @@ Returns a directed `Layer` whose indegree and oudegree sequences are sampled fro
     indegree_distribution::UnivariateDistribution,
     outdegree_distribution::UnivariateDistribution,
     null_graph::G,
-    weighttype::Type{U};
+    weighttype::Type{<:Real};
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T};IsDirected{G}}
+) where {G <: AbstractGraph; IsDirected{G}}
     indegree_sequence, outdegree_sequence = sample_digraphical_degree_sequences(
         indegree_distribution, outdegree_distribution, length(vertices)
     )
@@ -487,21 +481,15 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
 """
 @traitfn function Layer(
     name::Symbol,
-    vertices::Union{V,N}, #Vector{MultilayerVertex{nothing}},
+    vertices::Vector{<:Union{MultilayerVertex{nothing},Node}}, #Vector{MultilayerVertex{nothing}},
     indegree_sequence::Vector{<:Integer},
     outdegree_sequence::Vector{<:Integer},
     null_graph::G,
-    weighttype::Type{U};
+    weighttype::Type{<:Real};
     default_vertex_metadata::Function=mv -> NamedTuple(),
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
-) where {
-    T<:Integer,
-    U<:Real,
-    G<:AbstractGraph{T},
-    V<:Vector{MultilayerVertex{nothing}},
-    N<:Vector{Node};IsDirected{G},
-}
+) where {G <: AbstractGraph; IsDirected{G}}
     descriptor = LayerDescriptor(
         name,
         null_graph,
@@ -515,7 +503,7 @@ Returns an directed `Layer` with given `indegree_sequence` and `outdegree_sequen
 
     edge_list = NTuple{2,MultilayerVertex{nothing}}[]
 
-    if @isdefined(V)
+    if eltype(vertices) <: MultilayerVertex{nothing} #@isdefined(V)
         for edge in edges(equivalent_graph)
             src_mv = vertices[src(edge)]
             dst_mv = vertices[dst(edge)]
@@ -1896,7 +1884,7 @@ end
 """
     rem_vertex!(layer::Layer, n::Node)
 
-Remove node `n` from `layer`. Modify `layer.v_N_associations` according to how `rem_vertex!` works in [Graph.jl](https://juliagraphs.org/Graphs.jl/dev/core_functions/simplegraphs/#Graphs.SimpleGraphs.rem_vertex!-Tuple{Graphs.SimpleGraphs.AbstractSimpleGraph,%20Integer}).
+Remove node `n` from `layer`. Modify `layer.v_N_associations` according to how `rem_vertex!` works in [Graph.jl](https://juliagraphs.org/Graphs.jl/dev/core_functions/simplegraphs/#Graphs.Simplerem_vertex!-Tuple{SimpleGraphs.AbstractSimpleGraph,%20Integer}).
 """
 function Graphs.rem_vertex!(layer::Layer, n::Node)
     !has_node(layer, n) && return false

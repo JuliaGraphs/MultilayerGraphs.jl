@@ -1,4 +1,4 @@
-Graphs.weights(g::G) where {T,G<:AbstractSimpleWeightedGraph{T}} = Graphs.weights(g)
+# weights(g::G) where {T,G<:AbstractSimpleWeightedGraph{T}} = weights(g)
 
 function __add_vertex!(
     g::AbstractSimpleWeightedGraph{T}; metadata::Union{Tuple,NamedTuple}=NamedTuple()
@@ -39,3 +39,5 @@ function _set_weight!!(
 ) where {T,U}
     return add_edge!(g, src, dst, weight)
 end
+
+# is_directed(g::G) where {G <: AbstractSimpleWeightedGraph} = is_directed(G)

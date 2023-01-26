@@ -1,23 +1,23 @@
-"""
-    AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} 
-
-Abstract type representing an undirected multilayer graph.
-"""
-abstract type AbstractMultilayerUGraph{T,U} <: AbstractMultilayerGraph{T,U} end
-
 # Nodes
 
 # Vertices
 """
-    add_vertex_specialized!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
+    _add_vertex!(mg::M, V::MultilayerVertex) where {T, U, M <: AbstractMultilayerUGraph{T,U}}
 
-Add MultilayerVertex `V` to multilayer graph `mg`, provided that `node(V)` is a `Node` of `mg`. Return true if succeeds.
+Add MultilayerVertex `V` to multilayer graph `mg`.  If `add_node` is true and `node(mv)` is not already part of `mg`, then add `node(mv)` to `mg` before adding `mv` to `mg` instead of throwing an error. Return true if succeeds. 
 """
-function add_vertex_specialized!(
-    mg::M, V::MultilayerVertex
-) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-    !has_node(mg, node(V)) && return false
+@traitfn function _add_vertex!(
+    mg::M, V::MultilayerVertex; add_node::Bool=true
+) where {T,U,M<:AbstractMultilayerGraph{T,U};!IsDirected{M}}
     has_vertex(mg, V) && return false
+    if add_node
+        _node = node(V)
+        if add_node && !has_node(mg, _node)
+            add_node!(mg, _node)
+        end
+    else
+        !has_node(mg, node(V)) && return false
+    end
 
     n_nodes = nn(mg)
 
@@ -38,13 +38,15 @@ function add_vertex_specialized!(
 end
 
 """
-    rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
+    _rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
 
 Remove [MultilayerVertex](@ref) `mv` from `mg`. Return true if succeeds, false otherwise.
 """
-function Graphs.rem_vertex!(mg::AbstractMultilayerUGraph, V::MultilayerVertex)
+@traitfn function _rem_vertex!(
+    mg::M, V::MultilayerVertex
+) where {M <: AbstractMultilayerGraph; !IsDirected{M}}
     # Check that the node exists and then that the vertex exists
-    has_node(mg, V.node) || return false
+    has_node(mg, node(V)) || return false
     has_vertex(mg, V) || return false
 
     # Get the v corresponding to V, delete the association and replace it with a MissingVertex. Also substitute the metadata with an empty NamedTuple
@@ -91,11 +93,13 @@ end
 
 # Edges
 """
-    has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerUGraph{T}}
+    has_edge( mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T};!IsDirected{M}}
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """
-function Graphs.has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerUGraph{T}}
+@traitfn function Graphs.has_edge(
+    mg::M, src::T, dst::T
+) where {T,M<:AbstractMultilayerGraph{T};!IsDirected{M}}
     has_vertex(mg, src) || return false
     has_vertex(mg, dst) || return false
 
@@ -111,14 +115,122 @@ function Graphs.has_edge(mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerUG
     end
 end
 
+# Overloads that make AbstractMultilayerUGraph an extension of Graphs.jl. These are all well-inferred .
+"""
+    edges(mg::M) where {T,U,M<:AbstractMultilayerGraph{T,U}; !IsDirected{M}}
+
+Return an list of all the edges of `mg`.
+"""
+@traitfn function Graphs.edges(
+    mg::M
+) where {T,U,M<:AbstractMultilayerGraph{T,U};!IsDirected{M}}
+    edge_list = MultilayerEdge{U}[]
+
+    for (_src_v, halfedges) in enumerate(mg.fadjlist)
+        src_v = T(_src_v)
+        src_V = get_rich_mv(mg, src_v)
+
+        for halfedge in halfedges
+            dst_v = get_v(mg, vertex(halfedge))
+            # Don't take the same edge twice, except for self loops that are later removed by the unique 
+            if dst_v >= src_v
+                dst_V = get_rich_mv(mg, dst_v)
+                push!(edge_list, ME(src_V, dst_V, weight(halfedge), metadata(halfedge)))
+            end
+        end
+    end
+
+    # Remove duplicate self loops and return
+    return unique(edge_list)
+end
+
+"""
+    _add_edge!(mg::M, me::E) where {T,U, M <: AbstractMultilayerUGraph{T,U}, E <: MultilayerEdge{ <: Union{U,Nothing}}}
+
+Add MultilayerEdge `me` to the AbstractMultilayerUGraph `mg`. Return true if succeeds, false otherwise.
+"""
+@traitfn function _add_edge!(
+    mg::M, me::E
+) where {
+    T,U,E<:MultilayerEdge{<:Union{U,Nothing}},M<:AbstractMultilayerGraph{T,U};!IsDirected{M}
+}
+    _src = get_bare_mv(src(me))
+    _dst = get_bare_mv(dst(me))
+    has_vertex(mg, _src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, _dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+
+    # Add edge to `edge_dict`
+    src_v = get_v(mg, _src)
+    dst_v = get_v(mg, _dst)
+
+    _weight = isnothing(weight(me)) ? one(U) : weight(me)
+    _metadata = metadata(me)
+
+    if !has_edge(mg, _src, _dst)
+        if src_v != dst_v
+            push!(mg.fadjlist[src_v], HalfEdge(_dst, _weight, _metadata))
+            push!(mg.fadjlist[dst_v], HalfEdge(_src, _weight, _metadata))
+        else
+            push!(mg.fadjlist[src_v], HalfEdge(_dst, _weight, _metadata))
+        end
+        return true
+    else
+        @debug "An edge between $(src(me)) and $(dst(me)) already exists"
+
+        return false
+    end
+end
+
+"""
+    _rem_edge!(mg::AbstractMultilayerUGraph, src::MultilayerVertex, dst::MultilayerVertex)
+
+Remove edge from `src` to `dst` from `mg`. Return true if succeeds, false otherwise.
+"""
+@traitfn function _rem_edge!(
+    mg::M, src::MultilayerVertex, dst::MultilayerVertex
+) where {M <: AbstractMultilayerGraph; !IsDirected{M}}
+    # Perform routine checks
+    has_vertex(mg, src) ||
+        throw(ErrorException("Vertex $_src does not belong to the multilayer graph."))
+    has_vertex(mg, dst) ||
+        throw(ErrorException("Vertex $_dst does not belong to the multilayer graph."))
+
+    has_edge(mg, src, dst) || return false
+
+    src_V_idx = get_v(mg, src)
+    dst_V_idx = get_v(mg, dst)
+
+    _src = get_bare_mv(src)
+    _dst = get_bare_mv(dst)
+
+    if get_bare_mv(src) != get_bare_mv(dst)
+        src_idx_tbr = findfirst(
+            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
+        )
+        deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
+
+        dst_idx_tbr = findfirst(halfedge -> halfedge.vertex == _src, mg.fadjlist[dst_V_idx])
+        deleteat!(mg.fadjlist[dst_V_idx], dst_idx_tbr)
+    else
+        src_idx_tbr = findfirst(
+            halfedge -> vertex(halfedge) == _dst, mg.fadjlist[src_V_idx]
+        )
+        deleteat!(mg.fadjlist[src_V_idx], src_idx_tbr)
+    end
+
+    return true
+end
+
 """
     set_weight!(mg::M, src::MultilayerVertex{L1}, dst::MultilayerVertex{L2}, weight::U) where {L1 <: Symbol, L2 <: Symbol, T,U, M <: AbstractMultilayerGraph{T,U}}
 
 Set the weight of the edge between `src` and `dst` to `weight`. Return true if succeeds (i.e. if the edge exists and the underlying graph chosen for the Layer/Interlayer where the edge lies is weighted under the `IsWeighted` trait).
 """
-function set_weight!(
+@traitfn function set_weight!(
     mg::M, src::MultilayerVertex, dst::MultilayerVertex, weight::U
-) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
+) where {T,U,M<:AbstractMultilayerGraph{T,U};!IsDirected{M}}
     descriptor = get_subgraph_descriptor(mg, layer(src), layer(dst))
     is_weighted(descriptor.null_graph) || return false
     has_edge(mg, src, dst) || return false
@@ -143,12 +255,9 @@ end
 
 Set the metadata of the edge between `src` and `dst` to `metadata`. Return true if succeeds (i.e. if the edge exists and the underlying graph chosen for the Layer/Interlayer where the edge lies supports metadata at the edge level  under the `IsMeta` trait).
 """
-function set_metadata!(
-    mg::AbstractMultilayerUGraph,
-    src::MultilayerVertex,
-    dst::MultilayerVertex,
-    metadata::Union{Tuple,NamedTuple},
-)
+@traitfn function set_metadata!(
+    mg::M, src::MultilayerVertex, dst::MultilayerVertex, metadata::Union{Tuple,NamedTuple}
+) where {M <: AbstractMultilayerGraph; !IsDirected{M}}
     descriptor = get_subgraph_descriptor(mg, layer(src), layer(dst))
     is_meta(descriptor.null_graph) || return false
     has_edge(mg, src, dst) || return false
@@ -168,40 +277,13 @@ function set_metadata!(
     return true
 end
 
-# Overloads that make AbstractMultilayerUGraph an extension of Graphs.jl. These are all well-inferred .
-"""
-    edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-
-Return an list of all the edges of `mg`.
-"""
-function Graphs.edges(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
-    edge_list = MultilayerEdge{U}[]
-
-    for (_src_v, halfedges) in enumerate(mg.fadjlist)
-        src_v = T(_src_v)
-        src_V = get_rich_mv(mg, src_v)
-
-        for halfedge in halfedges
-            dst_v = get_v(mg, vertex(halfedge))
-            # Don't take the same edge twice, except for self loops that are later removed by the unique 
-            if dst_v >= src_v
-                dst_V = get_rich_mv(mg, dst_v)
-                push!(edge_list, ME(src_V, dst_V, weight(halfedge), metadata(halfedge)))
-            end
-        end
-    end
-
-    # Remove duplicate self loops and return
-    return unique(edge_list)
-end
-
 # Layers and Interlayers
 """
-    add_layer!( mg::M,
+    add_layer_directedness!( mg::M,
         new_layer::L; 
         default_interlayers_null_graph::H = SimpleGraph{T}(), 
         default_interlayers_structure::String ="multiplex"
-    ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},L<:Layer{T,U,G}, H <: AbstractGraph{T}}
+    ) where {T,U,G<:AbstractGraph{T},L<:Layer{T,U,G}, H <: AbstractGraph{T}, M<:AbstractMultilayerGraph{T,U}; !IsDirected{M}}
 
 Add layer `layer` to `mg`.
 
@@ -212,7 +294,7 @@ Add layer `layer` to `mg`.
 - `default_interlayers_null_graph::H = SimpleGraph{T}()`: upon addition of a new `Layer`, all the `Interlayer`s between the new and the existing `Layer`s are immediately created. This keyword argument specifies their `null_graph` See the `Layer` constructor for more information. Defaults to `SimpleGraph{T}()`;
 - `default_interlayers_structure::String = "multiplex"`: The structure of the `Interlayer`s created by default. May either be "multiplex" to have diagonally-coupled only interlayers, or "empty" for empty interlayers. Defaults to "multiplex".
 """
-function add_layer!(
+@traitfn function add_layer_directedness!(
     mg::M,
     new_layer::L;
     default_interlayers_null_graph::H=SimpleGraph{T}(),
@@ -221,9 +303,9 @@ function add_layer!(
     T,
     U,
     G<:AbstractGraph{T},
-    M<:AbstractMultilayerUGraph{T,U},
     L<:Layer{T,U,G},
     H<:AbstractGraph{T},
+    M<:AbstractMultilayerGraph{T,U};!IsDirected{M},
 }
     # Check that the layer is directed
     !istrait(IsDirected{typeof(new_layer.graph)}) || throw(
@@ -241,33 +323,13 @@ function add_layer!(
 end
 
 """
-    specify_interlayer!(
-        mg::M,
-        new_interlayer::In
-    ) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},In<:Interlayer{T,U,G}}
-
-Specify the interlayer `new_interlayer` as part of `mg`.
-"""
-function specify_interlayer!(
-    mg::M, new_interlayer::In
-) where {T,U,G<:AbstractGraph{T},M<:AbstractMultilayerUGraph{T,U},In<:Interlayer{T,U,G}}
-    !istrait(IsDirected{typeof(new_interlayer.graph)}) || throw(
-        ErrorException(
-            "The `new_interlayer`'s underlying graphs $(new_interlayer.graph) is directed, so it is not compatible with a `AbstractMultilayerUGraph`.",
-        ),
-    )
-
-    return _specify_interlayer!(mg, new_interlayer;)
-end
-
-"""
     get_subgraph(mg::M, descriptor::LD) where {T,U, M <: AbstractMultilayerUGraph{T,U}, LD <: LayerDescriptor{T,U}}
 
 Internal function. Instantiate the Layer described by `descriptor` whose vertices and edges are contained in `mg`.
 """
-function get_subgraph(
+@traitfn function get_subgraph(
     mg::M, descriptor::LD
-) where {T,U,M<:AbstractMultilayerUGraph{T,U},LD<:LayerDescriptor{T,U}}
+) where {T,U,LD<:LayerDescriptor{T,U},M<:AbstractMultilayerGraph{T,U};!IsDirected{M}}
     vs = sort([
         v for (v, mv) in collect(mg.v_V_associations) if mv.layer == descriptor.name
     ])
@@ -303,14 +365,14 @@ end
 
 Internal function. Instantiate the Interlayer described by `descriptor` whose vertices and edges are contained in `mg`.
 """
-function get_subgraph(
+@traitfn function get_subgraph(
     mg::M, descriptor::InD
 ) where {
     T,
     U,
-    G<:AbstractGraph{T},
-    M<:AbstractMultilayerUGraph{T,U},
-    InD<:InterlayerDescriptor{T,U,G},
+    # G<:AbstractGraph{T},
+    InD<:InterlayerDescriptor{T,U}, # G},
+    M<:AbstractMultilayerGraph{T,U};!IsDirected{M},
 }
     layer_1_vs = T[]
     layer_2_vs = T[]
@@ -376,32 +438,20 @@ end
 
 Return the degree of MultilayerVertex `v` within `mg`.
 """
-function Graphs.degree(
+@traitfn function Graphs.degree(
     mg::M, v::V
-) where {T,M<:AbstractMultilayerUGraph{T,<:Real},V<:MultilayerVertex}
+) where {M<:AbstractMultilayerGraph,V<:MultilayerVertex;!IsDirected{M}}
     return indegree(mg, v)
 end
-
-"""
-    is_directed(mg::AbstractMultilayerUGraph)
-
-Return `true` if `mg` is directed, `false` otherwise. 
-"""
-Graphs.is_directed(mg::AbstractMultilayerUGraph) = false
-
-"""
-    is_directed(m::M) where { M <: Type{ <: AbstractMultilayerUGraph}}
-
-Return `true` if `mg` is directed, `false` otherwise. 
-"""
-Graphs.is_directed(mg::M) where {M<:Type{<:AbstractMultilayerUGraph}} = false
 
 """
     inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
 
 Return the list of inneighbors of `v` within `mg`.
 """
-function Graphs.inneighbors(mg::M, v::T) where {T,M<:AbstractMultilayerUGraph{T,<:Real}}
+@traitfn function Graphs.inneighbors(
+    mg::M, v::T
+) where {T,M<:AbstractMultilayerGraph;!IsDirected{M}}
     return outneighbors(mg, v)
 end
 
@@ -411,7 +461,9 @@ end
     get_overlay_monoplex_graph(mg::M) where {M<: AbstractMultilayerUGraph}
 Get overlay monoplex graph (i.e. the graph that has the same nodes as `mg` but the link between node `i` and `j` has weight equal to the sum of all edges weights between the various vertices representing `i` and `j` in `mg`, accounting for only within-layer edges). See [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022).
 """
-function get_overlay_monoplex_graph(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
+@traitfn function get_overlay_monoplex_graph(
+    mg::M
+) where {T,U,M<:AbstractMultilayerGraph{T,U};!IsDirected{M}}
     wgt = weight_tensor(mg).array
     projected_overlay_adjacency_matrix = sum([wgt[:, :, i, i] for i in 1:size(wgt, 3)])
     return SimpleWeightedGraph{T,U}(projected_overlay_adjacency_matrix)
@@ -422,7 +474,9 @@ end
 
 Compute the Von Neumann entropy of `mg`, according to [De Domenico et al. (2013)](https://doi.org/10.1103/PhysRevX.3.041022). Only for undirected multilayer graphs.
 """
-function von_neumann_entropy(mg::M) where {T,U,M<:AbstractMultilayerUGraph{T,U}}
+@traitfn function von_neumann_entropy(
+    mg::M
+) where {T,U,M<:AbstractMultilayerGraph{T,U};!IsDirected{M}}
     wgt = weight_tensor(mg).array
 
     num_nodes = length(nodes(mg))
