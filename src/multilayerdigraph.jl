@@ -304,7 +304,7 @@ Add layer `layer` to `mg`.
 function add_layer!(
     mg::M,
     new_layer::L;
-    default_interlayers_null_graph::H=SimpleGraph{T}(),
+    default_interlayers_null_graph::H=SimpleDiGraph{T}(),
     default_interlayers_structure::String="multiplex",
 ) where {
     T,

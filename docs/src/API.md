@@ -205,8 +205,34 @@ nl(mg::AbstractMultilayerGraph)
 nIn(mg::AbstractMultilayerGraph)
 has_layer(mg::AbstractMultilayerGraph, layer_name::Symbol)
 
-add_layer!(::Type{SimpleTraits.Not{Graphs.IsDirected{M}}}, mg::M, new_layer::L; default_interlayers_null_graph, default_interlayers_structure) where {T, U, G<:Graphs.AbstractGraph{T}, L<:Layer{T, U, G}, M<:MultilayerGraph{T, U}}
-add_layer!(::Type{Graphs.IsDirected{M}}, mg::M, new_layer::L; default_interlayers_null_graph, default_interlayers_structure) where {T, U, G<:Graphs.AbstractGraph{T}, L<:Layer{T, U, G}, M<:MultilayerDiGraph{T, U}}
+add_layer!(
+    mg::M,
+    new_layer::L;
+    default_interlayers_null_graph::H=SimpleGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {
+    T,
+    U,
+    G<:AbstractGraph{T},
+    L<:Layer{T,U,G},
+    H<:AbstractGraph{T},
+    M<:MultilayerGraph{T,U}
+}
+
+add_layer!(
+    mg::M,
+    new_layer::L;
+    default_interlayers_null_graph::H=SimpleDiGraph{T}(),
+    default_interlayers_structure::String="multiplex",
+) where {
+    T,
+    U,
+    G<:AbstractGraph{T},
+    L<:Layer{T,U,G},
+    H<:AbstractGraph{T},
+    M<:MultilayerDiGraph{T,U}
+}
+
 specify_interlayer!(::Type{SimpleTraits.Not{Graphs.IsDirected{M}}}, mg::M, new_interlayer::In) where {T, U, G<:Graphs.AbstractGraph{T}, In<:Interlayer{T, U, G}, M<:MultilayerGraph{T, U}}
  specify_interlayer!(::Type{Graphs.IsDirected{M}}, mg::M, new_interlayer::In) where {T, U, G<:Graphs.AbstractGraph{T}, In<:Interlayer{T, U, G}, M<:MultilayerDiGraph{T, U}}
 
