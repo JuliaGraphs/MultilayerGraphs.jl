@@ -483,21 +483,20 @@ all_interlayers = [
     interlayer_empty_sdg_vdg,
 ]
 
-@debug "runtests finished"
 @testset verbose = true "MultilayerGraphs" begin
     @testset "layer" begin
         include("layer.jl")
     end
-    @debug "layer finished"
+
     @testset "interlayer" begin
         include("interlayer.jl")
     end
-    @debug "interlayer finished"
-    @testset "abstractmultilayerugraph" begin
-        include("abstractmultilayerugraph.jl")
+   
+    @testset "undirected" begin
+        include("undirected.jl")
     end
-    @testset "abstractmultilayerdigraph" begin
-        include("abstractmultilayerdigraph.jl")
+    @testset "directed" begin
+        include("directed.jl")
     end
     @testset "node_aligned_edge_colored_graphs" begin
         include("node_aligned_edge_colored_graph.jl")

@@ -640,8 +640,8 @@ end
 Get the vector of indegrees of vertices `vs` in `mg`.
 """
 function Graphs.indegree(
-    mg::AbstractMultilayerGraph, vs::AbstractVector{V}=vertices(mg)
-) where {V<:MultilayerVertex}
+    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=mv_vertices(mg)
+)
     return [indegree(mg, x) for x in vs]
 end
 
@@ -660,7 +660,7 @@ end
 Get the vector of outdegrees of vertices `vs` in `mg`.
 """
 function Graphs.outdegree(
-    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
+    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=mv_vertices(mg)
 )
     return [outdegree(mg, x) for x in vs]
 end
@@ -671,9 +671,9 @@ end
 Get the degree of vertices `vs` in `mg`.
 """
 function Graphs.degree(
-    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=vertices(mg)
+    mg::AbstractMultilayerGraph, vs::AbstractVector{<:MultilayerVertex}=mv_vertices(mg)
 )
-    return [degree(mg, x) for x in vs]
+    return degree.(Ref(mg), vs)
 end
 
 """
