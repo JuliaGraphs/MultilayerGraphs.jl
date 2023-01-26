@@ -93,7 +93,7 @@ end
 
 # Edges
 """
-    has_edge(mg::M, src::T, dst::T) where { T, M <: AbstractMultilayerUGraph{T}}
+    has_edge( mg::M, src::T, dst::T) where {T,M<:AbstractMultilayerGraph{T};!IsDirected{M}}
 
 Return true if `mg` has edge between the `src` and `dst` (does not check edge or vertex metadata).
 """

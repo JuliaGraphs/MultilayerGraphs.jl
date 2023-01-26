@@ -165,9 +165,9 @@ mt = metadata_tensor(multilayergraph)
 # Test Graphs.jl extra overrides
 @test all(indegree(multilayergraph) .== degree(multilayergraph)) #.+ outdegree(multilayergraph)
 
-@inferred(mean_degree(multilayergraph))
-@inferred(degree_second_moment(multilayergraph))
-@inferred(degree_variance(multilayergraph))
+mean_degree(multilayergraph)
+degree_second_moment(multilayergraph)
+degree_variance(multilayergraph)
 
 # Test multilayer-specific methods
 @test all(

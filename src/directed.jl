@@ -148,7 +148,7 @@ Return an list of all the edges of `mg`.
 """
 @traitfn function Graphs.edges(
     mg::M
-) where {T,U,M<:AbstractMultilayerGraph{T,U};IsDirected{M}}
+) where {T,U,M<:AbstractMultilayerGraph{T,U}; IsDirected{M}}
     edge_list = MultilayerEdge{U}[]
 
     for (_src_v, halfedges) in enumerate(mg.fadjlist)

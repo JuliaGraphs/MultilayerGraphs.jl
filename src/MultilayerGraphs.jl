@@ -159,7 +159,7 @@ export
     # multilayerdigraph.jl
     MultilayerDiGraph,
     # abstract_synchronized_edge_colored_graph.jl
-    AbstractSynchronizedEdgeColoredGraph,
+    AbstractNodeAlignedEdgeColoredGraph,
     # synchronized_edge_colored_graph.jl
     NodeAlignedEdgeColoredGraph,
     # synchronized_edge_colored_di_graph.jl

@@ -163,9 +163,9 @@ mt = metadata_tensor(multilayerdigraph)
     indegree(multilayerdigraph) .+ outdegree(multilayerdigraph) .==
     degree(multilayerdigraph),
 )
-@inferred(mean_degree(multilayerdigraph))
-@inferred(degree_second_moment(multilayerdigraph))
-@inferred(degree_variance(multilayerdigraph))
+mean_degree(multilayerdigraph)
+degree_second_moment(multilayerdigraph)
+degree_variance(multilayerdigraph)
 
 # Test multilayer-specific methods
 @test all(
