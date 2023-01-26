@@ -259,11 +259,19 @@ end
 
 # Layers and Interlayers
 """
-    add_layer!( mg::M,
-        new_layer::L; 
-        default_interlayers_null_graph::H = SimpleGraph{T}(), 
-        default_interlayers_structure::String ="multiplex"
-    ) where {T,U,G<:AbstractGraph{T},L<:Layer{T,U,G}, H <: AbstractGraph{T}, M<:MultilayerGraph{T,U}; !IsDirected{M}}
+    add_layer!(
+        mg::M,
+        new_layer::L;
+        default_interlayers_null_graph::H=SimpleGraph{T}(),
+        default_interlayers_structure::String="multiplex",
+    ) where {
+        T,
+        U,
+        G<:AbstractGraph{T},
+        L<:Layer{T,U,G},
+        H<:AbstractGraph{T},
+        M<:MultilayerGraph{T,U}
+    }
 
 Add layer `layer` to `mg`.
 
@@ -274,7 +282,7 @@ Add layer `layer` to `mg`.
 - `default_interlayers_null_graph::H = SimpleGraph{T}()`: upon addition of a new `Layer`, all the `Interlayer`s between the new and the existing `Layer`s are immediately created. This keyword argument specifies their `null_graph` See the `Layer` constructor for more information. Defaults to `SimpleGraph{T}()`;
 - `default_interlayers_structure::String = "multiplex"`: The structure of the `Interlayer`s created by default. May either be "multiplex" to have diagonally-coupled only interlayers, or "empty" for empty interlayers. Defaults to "multiplex".
 """
-@traitfn function add_layer!(
+function add_layer!(
     mg::M,
     new_layer::L;
     default_interlayers_null_graph::H=SimpleGraph{T}(),
@@ -285,7 +293,7 @@ Add layer `layer` to `mg`.
     G<:AbstractGraph{T},
     L<:Layer{T,U,G},
     H<:AbstractGraph{T},
-    M<:MultilayerGraph{T,U};!IsDirected{M},
+    M<:MultilayerGraph{T,U}
 }
     return add_layer_directedness!(
         mg,
