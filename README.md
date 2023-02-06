@@ -9,6 +9,7 @@
 [![Coverage: Codecov](https://codecov.io/gh/JuliaGraphs/MultilayerGraphs.jl/branch/main/graph/badge.svg?token=Z758JuxDJX)](https://codecov.io/gh/JuliaGraphs/MultilayerGraphs.jl)
 [![Coverage: Coveralls](https://coveralls.io/repos/github/JuliaGraphs/MultilayerGraphs.jl/badge.svg?branch=main)](https://coveralls.io/github/JuliaGraphs/MultilayerGraphs.jl?branch=main)
 [![Code Style: Blue](https://img.shields.io/badge/Code%20Style-Blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
+[![Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/MultilayerGraphs&label=Downloads)](https://pkgs.genieframework.com?packages=MultilayerGraphs)
 [![DOI: Zenodo](https://zenodo.org/badge/490352002.svg)](https://zenodo.org/badge/latestdoi/490352002)
 [![JOSS](https://joss.theoj.org/papers/7d1b94ff7a1a2ebd5e86075e86fc62fb/status.svg)](https://joss.theoj.org/papers/7d1b94ff7a1a2ebd5e86075e86fc62fb)
 
