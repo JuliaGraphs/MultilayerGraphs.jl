@@ -288,12 +288,7 @@ function add_layer!(
     default_interlayers_null_graph::H=SimpleGraph{T}(),
     default_interlayers_structure::String="multiplex",
 ) where {
-    T,
-    U,
-    G<:AbstractGraph{T},
-    L<:Layer{T,U,G},
-    H<:AbstractGraph{T},
-    M<:MultilayerGraph{T,U}
+    T,U,G<:AbstractGraph{T},L<:Layer{T,U,G},H<:AbstractGraph{T},M<:MultilayerGraph{T,U}
 }
     return add_layer_directedness!(
         mg,
