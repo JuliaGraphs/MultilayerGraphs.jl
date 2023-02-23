@@ -45,10 +45,18 @@ The tutorial below will be focused on the end-used experience, as developer meth
 
 ## Installation
 
-To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pressing `]` in the Julia REPL and then run the following command:
+To install the latest stable release of MultilayerGraphs.jl, make sure you have [installed](https://julialang.org/downloads/) Julia v1.8 or later and run the following command:
 
-```nothing
-pkg> add MultilayerGraphs
+``` julia
+using Pkg
+Pkg.add("MultilayerGraphs")
+```
+
+The development version can be installed as follows:
+
+``` julia
+using Pkg
+Pkg.add(url="https://github.com/JuliaGraphs/MultilayerGraphs.jl")
 ```
 
 ## Tutorial
@@ -943,7 +951,7 @@ The package also exports a [`SupraWeightMatrix`](@ref) which is a supra (weighte
 #### Sub-ecosystem
 Special applications may not require all the representational generality enabled by `Multilayer(Di)Graph`s, and, on the contrary, could benefit from the simpler interface and higher performance that come with restricted subtypes of multilayer graphs (e.g. multiplex graphs, edge-colored graph, etc).
 
-MultilayerGraphs.jl, via an apporoach that combines type-hierarchy with traits, allows for implementing custom multilayer graphs (similar to what Graphs.jl does). This feature has been initially proven with the implementation of [`NodeAlignedEdgeColoredGraph`](@ref) and [`NodeAlignedEdgeColoredDiGraph`](@ref), which aim at representing edge-colored graphs by naturally mapping them to multilayer graphs.
+MultilayerGraphs.jl, via an approach that combines type-hierarchy with traits, allows for implementing custom multilayer graphs (similar to what Graphs.jl does). This feature has been initially proven with the implementation of [`NodeAlignedEdgeColoredGraph`](@ref) and [`NodeAlignedEdgeColoredDiGraph`](@ref), which aim at representing edge-colored graphs by naturally mapping them to multilayer graphs.
 
 The sub-ecosystem capability is still under construction, see [Systematize the sub-ecosytem feature](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues/113).
 
