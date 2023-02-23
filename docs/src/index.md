@@ -45,10 +45,18 @@ The tutorial below will be focused on the end-used experience, as developer meth
 
 ## Installation
 
-To install MultilayerGraphs.jl it is sufficient to activate the `pkg` mode by pressing `]` in the Julia REPL and then run the following command:
+To install the latest stable release of MultilayerGraphs.jl, make sure you have [installed](https://julialang.org/downloads/) Julia v1.8 or later and run the following command:
 
-```nothing
-pkg> add MultilayerGraphs
+``` julia
+using Pkg
+Pkg.add("MultilayerGraphs")
+```
+
+The development version can be installed as follows:
+
+``` julia
+using Pkg
+Pkg.add(url="https://github.com/JuliaGraphs/MultilayerGraphs.jl")
 ```
 
 ## Tutorial
