@@ -574,7 +574,7 @@ add_edge!(layer_swg, src_w, dst_w, _weight)
 ```
 where `_weight` is exactly what you would pass to the `add_edge!` method that acts on `SimpleWeightedGraph` after:
 ```julia
-simpleweightedgraph = SimpleWeightedGraph(5, 0)
+simpleweightedgraph = SimpleWeightedGraph(SimpleGraph(5, 0))
 add_edge!(simpleweightedgraph, 1, 2, _weight)
 ```
 
