@@ -29,6 +29,7 @@ using Pkg
 Pkg.activate(@__DIR__)
 # Instantiate the environment 
 Pkg.instantiate()
+
 # Import necessary dependencies
 using Distributions, Graphs, SimpleValueGraphs
 using MultilayerGraphs
