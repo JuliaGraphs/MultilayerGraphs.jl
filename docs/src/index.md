@@ -64,6 +64,13 @@ Pkg.add(url="https://github.com/JuliaGraphs/MultilayerGraphs.jl")
 Here we illustrate how to define, handle and analyse a `MultilayerGraph` (the directed version is completely analogous).
 
 ```julia
+# Install necessary tutorial dependencies 
+using Pkg
+Pkg.add(["Revise", "Distributions", "SimpleValueGraph", 
+         "LoggingExtras", "StatsBase", "SimpleWeightedGraphs", 
+         "MetaGraphs", "Agents", "MultilayerGraphs"])
+
+# Import necessary tutorial dependencies
 using Revise
 using StatsBase, Distributions
 using Graphs, SimpleWeightedGraphs, MetaGraphs, SimpleValueGraphs
@@ -116,7 +123,7 @@ MultilayerVertex(
 )
 ```
 
-Let's contruct a list of `MultilayerVertex`s to use in the remainder of the tutorial:
+Let's construct a list of `MultilayerVertex`s to use in the remainder of the tutorial:
 
 ```julia
 ## Convert nodes to multilayer vertices without metadata
