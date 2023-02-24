@@ -23,6 +23,13 @@ Pkg.add(url="https://github.com/JuliaGraphs/MultilayerGraphs.jl")
 Let's begin by importing the necessary dependencies and setting the relevant constants.
 
 ```julia
+# Import the package manager 
+using Pkg
+# Activate the environment 
+Pkg.activate(@__DIR__)
+# Instantiate the environment 
+Pkg.instantiate()
+
 # Import necessary dependencies
 using Distributions, Graphs, SimpleValueGraphs
 using MultilayerGraphs
