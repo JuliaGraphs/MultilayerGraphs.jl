@@ -66,7 +66,7 @@ Here we illustrate how to define, handle and analyse a `MultilayerGraph` (the di
 ```julia
 # Install necessary tutorial dependencies 
 using Pkg
-Pkg.add(["Revise", "Distributions", "SimpleValueGraph", 
+Pkg.add(["Revise", "Distributions", "Graphs", "SimpleValueGraphs", 
          "LoggingExtras", "StatsBase", "SimpleWeightedGraphs", 
          "MetaGraphs", "Agents", "MultilayerGraphs"])
 
