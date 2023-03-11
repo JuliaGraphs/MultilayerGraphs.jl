@@ -16,7 +16,7 @@ CurrentModule = MultilayerGraphs
 
 **MultilayerGraphs.jl** is a Julia package for the creation, manipulation and analysis of the structure, dynamics and functions of multilayer graphs. 
 
-## Overview
+## 🌐 Overview
 
 A multilayer graph is a graph consisting of multiple standard subgraphs called *layers* which can be interconnected through [bipartite graphs](https://en.wikipedia.org/wiki/Bipartite_graph) called *interlayers* composed of the vertex sets of two different layers and the edges between them. The vertices in each layer represent a single set of nodes, although not all nodes have to be represented in every layer. 
 
@@ -43,7 +43,7 @@ A multilayer graph is composed of layers, i.e. graphs whose vertices represent t
 The documentation is organized as follows: you will find a comprehensive [Tutorial](@ref) below, complemented by an [API](@ref) page. The API page is organized in two sections: the [End-User](@ref) section lists all the methods intended for the user who does not need to write code that is also compatible with other libraries in the Graphs.jl's ecosystem, while the [Developer](@ref) section contains methods that allow MultilayerGraphs.jl to be used as any package that extend Graphs.jl . Bot section are further stratified by topic.
 The tutorial below will be focused on the end-used experience, as developer methods often have very similar signature and will be better addressed in a future developer-oriented guide, should the community manifest the need of it.
 
-## Installation
+## 🔰 Installation
 
 To install the latest stable release of MultilayerGraphs.jl, make sure you have [installed](https://julialang.org/downloads/) Julia v1.8 or later and run the following command:
 
@@ -59,7 +59,7 @@ using Pkg
 Pkg.add(url="https://github.com/JuliaGraphs/MultilayerGraphs.jl")
 ```
 
-## Tutorial
+## 🔍 Tutorial
 
 Here we illustrate how to define, handle and analyse a `MultilayerGraph` (the directed version is completely analogous).
 
@@ -974,19 +974,19 @@ Read a complete list of analytical methods exclusive to multilayer graphs in the
 
 All the information regarding the future developments of MultilayerGraphs.jl can be found in the [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues).
 
-## How to Contribute
+## 🛠 How to Contribute
 
 The ongoing development of this package would greatly benefit from the valuable feedback of the esteemed members of the [JuliaGraph](https://github.com/orgs/JuliaGraphs/people) community, as well as from graph theorists, network scientists, and any users who may have general questions or suggestions.
 
 We therefore encourage you to participate in [discussions](https://github.com/JuliaGraphs/MultilayerGraphs.jl/discussions), raise [issues](https://github.com/JuliaGraphs/MultilayerGraphs.jl/issues), or submit [pull requests](https://github.com/JuliaGraphs/MultilayerGraphs.jl/pulls). Your contributions are most welcome!
 
-## How to Cite
+## 🎓 How to Cite
 
 If you utilize this package in your project, please consider citing this repository using the citation information provided in [`CITATION.bib`](https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/main/CITATION.bib). 
 
 This will help to give appropriate credit to the [contributors](https://github.com/JuliaGraphs/MultilayerGraphs.jl/graphs/contributors) and support the continued development of the package.
 
-## Announcements 
+## 📢 Announcements 
 
 ### v0.1
 
@@ -1004,7 +1004,7 @@ MultilayerGraphs.jl (v1.1) and its features were announced on the following plat
 - [Forem](https://forem.julialang.org/inphyt/ann-multilayergraphsjl-v11-multilayer-network-science-in-julia-2oa3);
 - [Twitter](https://twitter.com/In_Phy_T/status/1612460371939581955).
 
-## Related Packages 
+## 📦 Related Packages 
 
 ### R 
 
@@ -1026,7 +1026,7 @@ Here is a list of software packages for the creation, manipulation, analysis and
 
 At the best of our knowledge there are currently no software packages dedicated to the creation, manipulation and analysis of multilayer graphs implemented in the [Julia language](https://julialang.org) apart from MultilayerGraphs.jl itself.
 
-## References
+## 📚 References
 
 1. De Domenico et al. (2013) [Mathematical Formulation of Multilayer Networks](https://doi.org/10.1103/PhysRevX.3.041022). *Physical Review X*; 
 2. Kivelä et al. (2014) [Multilayer networks](https://doi.org/10.1093/comnet/cnu016). *Journal of Complex Networks*; 
