@@ -19,7 +19,8 @@ makedocs(;
         canonical="https://juliagraphs.org/MultilayerGraphs.jl",
         assets=String[],
     ),
-    pages=["Home" => "index.md", "API" => "API.md"],
+    pages=["🏠 Home" => "index.md", 
+           "🛠 API" => "API.md"],
     clean=false,
 )
 
