@@ -1053,6 +1053,7 @@ At the best of our knowledge there are currently no software packages dedicated 
 7. Aleta and Moreno (2019) [Multilayer Networks in a Nutshell](https://doi.org/10.1146/annurev-conmatphys-031218-013259). *Annual Review of Condensed Matter Physics*; 
 8. Artime et al. (2022) [Multilayer Network Science: From Cells to Societies](https://doi.org/10.1017/9781009085809). *Cambridge University Press*; 
 9. De Domenico (2022) [Multilayer Networks: Analysis and Visualization](https://doi.org/10.1007/978-3-030-75718-2). *Springer Cham*. 
+10. De Domenico (2023) [More is different in real-world multilayer networks](https://doi.org/10.1038/s41567-023-02132-1). *Nature Physics*
 
 [^1]: [De Domenico  et al. (2013)](https://doi.org/10.1103/physrevx.3.041022); [Kivelä et al. (2014)](https://doi.org/10.1093/comnet/cnu016); [Boccaletti et al. (2014)](https://doi.org/10.1016/j.physrep.2014.07.001); [Lee et al. (2015)](https://doi.org/10.1140/epjb/e2015-50742-1); [Aleta and Moreno (2019)](https://doi.org/10.1146/annurev-conmatphys-031218-013259); [Bianconi (2018)](https://doi.org/10.1093/oso/9780198753919.001.0001); [Cozzo et al. (2018)](https://doi.org/10.1007/978-3-319-92255-3); [Artime et al. (2022)](https://doi.org/10.1017/9781009085809); [De Domenico (2022)](https://doi.org/10.1007/978-3-030-75718-2).
 
