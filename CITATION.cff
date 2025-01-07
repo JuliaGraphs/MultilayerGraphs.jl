@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: If you use this software, please cite both the article from preferred-citation and the software itself.
+authors:
+  - family-names: Moroni
+    given-names: Claudio
+  - family-names: Monticone
+    given-names: Pietro
+title: 'MultilayerGraphs.jl: Multilayer Network Science in Julia'
+version: 1.0.0
+url: https://doi.org/10.21105/joss.05116
+doi: 10.21105/joss.05116
+date-released: '2023-01-07'
+preferred-citation:
+  authors:
+    - family-names: Moroni
+      given-names: Claudio
+    - family-names: Monticone
+      given-names: Pietro
+  title: 'MultilayerGraphs.jl: Multilayer Network Science in Julia'
+  doi: 10.21105/joss.05116
+  url: https://doi.org/10.21105/joss.05116
+  type: article-journal
+  pages: '5116'
+  year: '2023'
+  conference: {}
+  publisher:
+    name: The Open Journal
