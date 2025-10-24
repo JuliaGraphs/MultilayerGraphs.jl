@@ -189,7 +189,7 @@ Return a random `Layer`.
 """
 function Layer(
     name::Symbol,
-    vertices::Vector{Union{V,N}},
+    vertices::Union{Vector{MultilayerVertex{nothing}},Vector{Node}},
     ne::Int64,
     null_graph::G,
     weighttype::Type{U};
@@ -197,7 +197,7 @@ function Layer(
     default_edge_weight::Function=(src, dst) -> nothing,
     default_edge_metadata::Function=(src, dst) -> NamedTuple(),
     allow_self_loops::Bool=false,
-) where {T<:Integer,U<:Real,G<:AbstractGraph{T},V<:MultilayerVertex{nothing},N<:Node}
+) where {T<:Integer,U<:Real,G<:AbstractGraph{T}}
     _nv = length(vertices)
     @assert(
         length(unique(vertices)) == _nv, "The argument `vertices` must be a unique list"
@@ -211,7 +211,7 @@ function Layer(
         "The number of required edges, $ne, is greater than the number of edges the provided graph supports i.e. $maxe"
     )
 
-    vertex_type = @isdefined(V) ? MultilayerVertex : Node
+    vertex_type = eltype(vertices)
 
     edge_list = NTuple{2,MultilayerVertex{nothing}}[]  #MultilayerEdge
     fadjlist = Dict{vertex_type,Vector{vertex_type}}()
@@ -250,7 +250,7 @@ function Layer(
         end
 
         # Add the edge to the edge list. Convert it to a MultilayerVertex if a list of Nodes was given as `vertices`
-        if @isdefined(V)
+        if vertex_type == MultilayerVertex{nothing}
             push!(edge_list, (rand_vertex_1, rand_vertex_2))
         else
             push!(edge_list, (MV(rand_vertex_1), MV(rand_vertex_2)))

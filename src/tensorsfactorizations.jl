@@ -140,7 +140,7 @@ function to_matrix(A, a, b; return_tensor_shape=false)
 
     # Permute the indices of A to the right order
     perm = vcat(a, b)
-    A = tensorcopy(A, collect(1:ndims(A)), perm)
+    A = tensorcopy(collect(1:ndims(A)), A, perm)
     # The lists shp_a and shp_b list the dimensions of the bonds in a and b
     shp = size(A)
     shp_a = shp[1:length(a)]
