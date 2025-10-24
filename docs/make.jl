@@ -17,6 +17,7 @@ makedocs(;
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://juliagraphs.org/MultilayerGraphs.jl",
         assets=String[],
+        size_threshold_ignore=["API.md"],
     ),
     pages=["🏠 Home" => "index.md", "🛠 API" => "API.md"],
     clean=false,
