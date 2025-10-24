@@ -12,7 +12,6 @@ DocMeta.setdocmeta!(
 makedocs(;
     modules=[MultilayerGraphs],
     authors="Pietro Monticone, Claudio Moroni",
-    repo="https://github.com/JuliaGraphs/MultilayerGraphs.jl/blob/{commit}{path}#{line}",
     sitename="MultilayerGraphs.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
