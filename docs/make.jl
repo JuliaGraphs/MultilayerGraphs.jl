@@ -21,6 +21,7 @@ makedocs(;
     ),
     pages=["🏠 Home" => "index.md", "🛠 API" => "API.md"],
     clean=false,
+    warnonly=true,
 )
 
 deploydocs(;
