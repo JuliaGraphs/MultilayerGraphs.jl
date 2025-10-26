@@ -51,7 +51,7 @@ fadjlist(mg::AbstractMultilayerGraph) = mg.fadjlist
 Return the nodes of the AbstractMultilayerGraph `mg`, in order of addition.
 """
 function nodes(mg::AbstractMultilayerGraph)
-    return [couple[2] for couple in sort(collect(mg.idx_N_associations); by=first)]
+    return Node[node for (_, node) in sort!(collect(mg.idx_N_associations); by=first)]
 end
 
 """
