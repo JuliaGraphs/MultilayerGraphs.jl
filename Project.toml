@@ -23,7 +23,7 @@ TensorOperations = "6aa20fa7-93e2-5fca-9bc0-fbd0db3c71a2"
 WhereTraits = "c9d4e05b-6318-49cb-9b56-e0e2b0ceadd8"
 
 [compat]
-Bijections = "0.1"
+Bijections = "0.2"
 DataStructures = "0.18, 0.19"
 Distributions = "0.25"
 Graphs = "1"
