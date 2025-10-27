@@ -239,3 +239,7 @@ for layer in all_layers_d
         end
     end
 end
+
+@testset "Printing MultilayerDiGraph" begin
+    @test_nowarn @show multilayergraph
+end

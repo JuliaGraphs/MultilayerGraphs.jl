@@ -244,3 +244,7 @@ for layer in all_layers_u
         end
     end
 end
+
+@testset "Printing MultilayerGraph" begin
+    @test_nowarn @show multilayergraph
+end
