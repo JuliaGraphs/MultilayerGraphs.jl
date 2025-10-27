@@ -2,7 +2,7 @@ function __add_vertex!(
     g::SimpleValueGraphs.AbstractValGraph{T}; metadata::Union{Tuple,NamedTuple}=NamedTuple()
 ) where {T<:Integer}
     if isempty(metadata)
-        add_vertex!(g)
+        add_vertex!(g, ())
     else
         add_vertex!(g, metadata)
     end
