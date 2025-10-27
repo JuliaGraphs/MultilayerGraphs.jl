@@ -1244,8 +1244,7 @@ function to_string(x::AbstractMultilayerGraph)
     interlayers_underlying_graphs = typeof.(graph.(values(x.interlayers)))
     interlayer_layer_1s = getproperty.(values(x.interlayers), Ref(:layer_1))
     interlayer_layer_2s = getproperty.(values(x.interlayers), Ref(:layer_2))
-    interlayer_tranfers =
-        getproperty.(values(x.interlayers), Ref(:transfer_vertex_metadata))
+    interlayer_tranfers = getproperty.(values(x.interlayers), Ref(:transfer_vertex_metadata))
 
     interlayers_table = pretty_table(
         hcat(
