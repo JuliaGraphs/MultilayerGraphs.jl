@@ -1230,16 +1230,14 @@ function to_string(x::AbstractMultilayerGraph)
 
     layers_names = name.(x.layers)
     layers_underlying_graphs = typeof.(graph.(x.layers))
-
     layers_table = pretty_table(
-        String,
         hcat(layers_names, layers_underlying_graphs);
         title="### LAYERS",
-        header=(["NAME", "UNDERLYING GRAPH"]),
+        column_labels=(["NAME", "UNDERLYING GRAPH"]),
         alignment=:c,
-        header_alignment=:c,
-        header_crayon=crayon"yellow bold",
-        hlines=:all,
+        column_label_alignment=:c,
+        style=TextTableStyle(; first_line_column_label=crayon"yellow bold"),
+        table_format=TextTableFormat(; @text__all_horizontal_lines()),
     )
 
     interlayers_names = name.(values(x.interlayers))
@@ -1250,7 +1248,6 @@ function to_string(x::AbstractMultilayerGraph)
         getproperty.(values(x.interlayers), Ref(:transfer_vertex_metadata))
 
     interlayers_table = pretty_table(
-        String,
         hcat(
             interlayers_names,
             interlayer_layer_1s,
@@ -1259,13 +1256,13 @@ function to_string(x::AbstractMultilayerGraph)
             interlayer_tranfers,
         );
         title="### INTERLAYERS",
-        header=([
+        column_labels=([
             "NAME", "LAYER 1", "LAYER 2", "UNDERLYING GRAPH", "TRANSFER VERTEX METADATA"
         ]),
         alignment=:c,
-        header_alignment=:c,
-        header_crayon=crayon"yellow bold",
-        hlines=:all,
+        column_label_alignment=:c,
+        style=TextTableStyle(; first_line_column_label=crayon"yellow bold"),
+        table_format=TextTableFormat(; @text__all_horizontal_lines()),
     )
 
     return """
